@@ -17,7 +17,7 @@ package ca.mcgill.ecse211.project;
 They are meant to help us (and you) with grading and reviewing the code. You can see the results
 of `checkstyle` and SpotBugs at
 
-travis-ci.com/mcgill-ecse211-f19/project-ecse211_gXX
+travis-ci.com/mcgill-ecse211-f19/project-ecse211_tXX
 
 where XX is your group number. 
 
@@ -39,7 +39,7 @@ You can run SpotBugs locally using the Eclipse
 
 From time to time (about once a week), you will be asked to create a release that represents your progress so far. A release is simply a tagged git commit. To do that, go to Releases:
 
-github.com/mcgill-ecse211-f19/project-ecse211_gXX/releases
+github.com/mcgill-ecse211-f19/project-ecse211_tXX/releases
 
 (Replace XX with your team number)
 
