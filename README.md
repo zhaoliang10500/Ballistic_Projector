@@ -15,13 +15,15 @@ package ca.mcgill.ecse211.project;
 **Do not modify the other source files in this repository without written permission!**
 
 They are meant to help us (and you) with grading and reviewing the code. You can see the results
-of `checkstyle` at
+of `checkstyle` and SpotBugs at
 
 travis-ci.com/mcgill-ecse211-f19/project-ecse211_gXX
 
 where XX is your group number. 
 
-You may also run `checkstyle` locally before you commit by running
+You may also run these locally after cloning the project and pulling the latest changes.
+
+Run `checkstyle` locally before you commit by running
 
 ```bash
 ./gradlew checkstyle
@@ -43,7 +45,15 @@ To generate Javadoc, right-click the project and select `Export > Javadoc`. Chan
 
 ## Releases
 
-From time to time (about once a week), you will be asked to create a release that represents your progress so far. A release is simply a tagged git commit. To do that, select Releases > New Release, and give your release an appropriate name and description, eg:
+From time to time (about once a week), you will be asked to create a release that represents your progress so far. A release is simply a tagged git commit. To do that, go to Releases:
+
+github.com/mcgill-ecse211-f19/project-ecse211_gXX/releases
+
+(Replace XX with your team number)
+
+Then select Draft a new release, and give your release an appropriate tag, name and description, eg:
+
+**Tag version:** v1.0.0 
 
 #### Version 1.0
 
