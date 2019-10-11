@@ -1,6 +1,6 @@
 # ECSE211 Ballistic Launcher Project
 
-This is your repository for the fifth lab as well as the project.
+This is your repository for the fifth lab as well as the project. If you want to follow best practices, work in the dev (development) branch, not master.
 
 ## Source files
 
@@ -33,14 +33,6 @@ on your local machine from the repo root directory.
 
 You can run SpotBugs locally using the Eclipse
 [plugin](https://marketplace.eclipse.org/content/spotbugs-eclipse-plugin).
-
-## Documentation
-
-Write your documentation in the [`docs`](docs) folder. **Do NOT include any personal information, such as your student number, since GitHub Pages is publicly viewable!**
-
-If it is not already, enable GitHub Pages for your repository following [these steps](https://help.github.com/en/articles/configuring-a-publishing-source-for-your-github-pages-site#choosing-a-publishing-source).
-
-To generate Javadoc, right-click the project and select `Export > Javadoc`. Change the output location to end in `docs/javadoc` instead of `doc`. This will make your Javadoc viewable directly on GitHub Pages.
 
 
 ## Releases

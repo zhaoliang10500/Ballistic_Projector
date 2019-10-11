@@ -1,1 +1,0 @@
-memberSearchIndex = [{"p":"ca.mcgill.ecse211.project","c":"Main","l":"Main()","url":"%3Cinit%3E()"}]
