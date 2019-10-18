@@ -2,9 +2,7 @@ package ca.mcgill.ecse211.project;
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.robotics.SampleProvider;
-import static ca.mcgill.ecse211.lab5.Resources.LAUNCHING_ACCELERATION;
 import static ca.mcgill.ecse211.project.Resources.*;
-import ca.mcgill.ecse211.lab5.Navigation;
 
 public class SimpleThrow {
   
