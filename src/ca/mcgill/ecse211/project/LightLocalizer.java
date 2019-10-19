@@ -9,7 +9,7 @@ import static ca.mcgill.ecse211.project.Helper.*;
  */
 public class LightLocalizer extends Thread {
   private double intensity, initialReading;
-  private final double waitTime = 20;
+  private final long waitTime = 100;
   private double[] angles; //angles recorded at the 1-4 lines
   
   private SampleProvider lsSampleProvider;
@@ -37,14 +37,14 @@ public class LightLocalizer extends Thread {
     
     // initial position adjustment to move closer to origin
     turnRight(90);
-    moveBackward(3.5);
+    moveBackward(4);
     forwardTillLine();
-    moveForward(LS_DISTANCE/2);
+    moveForward(LS_DISTANCE/3);
     
     turnLeft(90);
     moveBackward(5);
     forwardTillLine();
-    moveForward(LS_DISTANCE/2);
+    moveForward(1.1*LS_DISTANCE/2);
     odometer.setTheta(0);
     
     // Localize
@@ -52,13 +52,15 @@ public class LightLocalizer extends Thread {
     
     //calculate x and y offsets from origin
     double thetaY = angles[2] - angles[0];
-    double thetaX = angles[0] + angles[1] + (360-angles[3]);
+    double xError = 35; //the measured xTheta tend to be too large due to LS inaccuracies
+    double thetaX = angles[0] + angles[1] + (360-angles[3]-xError);
     
     double dy = LS_DISTANCE*Math.cos(thetaX/2*Math.PI/180);
     double dx = LS_DISTANCE*Math.cos(thetaY/2*Math.PI/180);
     
     LCD.drawString("delta y: " + dy, 0, 5);
     LCD.drawString("delta x: " + dx, 0, 6);
+    LCD.drawString("theta X: "+ thetaX, 0, 7);
     odometer.setY(-dy);
     odometer.setX(-dx);
     
@@ -81,7 +83,7 @@ public class LightLocalizer extends Thread {
     for (int i = 0; i < angles.length; i++) {
       angles[i] = recordAngle();
       try {
-        Thread.sleep(100);
+        Thread.sleep(waitTime);
       } catch(InterruptedException e) {
         LCD.drawString("Interrupted Exception", 0, 0);
       }

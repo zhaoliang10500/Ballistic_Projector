@@ -29,7 +29,7 @@ public class Resources {
 
   //constants
   public static final double WHEEL_RADIUS = 2.13;
-  public static final double WHEEL_BASE = 12;
+  public static final double WHEEL_BASE = 11.7;
   public static final int ROTATION_SPEED = 60;
   public static final int ACCELERATION = 600;
   public static final int FORWARD_SPEED = 60;
@@ -48,7 +48,7 @@ public class Resources {
   //Change these experimentally for LightLocalizer
   public static final double INTENSITY_THRESHOLD = 0.67;  //change in intensity for line detection
   public static final double LS_DISTANCE = 7; // sensor distance from center of rotation
-  public static final int LS_SPEED = 70; 
+  public static final int LS_SPEED = 80; //70
   public static final int MEAN_FILTER = 5;
 
   
