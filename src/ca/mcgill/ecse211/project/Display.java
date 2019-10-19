@@ -1,22 +1,18 @@
 package ca.mcgill.ecse211.project;
+
 import java.text.DecimalFormat;
+import ca.mcgill.ecse211.project.Main;
+
 import static ca.mcgill.ecse211.project.Resources.*;
 
 /**
- * This class is used to display the content of the odometer variables (x, y, Theta) and distance
+ * This class is used to display the content of the odometer variables (x, y, Theta)
  */
 public class Display extends Thread {
 
+  private double[] position;
   private final long DISPLAY_PERIOD = 25;
   private long timeout = Long.MAX_VALUE;
-  
-  private Odometer odometer;
-  private USLocalizer usLocalizer;
-  
-  public Display (Odometer odometer, USLocalizer usLocalizer) {
-    this.odometer = odometer;
-    this.usLocalizer = usLocalizer;
-  }
 
   public void run() {
     
@@ -27,13 +23,17 @@ public class Display extends Thread {
     long tStart = System.currentTimeMillis();
     do {
       updateStart = System.currentTimeMillis();
+
+      // Retrieve x, y and Theta information
+      position = odometer.getXYT();
       
       // Print x,y, and theta information
       DecimalFormat numberFormat = new DecimalFormat("######0.00");
-      LCD.drawString("X: " + numberFormat.format(odometer.getXYT()[0]), 0, 0);
-      LCD.drawString("Y: " + numberFormat.format(odometer.getXYT()[1]), 0, 1);
-      LCD.drawString("T: " + numberFormat.format(odometer.getXYT()[2]), 0, 2);
-      LCD.drawString("Distance: " + usLocalizer.filter(), 0, 3);
+      LCD.drawString("X: " + numberFormat.format(position[0]), 0, 0);
+      LCD.drawString("Y: " + numberFormat.format(position[1]), 0, 1);
+      LCD.drawString("T: " + numberFormat.format(position[2]), 0, 2);
+      LCD.drawString("Distance: " + Main.usLoc.medianFilter(), 0, 3);
+      
       // this ensures that the data is updated only once every period
       updateEnd = System.currentTimeMillis();
       if (updateEnd - updateStart < DISPLAY_PERIOD) {
