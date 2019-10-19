@@ -5,10 +5,13 @@ import static ca.mcgill.ecse211.project.Helper.*;
 import lejos.hardware.Sound;
 import lejos.robotics.SampleProvider;
 
+import java.util.concurrent.CountDownLatch;
+
 public class USLocalizer extends Thread {
   private int edgeType; 
   private SampleProvider usSampleProvider;
   private float[] usData;
+  private CountDownLatch latch;
   
   /**
    * class constructor
@@ -16,13 +19,15 @@ public class USLocalizer extends Thread {
    * @param usSampleProvider  ultrasonic sensor sample provider
    * @param usData  array to store ultrasonic sensor data
    */
-  public USLocalizer(int buttonID, SampleProvider usSampleProvider, float[] usData) {
+  public USLocalizer(int buttonID, SampleProvider usSampleProvider, float[] usData, CountDownLatch latch) {
     this.edgeType = buttonID;
     this.usSampleProvider = usSampleProvider;
     this.usData = usData;
     
     leftMotor.setSpeed(US_SPEED);
     rightMotor.setSpeed(US_SPEED);
+    
+    this.latch = latch;
   }
   
   /**
@@ -45,6 +50,7 @@ public class USLocalizer extends Thread {
     
     // physically turn robot to a heading of 0 degrees 
     turnLeft(dTheta);
+    latch.countDown();
   }
   
   

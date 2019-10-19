@@ -3,12 +3,13 @@ package ca.mcgill.ecse211.project;
 import static ca.mcgill.ecse211.project.Resources.*;
 import lejos.robotics.SampleProvider;
 import lejos.hardware.Button;
-
+import java.util.concurrent.CountDownLatch;
 
 public class Main {
   public static Display display;
   public static USLocalizer usLoc;
   public static LightLocalizer lightLoc;
+  public static CountDownLatch latch = new CountDownLatch(1);
   /**
    * Main entry point - instantiate objects used and set up sensor
    * @param args
@@ -37,7 +38,7 @@ public class Main {
 
 
     if (buttonChoice == Button.ID_LEFT) {
-      usLoc = new USLocalizer(FALLING, usSampleProvider, usData); //use rising edge 
+      usLoc = new USLocalizer(FALLING, usSampleProvider, usData, latch); //use rising edge 
       Display display = new Display();
       
       // create threads
@@ -49,18 +50,11 @@ public class Main {
       odoThread.start();
       displayThread.start();
       usLocalizerThread.start(); 
-      
-      // Allows verification of ultrasonic localization before starting light localization
-      if (Button.waitForAnyPress() == Button.ID_ESCAPE) {
-        System.exit(0); //exists if esc button is pressed
-        
-      } else {
-        // start light localization 
-        lightLoc = new LightLocalizer(lsSampleProvider, lsData);
-        Thread lightlocThread = new Thread(lightLoc);
-        lightlocThread.start();
 
-      }
+      // start light localization 
+      lightLoc = new LightLocalizer(lsSampleProvider, lsData, latch);
+      Thread lightlocThread = new Thread(lightLoc);
+      lightlocThread.start();
       
       /**
        * TO DO: Navigate to ideal coordinates

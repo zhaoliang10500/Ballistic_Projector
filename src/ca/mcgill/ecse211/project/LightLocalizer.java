@@ -4,6 +4,8 @@ import lejos.hardware.Sound;
 import lejos.robotics.SampleProvider;
 import static ca.mcgill.ecse211.project.Helper.*;
 
+import java.util.concurrent.CountDownLatch;
+
 /**
  * Light sensor localization class
  */
@@ -15,24 +17,34 @@ public class LightLocalizer extends Thread {
   private SampleProvider lsSampleProvider;
   private float[] lsData;
   
+  private CountDownLatch latch;
+  
   
   /**
    * Assumes the robot starts at theta = 0 in a position close enough to (1,1)
    * Where a 360 degree rotation allows the sensor to capture all four gridlines
    */
-  public LightLocalizer(SampleProvider lsSampleProvider, float[] lsData) {
+  public LightLocalizer(SampleProvider lsSampleProvider, float[] lsData, CountDownLatch latch) {
     this.lsSampleProvider = lsSampleProvider;
     this.lsData = lsData;
     angles = new double[4];
     
     leftMotor.setSpeed(LS_SPEED);
     rightMotor.setSpeed(LS_SPEED);
+    
+    this.latch = latch;
   }
   
   /**
    * Runs the logic of the light localizer
    */
   public void run() {
+    try {
+      latch.await();
+    } catch(InterruptedException e) {
+      LCD.drawString("Interrupted Exception", 0, 0);
+    }
+
     initialReading = meanFilter();
     
     // initial position adjustment to move closer to origin

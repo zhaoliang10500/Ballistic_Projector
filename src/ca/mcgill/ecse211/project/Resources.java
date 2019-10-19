@@ -9,6 +9,7 @@ import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 
+
 public class Resources {
   
   //Setup two motors here
@@ -38,7 +39,7 @@ public class Resources {
   public static final int FALLING = Button.ID_RIGHT; //for USLocalizer
   
   //Change these experimentally for USLocalizer
-  public static final int US_SPEED = 80;
+  public static final int US_SPEED = 100; //80
   public static final int RISE_THRESHOLD = 37; //38, 40
   public static final int RISE_ANGLE = 225;
   public static final int FALL_THRESHOLD = 25; //25
