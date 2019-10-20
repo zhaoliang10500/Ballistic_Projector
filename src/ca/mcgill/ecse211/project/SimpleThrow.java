@@ -12,8 +12,8 @@ public class SimpleThrow {
       //set up motors
       this.leftThrowMotor = leftThrowMotor;
       this.rightThrowMotor = rightThrowMotor;
-      this.leftThrowMotor.setAcceleration(LAUNCHING_ACCELERATION + 50000);
-      this.rightThrowMotor.setAcceleration(LAUNCHING_ACCELERATION + 50000);
+      this.leftThrowMotor.setAcceleration(50000);
+      this.rightThrowMotor.setAcceleration(50000);
   }
   
   public void doSimpleThrow () {

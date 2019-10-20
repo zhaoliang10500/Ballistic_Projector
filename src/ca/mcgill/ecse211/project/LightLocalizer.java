@@ -17,14 +17,14 @@ public class LightLocalizer extends Thread {
   private SampleProvider lsSampleProvider;
   private float[] lsData;
   
-  private CountDownLatch latch;
+  private CountDownLatch latch, latch2;
   
   
   /**
    * Assumes the robot starts at theta = 0 in a position close enough to (1,1)
    * Where a 360 degree rotation allows the sensor to capture all four gridlines
    */
-  public LightLocalizer(SampleProvider lsSampleProvider, float[] lsData, CountDownLatch latch) {
+  public LightLocalizer(SampleProvider lsSampleProvider, float[] lsData, CountDownLatch latch, CountDownLatch latch2) {
     this.lsSampleProvider = lsSampleProvider;
     this.lsData = lsData;
     angles = new double[4];
@@ -33,6 +33,7 @@ public class LightLocalizer extends Thread {
     rightMotor.setSpeed(LS_SPEED);
     
     this.latch = latch;
+    this.latch2 = latch2;
   }
   
   /**
@@ -81,6 +82,7 @@ public class LightLocalizer extends Thread {
     moveForward(dx);
     turnLeft(90);
     moveForward(dy);
+    latch2.countDown();
   }
   
   /**

@@ -33,6 +33,7 @@ public class Display extends Thread {
       LCD.drawString("Y: " + numberFormat.format(position[1]), 0, 1);
       LCD.drawString("T: " + numberFormat.format(position[2]), 0, 2);
       LCD.drawString("Distance: " + Main.usLoc.medianFilter(), 0, 3);
+      LCD.drawString("Target: " + Main.nav.target, 0, 4);
       
       // this ensures that the data is updated only once every period
       updateEnd = System.currentTimeMillis();

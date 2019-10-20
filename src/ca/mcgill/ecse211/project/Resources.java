@@ -42,6 +42,7 @@ public class Resources {
   public static final int US_SPEED = 100; //80
   public static final int RISE_THRESHOLD = 37; //38, 40
   public static final int RISE_ANGLE = 225;
+  
   public static final int FALL_THRESHOLD = 25; //25
   public static final int FALL_ANGLE = 45; //45
   public static final int MEDIAN_FILTER = 3; //number of sample taken 
@@ -55,6 +56,11 @@ public class Resources {
   
   //change for the LightLocalizer
   public static final int CORRECTION_PERIOD = 10;
+  
+  //for navigation
+  public static int NAV_FORWARD = 100;
+  public static double DISTANCE_AWAY = 4.5*TILE_SIZE;
+  public static int NAV_ROTATE = 90;
   
   //For throwing the balls
   public static final int LAUNCHING_ACCELERATION = 10000;

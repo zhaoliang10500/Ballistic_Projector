@@ -3,13 +3,17 @@ package ca.mcgill.ecse211.project;
 import static ca.mcgill.ecse211.project.Resources.*;
 import lejos.robotics.SampleProvider;
 import lejos.hardware.Button;
+import java.text.DecimalFormat;
 import java.util.concurrent.CountDownLatch;
 
 public class Main {
   public static Display display;
   public static USLocalizer usLoc;
   public static LightLocalizer lightLoc;
+  public static Navigation nav;
   public static CountDownLatch latch = new CountDownLatch(1);
+  public static CountDownLatch latch2 = new CountDownLatch(1);
+  
   /**
    * Main entry point - instantiate objects used and set up sensor
    * @param args
@@ -38,27 +42,26 @@ public class Main {
 
 
     if (buttonChoice == Button.ID_LEFT) {
-      usLoc = new USLocalizer(FALLING, usSampleProvider, usData, latch); //use rising edge 
-      Display display = new Display();
-      
       // create threads
       Thread odoThread = new Thread(odometer);
-      Thread usLocalizerThread = new Thread(usLoc);
-      Thread displayThread = new Thread(display);
-      
-      // start odometer, display, and ultrasonic localization
       odoThread.start();
-      displayThread.start();
+      
+      usLoc = new USLocalizer(FALLING, usSampleProvider, usData, latch); 
+      Thread usLocalizerThread = new Thread(usLoc);
+
       usLocalizerThread.start(); 
 
       // start light localization 
-      lightLoc = new LightLocalizer(lsSampleProvider, lsData, latch);
+      lightLoc = new LightLocalizer(lsSampleProvider, lsData, latch, latch2);
       Thread lightlocThread = new Thread(lightLoc);
       lightlocThread.start();
       
-      /**
-       * TO DO: Navigate to ideal coordinates
-       */
+      
+      nav = new Navigation(latch2);
+      Thread navThread = new Thread(nav);
+      navThread.start();
+  
+      
       /**
        * TO DO: Throw after calculation
        */

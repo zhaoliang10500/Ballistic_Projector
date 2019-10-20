@@ -34,8 +34,14 @@ public class USLocalizer extends Thread {
    * Runs the logic of the US localizer
    */
   public void run() { 
-    double dTheta;
+    // wait for odometer thread to start before localizing
+    try {
+      Thread.sleep(2000);
+    } catch(InterruptedException e) {
+      LCD.drawString("Interrupted Exception", 0, 0);
+    }
     
+    double dTheta;
     if (edgeType == RISING) {
       dTheta = risingEdge(); 
     }
