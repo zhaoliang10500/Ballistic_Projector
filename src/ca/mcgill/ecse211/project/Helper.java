@@ -97,8 +97,8 @@ public class Helper{
    * Helper method, stops both motors
    */
   public static void stopMotors() {
-    leftMotor.stop();
-    rightMotor.stop();
+    leftMotor.stop(true);
+    rightMotor.stop(false);
   }
   
   
