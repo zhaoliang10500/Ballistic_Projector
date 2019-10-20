@@ -19,6 +19,10 @@ public class LightLocalizer extends Thread {
   
   private CountDownLatch latch, latch2;
   
+  float lastrgb = -1;
+  float rgb;
+  int lastChecked = 0;
+  
   
   /**
    * Assumes the robot starts at theta = 0 in a position close enough to (1,1)
@@ -128,17 +132,45 @@ public class LightLocalizer extends Thread {
     return sum/MEAN_FILTER; //return median
   }
   
+
+  /**
+   * This method retrieves the R,G and B values from the color sensor and outputs a non-physical value.
+   * @param rgb Non-physical value for line detection.
+   */
+  public static float getCSData() {
+    float rgb;
+    float[] colorData = new float[L_SENSOR.getRGBMode().sampleSize()];
+    L_SENSOR.getRGBMode().fetchSample(colorData, 0);
+    rgb = (colorData[0] + colorData[1] + colorData[2]) * 1000;
+    return rgb;
+  }
+  
   /**
    * Get the odometer angle at each grid line
    * @return  odometer angle at each grid line
    */
   private double recordAngle() {
     while(leftMotor.isMoving() || rightMotor.isMoving()) {
-      intensity = meanFilter();
-      if (intensity/initialReading < INTENSITY_THRESHOLD) {
-        Sound.beep();
-        return odometer.getXYT()[2]; //get the angle at a line
+      rgb = getCSData();
+      
+      if (lastrgb != -1) {
+        if ((lastrgb - rgb > 30) && lastChecked == 0) {
+          Sound.beep();
+          lastChecked = 7;
+          return odometer.getXYT()[2];
+        } else {
+          if (lastChecked > 0) { // Logic for avoiding detection of the same line twice (decrement lastChecked until it
+                                 // reaches 0, only then can you re-enter the if statement)
+            lastChecked--;
+          }
+        }
       }
+      lastrgb = rgb;
+      
+//      if (intensity/initialReading < INTENSITY_THRESHOLD) {
+//        Sound.beep();
+//        return odometer.getXYT()[2]; //get the angle at a line
+//      }
     }
     return -1;
   }
