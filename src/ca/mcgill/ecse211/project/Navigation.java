@@ -39,7 +39,7 @@ public class Navigation extends Thread{
    * @param xCoord  x coordinate of waypoint[i]
    * @param yCoord  y coordinate of waypoint[i]
    */
-  public void run () {
+  public void run () { //travelTo
     try {
       latch2.await();
     } catch(InterruptedException e) {
@@ -55,6 +55,8 @@ public class Navigation extends Thread{
     
     deltaX = TILE_SIZE*xyCoord[0] - x;  
     deltaY = TILE_SIZE*xyCoord[1] - y;
+    minDist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+    travelDist = minDist - NAV_OFFSET;
     
     // Turn
     theta2 = Math.toDegrees(Math.atan2(deltaX, deltaY)); //theta2 now in degrees
@@ -65,9 +67,7 @@ public class Navigation extends Thread{
     rightMotor.setSpeed(NAV_FORWARD);
     leftMotor.setSpeed(NAV_FORWARD);
     
-    // Calculate travel distance 
-    minDist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
-    travelDist = minDist - DISTANCE_AWAY;
+    
     
     // Calculate launch coordinates for display
     launch[0] = travelDist*Math.cos(turnedAngle);

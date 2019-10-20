@@ -59,7 +59,7 @@ public class Resources {
   
   //for navigation
   public static int NAV_FORWARD = 100;
-  public static double DISTANCE_AWAY = 4.5*TILE_SIZE;
+  public static double NAV_OFFSET = 4.5*TILE_SIZE;
   public static int NAV_ROTATE = 90;
   
   //For throwing the balls

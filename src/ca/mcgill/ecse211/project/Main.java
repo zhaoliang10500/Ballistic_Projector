@@ -56,15 +56,14 @@ public class Main {
       Thread lightlocThread = new Thread(lightLoc);
       lightlocThread.start();
       
-      
       nav = new Navigation(latch2);
       Thread navThread = new Thread(nav);
       navThread.start();
   
       
-      /**
-       * TO DO: Throw after calculation
-       */
+      if (Button.waitForAnyPress() == Button.ID_ENTER) {
+        simpleThrow.doSimpleThrow();   
+      }
     }
     
     else if (buttonChoice == Button.ID_RIGHT) {
