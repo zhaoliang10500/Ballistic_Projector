@@ -48,7 +48,7 @@ public class Resources {
   public static final int MEDIAN_FILTER = 3; //number of sample taken 
   
   //Change these experimentally for LightLocalizer
-  public static final double INTENSITY_THRESHOLD = 0.67;  //change in intensity for line detection
+  public static final double INTENSITY_THRESHOLD = 0.60;//0.67  //change in intensity for line detection
   public static final double LS_DISTANCE = 7; // sensor distance from center of rotation
   public static final int LS_SPEED = 80; //70
   public static final int MEAN_FILTER = 5;

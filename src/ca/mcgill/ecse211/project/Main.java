@@ -29,6 +29,7 @@ public class Main {
     SimpleThrow simpleThrow = new SimpleThrow(leftThrowMotor, rightThrowMotor);
     
     int buttonChoice;
+    
     do {
       LCD.clear();
       LCD.drawString("< Left  | Right >", 0, 0);
@@ -43,6 +44,7 @@ public class Main {
 
     if (buttonChoice == Button.ID_LEFT) {
       // create threads
+      LCD.clear();
       Thread odoThread = new Thread(odometer);
       odoThread.start();
       
@@ -59,7 +61,6 @@ public class Main {
       nav = new Navigation(latch2);
       Thread navThread = new Thread(nav);
       navThread.start();
-  
       
       if (Button.waitForAnyPress() == Button.ID_ENTER) {
         simpleThrow.doSimpleThrow();   

@@ -125,7 +125,6 @@ public class Odometer extends Thread {
       }
       
       //display
-      LCD.clear();
       DecimalFormat numberFormat = new DecimalFormat("######0.00");
       double[] position = odo.getXYT();
       LCD.drawString("X: " + numberFormat.format(position[0]), 0, 0);
