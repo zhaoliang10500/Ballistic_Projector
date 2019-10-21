@@ -30,7 +30,7 @@ public class Resources {
 
   //constants
   public static final double WHEEL_RADIUS = 2.13;
-  public static final double WHEEL_BASE = 11.7;
+  public static final double WHEEL_BASE = 11.7; //11.7
   public static final int ROTATION_SPEED = 60;
   public static final int ACCELERATION = 600;
   public static final int FORWARD_SPEED = 60;
@@ -48,7 +48,7 @@ public class Resources {
   public static final int MEDIAN_FILTER = 3; //number of sample taken 
   
   //Change these experimentally for LightLocalizer
-  public static final double INTENSITY_THRESHOLD = 0.60;//0.67  //change in intensity for line detection
+  public static final double INTENSITY_THRESHOLD = 0.62;//0.67  //change in intensity for line detection
   public static final double LS_DISTANCE = 7; // sensor distance from center of rotation
   public static final int LS_SPEED = 80; //70
   public static final int MEAN_FILTER = 5;
@@ -58,10 +58,8 @@ public class Resources {
   public static final int CORRECTION_PERIOD = 10;
   
   //for navigation
-  public static int NAV_FORWARD = 100;
-  public static double NAV_OFFSET = 4*TILE_SIZE;
+  public static int NAV_FORWARD = 160;
+  public static double NAV_OFFSET = 4.7*TILE_SIZE; //min offset = 4.5
   public static int NAV_ROTATE = 90;
   
-  //For throwing the balls
-  public static final int LAUNCHING_ACCELERATION = 10000;
 }

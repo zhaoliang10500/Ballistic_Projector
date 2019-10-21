@@ -27,7 +27,7 @@ public class Main {
     SampleProvider lsSampleProvider = L_SENSOR.getMode("Red");
     float[] lsData = new float[lsSampleProvider.sampleSize()];
     
-    SimpleThrow simpleThrow = new SimpleThrow(leftThrowMotor, rightThrowMotor);
+    SimpleThrow simpleThrow = new SimpleThrow();
     
     int buttonChoice;
     
@@ -63,29 +63,38 @@ public class Main {
       Thread navThread = new Thread(nav);
       navThread.start();
       
-      if (Button.waitForAnyPress() == Button.ID_ENTER) {
-        simpleThrow.doSimpleThrow();   
+      for (int i = 0; i < 5; i++) {
+        int buttonpressed;
+        do {
+          buttonpressed = Button.waitForAnyPress();
+        }
+        while (buttonpressed != Button.ID_ENTER && buttonpressed != Button.ID_ESCAPE); 
+        if (buttonpressed == Button.ID_ESCAPE) {
+          System.exit(0);
+        }
+        simpleThrow.doSimpleThrow();
       }
+   
     }
     
     else if (buttonChoice == Button.ID_RIGHT) {
-      simpleThrow.doSimpleThrow();
-    }
-    
-   LCD.drawString("Press to throw again", 0, 5);
-    //Do throw another 4 times
-    for (int i = 0; i < 4; i++) {
-      int buttonpressed;
-      do {
-        LCD.drawString("Press to Left or Right Button", 0, 6);
-        buttonpressed = Button.waitForAnyPress();
+      for (int i = 0; i < 5; i++) {
+        int buttonpressed;
+        do {
+          buttonpressed = Button.waitForAnyPress();
+        }
+        while (buttonpressed != Button.ID_ENTER && buttonpressed != Button.ID_ESCAPE); 
+        if (buttonpressed == Button.ID_ESCAPE) {
+          System.exit(0);
+        }
+        simpleThrow.doSimpleThrow();
       }
-      while (buttonpressed != Button.ID_LEFT && buttonpressed != Button.ID_RIGHT); 
-        
-      simpleThrow.doSimpleThrow();
+
     }
-    
-    
+    else {
+      System.exit(0);
+    }
+      
     System.exit(0);
 
   }
