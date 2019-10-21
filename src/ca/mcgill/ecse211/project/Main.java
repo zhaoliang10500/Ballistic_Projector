@@ -1,66 +1,103 @@
 package ca.mcgill.ecse211.project;
-import lejos.hardware.Button;
-import lejos.hardware.sensor.EV3ColorSensor;
-import lejos.hardware.sensor.EV3UltrasonicSensor;
-import lejos.hardware.sensor.SensorModes;
-import lejos.robotics.SampleProvider;
+
 import static ca.mcgill.ecse211.project.Resources.*;
-/**
- * @author zhaoliang & Brandon
- * Main function
- */
+import lejos.robotics.SampleProvider;
+import lejos.hardware.Button;
+import java.util.concurrent.CountDownLatch;
+
 public class Main {
+  public static Display display;
+  public static USLocalizer usLoc;
+  public static LightLocalizer lightLoc;
+  public static Navigation nav;
+  public static CountDownLatch latch = new CountDownLatch(1);
+  public static CountDownLatch latch2 = new CountDownLatch(1);
   
-  public static void main (String[] args) throws InterruptedException {
-    //Setup the Ultrasonic Sensor
-    SensorModes usSensor = new EV3UltrasonicSensor(usPort);
-    SampleProvider usValue = usSensor.getMode("Distance");
-    float[] usData = new float[usValue.sampleSize()];   
+  public static int isTimeForMulThrow = 0;
+  
+  /**
+   * Main entry point - instantiate objects used and set up sensor
+   * @param args
+   */
+  public static void main(String[] args) {
     
-    //Setup the Odometer and the Display
-    Odometer odometer = Odometer.getOdometer();
-    USLocalizer usLocalizer = new USLocalizer(leftMotor, rightMotor, odometer, usSensor, usData);
+    SampleProvider usSampleProvider = US_SENSOR.getMode("Distance");
+    float[] usData = new float[usSampleProvider.sampleSize()];
+   
+    SampleProvider lsSampleProvider = L_SENSOR.getMode("Red");
+    float[] lsData = new float[lsSampleProvider.sampleSize()];
+    
     SimpleThrow simpleThrow = new SimpleThrow(leftThrowMotor, rightThrowMotor);
-    Display display = new Display(odometer, usLocalizer);
     
-    //Setup the Color Sensor
-    @SuppressWarnings("resource")
-    SensorModes colorSensor = new EV3ColorSensor(colorPort);
-    SampleProvider colorValue = colorSensor.getMode("RGB");
-    float[] colorData = new float[colorValue.sampleSize()];
+    int buttonChoice;
     
-    
-    //Display on the screen defines here
-    int pressForStage1;
     do {
       LCD.clear();
+      LCD.drawString("< Left  | Right >", 0, 0);
+      LCD.drawString("        |        ", 0, 1);
+      LCD.drawString(" Mobile | Fixed  ", 0, 2);
+      LCD.drawString(" Launch | Launch ", 0, 3);
+
+      buttonChoice = Button.waitForAnyPress();
+
+    } while (buttonChoice != Button.ID_LEFT && buttonChoice != Button.ID_RIGHT && buttonChoice != Button.ID_ESCAPE);
+
+
+    if (buttonChoice == Button.ID_LEFT) {
+      // create threads
+      LCD.clear();
+      Thread odoThread = new Thread(odometer);
+      odoThread.start();
       
-      LCD.drawString("< Left       | Right       >", 0, 0);
-      LCD.drawString("             |              ", 0, 1);
-      LCD.drawString(" do          | do           ", 0, 2);
-      LCD.drawString(" localization| Throw        ", 0, 3);
-      LCD.drawString(" & Throw     | only         ", 0, 4);
-      pressForStage1 = Button.waitForAnyPress();
-    } while (pressForStage1 != Button.ID_LEFT && pressForStage1 != Button.ID_RIGHT);
-    //Do localization and throw if left button is pressed
-    if (pressForStage1 == Button.ID_LEFT) {
-      //DO RISING_EDGE
-      odometer.start();
-      display.start();
-      usLocalizer.doLocalization("RISING_EDGE");
-      //DO LOCALIZATION TO (1,1)
-      LightLocalizer lightLocalizer = new LightLocalizer(leftMotor, rightMotor, odometer, colorValue, colorData);
-      Navigation navigation = new Navigation(leftMotor, rightMotor, odometer, lightLocalizer);//Navigating to grid point (1,1)
-      lightLocalizer.start();
-      navigation.doNavigation();
-      //DO THROW
+      usLoc = new USLocalizer(FALLING, usSampleProvider, usData, latch); 
+      Thread usLocalizerThread = new Thread(usLoc);
+
+      usLocalizerThread.start(); 
+
+      // start light localization 
+      lightLoc = new LightLocalizer(lsSampleProvider, lsData, latch, latch2);
+      Thread lightlocThread = new Thread(lightLoc);
+      lightlocThread.start();
       
+      nav = new Navigation(latch2);
+      Thread navThread = new Thread(nav);
+      navThread.start();
       
-      
+      if (Button.waitForAnyPress() == Button.ID_ENTER) {
+        simpleThrow.doSimpleThrow();   
+      }
     }
-    //Do simple throw directly
-    else if (pressForStage1 == Button.ID_RIGHT) {
+    
+    else if (buttonChoice == Button.ID_RIGHT) {
       simpleThrow.doSimpleThrow();
     }
+    
+   LCD.drawString("Press to throw again", 0, 5);
+    //Do throw another 4 times
+    for (int i = 0; i < 4; i++) {
+      int buttonpressed;
+      do {
+        LCD.drawString("Press to Left or Right Button", 0, 6);
+        buttonpressed = Button.waitForAnyPress();
+      }
+      while (buttonpressed != Button.ID_LEFT && buttonpressed != Button.ID_RIGHT); 
+        
+      simpleThrow.doSimpleThrow();
+    }
+    
+    
+    System.exit(0);
+
   }
+    
+    
 }
+  
+  
+  
+  
+  
+  
+  
+  
+  

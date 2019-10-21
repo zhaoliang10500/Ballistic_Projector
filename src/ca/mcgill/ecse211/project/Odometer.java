@@ -1,9 +1,11 @@
 package ca.mcgill.ecse211.project;
 
+import java.text.DecimalFormat;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import static ca.mcgill.ecse211.project.Resources.*;
+
 
 /**
  * This class implements the odometer for Lab4 on the EV3 Platform 
@@ -121,6 +123,14 @@ public class Odometer extends Thread {
           //there is nothing to be done
         }
       }
+      
+      //display
+      DecimalFormat numberFormat = new DecimalFormat("######0.00");
+      double[] position = odo.getXYT();
+      LCD.drawString("X: " + numberFormat.format(position[0]), 0, 0);
+      LCD.drawString("Y: " + numberFormat.format(position[1]), 0, 1);
+      LCD.drawString("T: " + numberFormat.format(position[2]), 0, 2);
+      
     }
   }
   

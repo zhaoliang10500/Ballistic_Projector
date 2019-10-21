@@ -1,124 +1,156 @@
 package ca.mcgill.ecse211.project;
-import lejos.hardware.Sound;
-import lejos.hardware.motor.EV3LargeRegulatedMotor;
+
 import static ca.mcgill.ecse211.project.Resources.*;
-/**
- * @author zhaoliang & Brandon
- * This Class implemented the navigation function to gridpoint(1,1)
- */
-public class Navigation {
+import static ca.mcgill.ecse211.project.Helper.*;
+
+import java.util.concurrent.CountDownLatch;
+import lejos.hardware.Sound;
+
+
+public class Navigation extends Thread{
+  private static double x, y; 
+  private static double deltaX, deltaY;
   
-  private static EV3LargeRegulatedMotor leftMotor;
-  private static EV3LargeRegulatedMotor rightMotor;
-  private static Odometer odometer;
-  private LightLocalizer lightLocalizer;
+  private static double minDist, travelDist;
+  private static double theta1, theta2;
+  private boolean tooClose; //for calculating ideal launch
   
-  public Navigation (EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor,
-      Odometer odometer, LightLocalizer lightLocalizer) {
-    Navigation.leftMotor = leftMotor;
-    Navigation.rightMotor = rightMotor;
-    Navigation.odometer = odometer;
-    this.lightLocalizer = lightLocalizer;
+  public double[] target;
+  public double[] launch;
+  
+  private CountDownLatch latch2;
+  
+  /**
+   * Class constructor
+   */
+  public Navigation (CountDownLatch latch2) {
+    launch = new double[2];
+    target = new double[] {7,5}; //{3,3} {7,0} {7,5}
+    this.latch2 = latch2;
+    
+    // Reset motors, navigating, and set odometer 
+    leftMotor.stop();
+    rightMotor.stop();
+    odometer.setXYT(TILE_SIZE, TILE_SIZE, 0);
   }
+
   
-  public void doNavigation () {
-    //first move to the black line of x-axis side.
-    while (lightLocalizer.isDetectedBlackLineOfXSide != 1) {
-      leftMotor.forward();
-      rightMotor.forward();
+  /**
+   * Moves the robot to each desired waypoint
+   * @param xCoord  x coordinate of waypoint[i]
+   * @param yCoord  y coordinate of waypoint[i]
+   */
+  public void run () { //travelTo
+    try {
+      latch2.await();
+    } catch(InterruptedException e) {
+      LCD.drawString("Interrupted Exception", 0, 0);
     }
-    //detected a black line, backwards for a bit
-    leftMotor.rotate(-180, true);
-    rightMotor.rotate(-180, false);
     
-    //change to 270 degrees which means it is now facing the black line of y-axis side.
-    leftMotor.rotate(240, true);
-    rightMotor.rotate(-240, false);
-    while (lightLocalizer.isDetectedBlackLineOfYSide != 1) {
-      leftMotor.forward();
-      rightMotor.forward();
+    double[] xyCoord = target;
+    rightMotor.setSpeed(NAV_FORWARD);
+    leftMotor.setSpeed(NAV_FORWARD);
+    
+    LCD.drawString("Target: " + (int)target[0] + ", " + (int)target[1], 0, 4);
+    // Gets current x, y positions (already in cm) 
+    x = odometer.getXYT()[0];
+    y = odometer.getXYT()[1];
+    
+    //TILE_SIZE/2 because true desired point at center of tile
+    deltaX = TILE_SIZE*xyCoord[0] - x + TILE_SIZE/2;  
+    deltaY = TILE_SIZE*xyCoord[1] - y + TILE_SIZE/2;
+    
+    minDist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+    
+    LCD.drawString("minDist" + minDist, 0, 7);
+    
+    if (minDist >= NAV_OFFSET) {
+      tooClose = false;
+      travelDist = minDist - NAV_OFFSET;
+      
+      //Calculate angles, atan = first/second
+      theta2 = Math.toDegrees(Math.atan2(deltaX, deltaY)); //theta2 now in degrees
+      theta1 = odometer.getXYT()[2]; // theta1 in degrees
     }
-    leftMotor.rotate(-180, true);
-    rightMotor.rotate(-180, false);
+    else {
+      tooClose = true;
+      leftMotor.setSpeed(NAV_ROTATE);
+      rightMotor.setSpeed(NAV_ROTATE);
+      Helper.turnRight(89);
+      leftMotor.setSpeed(NAV_FORWARD);
+      rightMotor.setSpeed(NAV_FORWARD);
+      Helper.moveForward(TILE_SIZE*6 + TILE_SIZE/1.3);
+      leftMotor.setSpeed(NAV_ROTATE);
+      rightMotor.setSpeed(NAV_ROTATE);
+      Helper.turnLeft(89);
+      Helper.moveBackward(TILE_SIZE/1.8);
+      
+      // Gets current x, y positions (already in cm) 
+      x = odometer.getXYT()[0];
+      y = odometer.getXYT()[1];
+      
+      deltaX = x - TILE_SIZE*xyCoord[0] + TILE_SIZE/2;
+      deltaY = TILE_SIZE*xyCoord[1] - y + TILE_SIZE/2;
+  
+      minDist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+      NAV_OFFSET = 5.8*TILE_SIZE; //because this case tend to be more inaccurate with localization
+      travelDist = minDist - NAV_OFFSET;
+      
+      //Calculate angles, atan = first/second
+      theta2 = Math.toDegrees(Math.atan2(deltaX, deltaY)); //theta2 now in degrees
+      theta1 = odometer.getXYT()[2]; // theta1 in degrees
+    }
     
-    //now we can go to (1,1) gridpoint, we know we are 180units from x and y axis
-    //turn to the 45 degree line
-    leftMotor.rotate(-120, true);
-    rightMotor.rotate(120, false);
+    LCD.drawString("travelDist: " + travelDist, 0, 3);
     
-    //255^2 = 180^2 + 180^2, 55 is the adjustment of errors.
-    leftMotor.rotate(255 + 190, true);
-    rightMotor.rotate(255 + 190, false);
+    turnTo(theta2 - theta1);
     
-    leftMotor.rotate(-120, true);
-    rightMotor.rotate(120, false);
+    
+    // Move forward
+    leftMotor.rotate(Helper.convertDistance(travelDist, WHEEL_RADIUS), true);
+    rightMotor.rotate(Helper.convertDistance(travelDist, WHEEL_RADIUS), false);
+    
+    Sound.buzz();
   }
   
   /**
-   * @param double angle representing the angle heading change in radians 
-   * @return minimum degrees needed to turn to the required angle
+   * Causes the robot to turn (on point) to the absolute heading theta. 
+   * This method should turn a MINIMAL angle to its target. 
+   * @param theta  robot turning angle before each waypoint
    */
-  public static double getMinAngle(double angle) {
-    if (angle > Math.PI) {
-      angle = 2 * Math.PI - angle;
+  private void turnTo(double theta) {
+    double turnAngle;
+    if (theta > 180) {
+      turnAngle = 360 - theta;
     }
-    else if (angle < -Math.PI) {
-      angle = angle + 2 * Math.PI;
+    else if (theta < -180) {
+      turnAngle = 360 + theta;
     }
-    return angle;
-  }
-  
-  /** parameters: double theta that represents an angle in radians
-   *  action: changes direction from current angle to theta
-   */
-  public static void turnTo(double theta) {
-      double angle = theta- odometer.getXYT()[2];
-      
-      leftMotor.rotate(changeToDesiredAngle(getMinAngle(angle)),true);
-      rightMotor.rotate(-changeToDesiredAngle(getMinAngle(angle)),false);
-  }
+    else {
+      turnAngle = theta;
+    }
+    
+    LCD.drawString("turnAngle: "+ turnAngle, 0, 6);
+    // Calculate launch coordinates for display
+    launch[0] = travelDist*Math.sin(Math.toRadians(turnAngle)) + TILE_SIZE; //x
+    launch[1] = travelDist*Math.cos(Math.toRadians(turnAngle)) + TILE_SIZE; //y
+    
+    LCD.drawString("Lauch: " + (int)launch[0] + ", " + (int)launch[1], 0, 5);
+    
+    leftMotor.setSpeed(NAV_ROTATE);
+    rightMotor.setSpeed(NAV_ROTATE);
+    
+    
+    if (!tooClose) {
+      leftMotor.rotate(convertAngle(turnAngle, WHEEL_RADIUS), true);
+      rightMotor.rotate(-convertAngle(turnAngle, WHEEL_RADIUS), false);
+    }
+    else {
+      leftMotor.rotate(-convertAngle(turnAngle, WHEEL_RADIUS), true);
+      rightMotor.rotate(convertAngle(turnAngle, WHEEL_RADIUS), false);
+    }
 
-  /** parameter: double angle representing the angle heading change in radians
-   *  returns: degrees the motors have to turn to change this direction
-   */
-  private static int changeToDesiredAngle(double angle){
-      return travelToNextWaypoint(WHEEL_BASE*angle/2);
   }
   
-//****Normal Travel mode used in Simple navigation******
-  public static void travelTo(double x, double y) {
-      
-    //reset motors
-    leftMotor.stop();
-    rightMotor.stop();
-    leftMotor.setAcceleration(600);
-    rightMotor.setAcceleration(600);
-    
-    //calculate trajectory path and angle
-    double trajectoryX = x;
-    double trajectoryY = y;
-    double trajectoryAngle = Math.atan2(trajectoryX, trajectoryY);
-    
-    //rotate to correct angle
-    Sound.beepSequenceUp();
-    leftMotor.setSpeed(ROTATION_SPEED);
-    rightMotor.setSpeed(ROTATION_SPEED);
-    turnTo(trajectoryAngle);
-    
-    double trajectoryLine = Math.hypot(trajectoryX, trajectoryY);
-    
-    //move forward correct distance
-    Sound.beepSequence();
-    leftMotor.setSpeed(FORWARD_SPEED);
-    rightMotor.setSpeed(FORWARD_SPEED);
-    leftMotor.rotate(travelToNextWaypoint(trajectoryLine),true);
-    rightMotor.rotate(travelToNextWaypoint(trajectoryLine),false);
-  }
   
-  /** parameter: double distance indicates how far the car should run
-   *  returns: degress the wheels have to turn to get to the next waypoint
-   */
-  private static int travelToNextWaypoint(double distance){
-      return (int) (180*distance/(Math.PI * WHEEL_RADIUS));
-  }
 }
