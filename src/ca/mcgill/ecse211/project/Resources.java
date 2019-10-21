@@ -59,7 +59,7 @@ public class Resources {
   
   //for navigation
   public static int NAV_FORWARD = 160;
-  public static double NAV_OFFSET = 4.7*TILE_SIZE; //min offset = 4.5
+  public static double NAV_OFFSET = 4.5*TILE_SIZE; //min offset = 4.5
   public static int NAV_ROTATE = 90;
   
 }

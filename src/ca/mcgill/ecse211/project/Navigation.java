@@ -25,7 +25,7 @@ public class Navigation extends Thread{
    */
   public Navigation (CountDownLatch latch2) {
     launch = new double[2];
-    target = new double[] {7,5}; //{3,3} {7,0} {7,5}
+    target = new double[] {5,7}; //{3,3} {7,0} {7,5}
     this.latch2 = latch2;
     
     // Reset motors, navigating, and set odometer 

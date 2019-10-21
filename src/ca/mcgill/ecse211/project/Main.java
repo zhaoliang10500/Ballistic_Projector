@@ -6,7 +6,6 @@ import lejos.hardware.Button;
 import java.util.concurrent.CountDownLatch;
 
 public class Main {
-  public static Display display;
   public static USLocalizer usLoc;
   public static LightLocalizer lightLoc;
   public static Navigation nav;
