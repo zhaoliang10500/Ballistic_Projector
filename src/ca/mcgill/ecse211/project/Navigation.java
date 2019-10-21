@@ -4,6 +4,7 @@ import static ca.mcgill.ecse211.project.Resources.*;
 import static ca.mcgill.ecse211.project.Helper.*;
 
 import java.util.concurrent.CountDownLatch;
+import lejos.hardware.Sound;
 
 
 public class Navigation extends Thread{
@@ -12,7 +13,7 @@ public class Navigation extends Thread{
   
   private static double minDist, travelDist;
   private static double theta1, theta2;
-  public static double turnedAngle; //for calculating launch (for display)
+  private boolean tooClose; //for calculating ideal launch
   
   public double[] target;
   public double[] launch;
@@ -24,7 +25,7 @@ public class Navigation extends Thread{
    */
   public Navigation (CountDownLatch latch2) {
     launch = new double[2];
-    target = new double[] {5,6};
+    target = new double[] {7,5}; //{3,3} {7,0} {7,5}
     this.latch2 = latch2;
     
     // Reset motors, navigating, and set odometer 
@@ -47,51 +48,69 @@ public class Navigation extends Thread{
     }
     
     double[] xyCoord = target;
+    rightMotor.setSpeed(NAV_FORWARD);
+    leftMotor.setSpeed(NAV_FORWARD);
     
-    LCD.drawString("Target: " + (int)target[0] + " " + (int)target[1], 0, 4);
+    LCD.drawString("Target: " + (int)target[0] + ", " + (int)target[1], 0, 4);
     // Gets current x, y positions (already in cm) 
     x = odometer.getXYT()[0];
     y = odometer.getXYT()[1];
     
-    deltaX = TILE_SIZE*xyCoord[0] - x;  
-    deltaY = TILE_SIZE*xyCoord[1] - y;
+    //TILE_SIZE/2 because true desired point at center of tile
+    deltaX = TILE_SIZE*xyCoord[0] - x + TILE_SIZE/2;  
+    deltaY = TILE_SIZE*xyCoord[1] - y + TILE_SIZE/2;
     
     minDist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+    
+    LCD.drawString("minDist" + minDist, 0, 7);
+    
     if (minDist >= NAV_OFFSET) {
+      tooClose = false;
       travelDist = minDist - NAV_OFFSET;
+      
+      //Calculate angles, atan = first/second
+      theta2 = Math.toDegrees(Math.atan2(deltaX, deltaY)); //theta2 now in degrees
+      theta1 = odometer.getXYT()[2]; // theta1 in degrees
     }
     else {
-      Helper.turnRight(90);
-      Helper.moveForward(TILE_SIZE*6);
-      Helper.turnLeft(90);
+      tooClose = true;
+      leftMotor.setSpeed(NAV_ROTATE);
+      rightMotor.setSpeed(NAV_ROTATE);
+      Helper.turnRight(89);
+      leftMotor.setSpeed(NAV_FORWARD);
+      rightMotor.setSpeed(NAV_FORWARD);
+      Helper.moveForward(TILE_SIZE*6 + TILE_SIZE/1.3);
+      leftMotor.setSpeed(NAV_ROTATE);
+      rightMotor.setSpeed(NAV_ROTATE);
+      Helper.turnLeft(89);
+      Helper.moveBackward(TILE_SIZE/1.8);
+      
       // Gets current x, y positions (already in cm) 
       x = odometer.getXYT()[0];
       y = odometer.getXYT()[1];
       
-      deltaX = TILE_SIZE*xyCoord[0] - x;  
-      deltaY = TILE_SIZE*xyCoord[1] - y;
+      deltaX = x - TILE_SIZE*xyCoord[0] + TILE_SIZE/2;
+      deltaY = TILE_SIZE*xyCoord[1] - y + TILE_SIZE/2;
+  
       minDist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+      NAV_OFFSET = 5.8*TILE_SIZE; //because this case tend to be more inaccurate with localization
       travelDist = minDist - NAV_OFFSET;
+      
+      //Calculate angles, atan = first/second
+      theta2 = Math.toDegrees(Math.atan2(deltaX, deltaY)); //theta2 now in degrees
+      theta1 = odometer.getXYT()[2]; // theta1 in degrees
     }
     
-    // Turn
-    theta2 = Math.toDegrees(Math.atan2(deltaX, deltaY)); //theta2 now in degrees
-    theta1 = odometer.getXYT()[2]; // theta1 in degrees
+    LCD.drawString("travelDist: " + travelDist, 0, 3);
     
     turnTo(theta2 - theta1);
     
-    rightMotor.setSpeed(NAV_FORWARD);
-    leftMotor.setSpeed(NAV_FORWARD);
-    
-    // Calculate launch coordinates for display
-    launch[0] = travelDist*Math.cos(turnedAngle);
-    launch[1] = travelDist*Math.sin(turnedAngle);
-    LCD.drawString("Lauch: " + launch[0] + " " + launch[1], 0, 5);
     
     // Move forward
     leftMotor.rotate(Helper.convertDistance(travelDist, WHEEL_RADIUS), true);
     rightMotor.rotate(Helper.convertDistance(travelDist, WHEEL_RADIUS), false);
-
+    
+    Sound.buzz();
   }
   
   /**
@@ -100,19 +119,36 @@ public class Navigation extends Thread{
    * @param theta  robot turning angle before each waypoint
    */
   private void turnTo(double theta) {
+    double turnAngle;
     if (theta > 180) {
-      theta = 360 - theta;
+      turnAngle = 360 - theta;
     }
     else if (theta < -180) {
-      theta = 360 + theta;
+      turnAngle = 360 + theta;
+    }
+    else {
+      turnAngle = theta;
     }
     
-    turnedAngle = theta;
+    LCD.drawString("turnAngle: "+ turnAngle, 0, 6);
+    // Calculate launch coordinates for display
+    launch[0] = travelDist*Math.sin(Math.toRadians(turnAngle)) + TILE_SIZE; //x
+    launch[1] = travelDist*Math.cos(Math.toRadians(turnAngle)) + TILE_SIZE; //y
+    
+    LCD.drawString("Lauch: " + (int)launch[0] + ", " + (int)launch[1], 0, 5);
     
     leftMotor.setSpeed(NAV_ROTATE);
     rightMotor.setSpeed(NAV_ROTATE);
-    leftMotor.rotate(convertAngle(theta, WHEEL_RADIUS), true);
-    rightMotor.rotate(-convertAngle(theta, WHEEL_RADIUS), false);
+    
+    
+    if (!tooClose) {
+      leftMotor.rotate(convertAngle(turnAngle, WHEEL_RADIUS), true);
+      rightMotor.rotate(-convertAngle(turnAngle, WHEEL_RADIUS), false);
+    }
+    else {
+      leftMotor.rotate(-convertAngle(turnAngle, WHEEL_RADIUS), true);
+      rightMotor.rotate(convertAngle(turnAngle, WHEEL_RADIUS), false);
+    }
 
   }
   

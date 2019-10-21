@@ -71,13 +71,10 @@ public class LightLocalizer extends Thread {
     double dy = LS_DISTANCE*Math.cos(thetaX/2*Math.PI/180);
     double dx = LS_DISTANCE*Math.cos(thetaY/2*Math.PI/180);
     
-    LCD.drawString("delta y: " + dy, 0, 5);
-    LCD.drawString("delta x: " + dx, 0, 6);
-    LCD.drawString("theta X: "+ thetaX, 0, 7);
-    odometer.setY(-dy);
-    odometer.setX(-dx);
+    odometer.setY(-dy + TILE_SIZE);
+    odometer.setX(-dx + TILE_SIZE );
     
-    // Move robot's center of rotation of (0,0) and turn to 0 degrees
+    // Move robot's center of rotation to (1,1) and turn to 0 degrees
     turnRight(90);
     moveForward(dx);
     turnLeft(90);
