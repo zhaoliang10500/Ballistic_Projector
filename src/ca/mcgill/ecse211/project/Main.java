@@ -3,7 +3,6 @@ package ca.mcgill.ecse211.project;
 import static ca.mcgill.ecse211.project.Resources.*;
 import lejos.robotics.SampleProvider;
 import lejos.hardware.Button;
-import java.text.DecimalFormat;
 import java.util.concurrent.CountDownLatch;
 
 public class Main {
@@ -13,6 +12,8 @@ public class Main {
   public static Navigation nav;
   public static CountDownLatch latch = new CountDownLatch(1);
   public static CountDownLatch latch2 = new CountDownLatch(1);
+  
+  public static int isTimeForMulThrow = 0;
   
   /**
    * Main entry point - instantiate objects used and set up sensor
@@ -71,13 +72,20 @@ public class Main {
       simpleThrow.doSimpleThrow();
     }
     
-    else {
-      System.exit(0);
+   LCD.drawString("Press to throw again", 0, 5);
+    //Do throw another 4 times
+    for (int i = 0; i < 4; i++) {
+      int buttonpressed;
+      do {
+        LCD.drawString("Press to Left or Right Button", 0, 6);
+        buttonpressed = Button.waitForAnyPress();
+      }
+      while (buttonpressed != Button.ID_LEFT && buttonpressed != Button.ID_RIGHT); 
+        
+      simpleThrow.doSimpleThrow();
     }
     
-    while(Button.waitForAnyPress() != Button.ID_ESCAPE) {
-      // keep program from ending unless esc is pressed
-    }
+    
     System.exit(0);
 
   }
