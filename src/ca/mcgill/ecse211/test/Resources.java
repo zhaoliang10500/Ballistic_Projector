@@ -5,53 +5,16 @@ import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 
-/**
- * Class for static resources (things that stay the same throughout the entire program execution),
- * like constants and hardware.
- * 
- * Use these resources in other files by adding this line at the top (see examples):<br>
- * 
- * {@code import static ca.mcgill.ecse211.lab1.Resources.*;}
- */
 public class Resources {
   //Parameters: adjust these for desired performance
   
-  public static final int FWDSPEED = 200;
-  public static final int DELTASPD = 100;
-  
-  
-  /**
-   * Offset from the wall (cm).
-   */
-  public static final int BAND_CENTER = 30;
-  
-  /**
-   * Width of dead band (cm).
-   */
-  public static final int BAND_WIDTH = 3;
-  
-  /**
-   * Speed of slower rotating wheel (deg/sec).
-   */
-  public static final int MOTOR_LOW = 80;
-  
-  /**
-   * Speed of the faster rotating wheel (deg/sec).
-   */
-  public static final int MOTOR_HIGH = 200;
-  
-  public static final int FILTER_OUT = 30;
-
-  /**
-   * The LCD screen used for displaying text.
-   */
-  public static final TextLCD TEXT_LCD = LocalEV3.get().getTextLCD();
+  public static final TextLCD LCD = LocalEV3.get().getTextLCD();
   
   /**
    * The ultrasonic sensor.
    */
   public static final EV3UltrasonicSensor US_SENSOR = 
-      new EV3UltrasonicSensor(LocalEV3.get().getPort("S1"));
+      new EV3UltrasonicSensor(LocalEV3.get().getPort("S4"));
   
   /**
    * The left motor.
