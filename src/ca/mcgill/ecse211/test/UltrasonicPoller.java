@@ -1,5 +1,9 @@
 package ca.mcgill.ecse211.test;
+
 import static ca.mcgill.ecse211.test.Resources.*;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.text.DecimalFormat;
 
 /**
  * Samples the US sensor and invokes the selected controller on each cycle.
@@ -12,12 +16,12 @@ import static ca.mcgill.ecse211.test.Resources.*;
  */
 public class UltrasonicPoller implements Runnable {
 
-  private UltrasonicController controller;
   private float[] usData;
+  private PrintWriter writer;
 
-  public UltrasonicPoller() {
+  public UltrasonicPoller(PrintWriter writer) {
+    this.writer = writer;
     usData = new float[US_SENSOR.sampleSize()];
-    controller = Main.selectedController;
   }
 
   /*
@@ -27,16 +31,23 @@ public class UltrasonicPoller implements Runnable {
    * @see java.lang.Thread#run()
    */
   public void run() {
-    int distance = 0;
-    while (distance > 20.5 || distance < 19.5) { //////////// if distance detected by the US is 20, stop the process
-      US_SENSOR.getDistanceMode().fetchSample(usData, 0); // acquire distance data in meters
-      distance = (int) (usData[0] * 100.0); // extract from buffer, convert to cm, cast to int
-      controller.processUSData(distance); // now take action depending on value
-      try {
-        Thread.sleep(50);
-      } catch (Exception e) {
-      } // Poor man's timed sampling
-    }
+      int distance;
+      while (true) {
+        US_SENSOR.getDistanceMode().fetchSample(usData, 0); // acquire distance data in meters
+        distance = (int) (usData[0] * 100.0); // extract from buffer, convert to cm, cast to int
+        LCD.clear();
+        DecimalFormat numberFormat = new DecimalFormat("######0.00");
+        LCD.drawString("Distance: : " + numberFormat.format(distance), 0, 0);
+        LCD.drawString("Angle: " + numberFormat.format(LEFT_MOTOR.getTachoCount()), 0, 1); //change here to switch motor
+        if (LEFT_MOTOR.getTachoCount() % 10 == 0) {
+          System.out.println("Distance: " + distance + "   Angle: " + LEFT_MOTOR.getTachoCount());
+          writer.append("Distance: " + distance + "   Angle: " + LEFT_MOTOR.getTachoCount());
+        }
+        try {
+          Thread.sleep(50);
+        } catch (Exception e) {
+        } // Poor man's timed sampling
+      }
   }
 
 }
