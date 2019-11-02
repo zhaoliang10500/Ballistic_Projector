@@ -1,11 +1,14 @@
 package ca.mcgill.ecse211.project.sensor;
 
 import lejos.robotics.SampleProvider;
+import ca.mcgill.ecse211.project.game.SensorController;
 
 public class ColorPoller extends Thread {
   private static final int COLOR_POLLER_PERIOD = 50;
   private float[][] data;
   private SampleProvider[] sampleProvider;
+  public SensorController sensorCont;
+  public boolean running;
 
   public ColorPoller(SampleProvider leftSamp, float[] leftData, SampleProvider rightSamp,float[] rightData) {
     this.sampleProvider = new SampleProvider[] {leftSamp, rightSamp};
