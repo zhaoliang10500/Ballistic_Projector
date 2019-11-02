@@ -1,9 +1,12 @@
-package ca.mcgill.ecse211.project;
+package ca.mcgill.ecse211.project.game;
 
-import static ca.mcgill.ecse211.project.Resources.*;
 import lejos.robotics.SampleProvider;
 import lejos.hardware.Button;
+import static ca.mcgill.ecse211.project.game.Resources.*;
 import java.util.concurrent.CountDownLatch;
+import ca.mcgill.ecse211.project.localization.LightLocalizer;
+import ca.mcgill.ecse211.project.localization.Navigation;
+import ca.mcgill.ecse211.project.localization.USLocalizer;
 
 public class Main {
   public static USLocalizer usLoc;

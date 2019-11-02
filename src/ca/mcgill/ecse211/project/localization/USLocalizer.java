@@ -1,7 +1,7 @@
-package ca.mcgill.ecse211.project;
-import static ca.mcgill.ecse211.project.Resources.*;
+package ca.mcgill.ecse211.project.localization;
+import static ca.mcgill.ecse211.project.game.Helper.*;
+import static ca.mcgill.ecse211.project.game.Resources.*;
 import java.util.Arrays;
-import static ca.mcgill.ecse211.project.Helper.*;
 import lejos.hardware.Sound;
 import lejos.robotics.SampleProvider;
 

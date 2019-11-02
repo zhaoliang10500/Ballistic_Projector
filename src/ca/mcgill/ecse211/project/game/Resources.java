@@ -1,6 +1,6 @@
-package ca.mcgill.ecse211.project;
+package ca.mcgill.ecse211.project.game;
 
-import ca.mcgill.ecse211.project.Odometer;
+import ca.mcgill.ecse211.project.odometry.Odometer;
 import lejos.hardware.Button;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;

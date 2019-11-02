@@ -1,9 +1,10 @@
-package ca.mcgill.ecse211.project;
+package ca.mcgill.ecse211.project.localization;
 
-import static ca.mcgill.ecse211.project.Resources.*;
-import static ca.mcgill.ecse211.project.Helper.*;
-
+import static ca.mcgill.ecse211.project.game.Resources.*;
+import static ca.mcgill.ecse211.project.game.Helper.*;
 import java.util.concurrent.CountDownLatch;
+import ca.mcgill.ecse211.project.game.Helper;
+import ca.mcgill.ecse211.project.game.Resources;
 import lejos.hardware.Sound;
 
 
@@ -75,8 +76,7 @@ public class Navigation extends Thread{
     else {
       tooClose = true;
       leftMotor.setSpeed(NAV_ROTATE);
-      rightMotor.setSpeed(NAV_ROTATE);
-      Helper.turnRight(89);
+      rightMotor.setSpeed(NAV_ROTATE);      Helper.turnRight(89);
       leftMotor.setSpeed(NAV_FORWARD);
       rightMotor.setSpeed(NAV_FORWARD);
       Helper.moveForward(TILE_SIZE*6 + TILE_SIZE/1.3);
