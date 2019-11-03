@@ -7,8 +7,12 @@ import ca.mcgill.ecse211.project.game.Helper;
 import ca.mcgill.ecse211.project.game.Resources;
 import lejos.hardware.Sound;
 
-
-public class Navigation extends Thread{
+/**
+ * This class contains methods for navigations
+ * Everything here should be made static
+ *
+ */
+public class Navigation {
   private static double x, y; 
   private static double deltaX, deltaY;
   
@@ -19,15 +23,12 @@ public class Navigation extends Thread{
   public double[] target;
   public double[] launch;
   
-  private CountDownLatch latch2;
-  
   /**
    * Class constructor
    */
-  public Navigation (CountDownLatch latch2) {
+  public Navigation () {
     launch = new double[2];
     target = new double[] {5,7}; //{3,3} {7,0} {7,5}
-    this.latch2 = latch2;
     
     // Reset motors, navigating, and set odometer 
     leftMotor.stop();
@@ -41,13 +42,7 @@ public class Navigation extends Thread{
    * @param xCoord  x coordinate of waypoint[i]
    * @param yCoord  y coordinate of waypoint[i]
    */
-  public void run () { //travelTo
-    try {
-      latch2.await();
-    } catch(InterruptedException e) {
-      LCD.drawString("Interrupted Exception", 0, 0);
-    }
-    
+  public void navigate () { //travelTo 
     double[] xyCoord = target;
     rightMotor.setSpeed(NAV_FORWARD);
     leftMotor.setSpeed(NAV_FORWARD);
@@ -76,7 +71,8 @@ public class Navigation extends Thread{
     else {
       tooClose = true;
       leftMotor.setSpeed(NAV_ROTATE);
-      rightMotor.setSpeed(NAV_ROTATE);      Helper.turnRight(89);
+      rightMotor.setSpeed(NAV_ROTATE);      
+      Helper.turnRight(89);
       leftMotor.setSpeed(NAV_FORWARD);
       rightMotor.setSpeed(NAV_FORWARD);
       Helper.moveForward(TILE_SIZE*6 + TILE_SIZE/1.3);

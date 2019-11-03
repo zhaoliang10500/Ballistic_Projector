@@ -3,112 +3,63 @@ package ca.mcgill.ecse211.project.game;
 import lejos.robotics.SampleProvider;
 import lejos.hardware.Button;
 import static ca.mcgill.ecse211.project.game.Resources.*;
-import java.util.concurrent.CountDownLatch;
-import ca.mcgill.ecse211.project.localization.LightLocalizer;
-import ca.mcgill.ecse211.project.localization.Navigation;
-import ca.mcgill.ecse211.project.localization.USLocalizer;
+import ca.mcgill.ecse211.project.localization.*;
+import ca.mcgill.ecse211.project.sensor.*;
+import ca.mcgill.ecse211.project.odometry.*;
+import ca.mcgill.ecse211.project.game.*;
 
+/**
+ * This class contains the main method of the program
+ *
+ */
 public class Main {
-  public static USLocalizer usLoc;
-  public static LightLocalizer lightLoc;
-  public static Navigation nav;
-  public static CountDownLatch latch = new CountDownLatch(1);
-  public static CountDownLatch latch2 = new CountDownLatch(1);
-  
-  public static int isTimeForMulThrow = 0;
-  
+
   /**
-   * Main entry point - instantiate objects used and set up sensor
+   * Program entry point
    * @param args
    */
   public static void main(String[] args) {
+    SampleProvider usSamp = US_SENSOR.getMode("Distance");
+    float[] usData = new float[usSamp.sampleSize()];
     
-    SampleProvider usSampleProvider = US_SENSOR.getMode("Distance");
-    float[] usData = new float[usSampleProvider.sampleSize()];
-   
-    SampleProvider lsSampleProvider = L_SENSOR.getMode("Red");
-    float[] lsData = new float[lsSampleProvider.sampleSize()];
+    SampleProvider colorSampL = COLOR_SENSOR_L.getRGBMode();
+    float[] colorDataL = new float[colorSampL.sampleSize()];
+    SampleProvider colorSampR = COLOR_SENSOR_R.getRGBMode();
+    float[] colorDataR = new float[colorSampR.sampleSize()];
     
-    SimpleThrow simpleThrow = new SimpleThrow();
+    USPoller USPoll = new USPoller(usSamp, usData);
+    ColorPoller colorPoll = new ColorPoller(colorSampL, colorDataL, colorSampR, colorDataR);
     
-    int buttonChoice;
+    //synchronized method to control sensor threads
+    SensorController sensorControl = SensorController.getSensorController(USPoll, colorPoll);
     
-    do {
-      LCD.clear();
-      LCD.drawString("< Left  | Right >", 0, 0);
-      LCD.drawString("        |        ", 0, 1);
-      LCD.drawString(" Mobile | Fixed  ", 0, 2);
-      LCD.drawString(" Launch | Launch ", 0, 3);
-
-      buttonChoice = Button.waitForAnyPress();
-
-    } while (buttonChoice != Button.ID_LEFT && buttonChoice != Button.ID_RIGHT && buttonChoice != Button.ID_ESCAPE);
-
-
-    if (buttonChoice == Button.ID_LEFT) {
-      // create threads
-      LCD.clear();
-      Thread odoThread = new Thread(odometer);
-      odoThread.start();
-      
-      usLoc = new USLocalizer(FALLING, usSampleProvider, usData, latch); 
-      Thread usLocalizerThread = new Thread(usLoc);
-
-      usLocalizerThread.start(); 
-
-      // start light localization 
-      lightLoc = new LightLocalizer(lsSampleProvider, lsData, latch, latch2);
-      Thread lightlocThread = new Thread(lightLoc);
-      lightlocThread.start();
-      
-      nav = new Navigation(latch2);
-      Thread navThread = new Thread(nav);
-      navThread.start();
-      
-      for (int i = 0; i < 5; i++) {
-        int buttonpressed;
-        do {
-          buttonpressed = Button.waitForAnyPress();
-        }
-        while (buttonpressed != Button.ID_ENTER && buttonpressed != Button.ID_ESCAPE); 
-        if (buttonpressed == Button.ID_ESCAPE) {
-          System.exit(0);
-        }
-        simpleThrow.doSimpleThrow();
-      }
-   
-    }
+    USLocalizer USLoc = new USLocalizer();
+    ColorLocalizer colorLoc = new ColorLocalizer();
+    OdometryCorrection odoCorrect = new OdometryCorrection();
+    ObstacleAvoidance obAvoid = new ObstacleAvoidance();
+    //TODO: make navigation completely static so no object construction needed for navigation
+    //TODO: change Navigation class to suit current needs
+    //Launcher is also completely static
     
-    else if (buttonChoice == Button.ID_RIGHT) {
-      for (int i = 0; i < 5; i++) {
-        int buttonpressed;
-        do {
-          buttonpressed = Button.waitForAnyPress();
-        }
-        while (buttonpressed != Button.ID_ENTER && buttonpressed != Button.ID_ESCAPE); 
-        if (buttonpressed == Button.ID_ESCAPE) {
-          System.exit(0);
-        }
-        simpleThrow.doSimpleThrow();
-      }
-
-    }
-    else {
-      System.exit(0);
-    }
-      
+    GameController gameControl = new GameController(sensorControl, USLoc, colorLoc, odoCorrect, obAvoid);
+    //TODO: obstacle avoidance might not work this way
+    
+    Thread odoThread = new Thread(odometer); //odometer created in Resources
+    Thread USThread = new Thread(USPoll);
+    Thread colorThread = new Thread(colorPoll);
+    //TODO: might have to implement odometry correction inside odometer, currently it is separate
+    Thread gameThread = new Thread(gameControl);
+    
+    //Get parameters from WiFi class
+    WiFi.wifi();
+    
+    odoThread.start();
+    USThread.start();
+    colorThread.start();
+    gameThread.start();
+    
+    while (Button.waitForAnyPress() != Button.ID_ESCAPE);
     System.exit(0);
-
   }
-    
-    
+  
 }
-  
-  
-  
-  
-  
-  
-  
-  
-  

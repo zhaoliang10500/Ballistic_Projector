@@ -1,8 +1,13 @@
 package ca.mcgill.ecse211.project.game;
 
 import java.util.ArrayList;
+import java.awt.Color;
 import ca.mcgill.ecse211.project.sensor.*;
 
+/**
+ * This class contains methods that controls the ultrasonic and color sensors
+ *
+ */
 public class SensorController {
   private static SensorController sensorCont = null;
   private ColorPoller colorPoll;
@@ -56,6 +61,20 @@ public class SensorController {
   }
   
   /**
+   * rotates US sensor motor
+   */
+  public void pauseUSMotor() {
+    usPoll.waving = false;
+  }
+  
+  /**
+   * Stops US sensor motor
+   */
+  public void resumeUSMotor() {
+    usPoll.waving = true;
+  }
+  
+  /**
    * Pause Color Poller
    */
   public void pauseColorPoller() {
@@ -70,5 +89,43 @@ public class SensorController {
   }
   
   
+  /**
+   * Add a USUser to the currUSUsers list
+   * @param currUSUsers
+   */
+  public void setCurrUSUsers (ArrayList<USUser> currUSUsers) {
+    this.currUSUsers = currUSUsers;
+  }
+  
+  /**
+   * Add a colorUser to the currColorUsers list
+   * @param currColorUsers
+   */
+  public void setCurrColorUsers (ArrayList<ColorUser> currColorUsers) {
+    this.currColorUsers = currColorUsers;
+  }
+  
+  /**
+   * Set distance for all ultrasonic sensor users
+   * @param distance
+   */
+  public void setDistance (int distance) {
+    for(USUser user : currUSUsers) {
+      user.processUSData(distance);
+    }
+  }
+  
+  /**
+   * Set color for all color sensor users
+   * @param colorArray
+   */
+  public void setColor(int[] colors) { 
+    for(ColorUser user : currColorUsers) {
+      user.processColorData(colors);
+    }
+  }
 
 }
+
+
+

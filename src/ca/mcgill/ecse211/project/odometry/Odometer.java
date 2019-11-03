@@ -8,9 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 
 /**
- * This class implements the odometer for Lab4 on the EV3 Platform 
- * 
- * @author Freiberger & Zhao
+ * This class contains the odometer
  */
 
 public class Odometer extends Thread {
