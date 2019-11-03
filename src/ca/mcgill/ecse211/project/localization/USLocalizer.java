@@ -6,12 +6,17 @@ import java.util.Arrays;
 import lejos.hardware.Sound;
 import lejos.robotics.SampleProvider;
 
+/**
+ * This class contains methods for ultrasonic localization
+ *
+ */
 public class USLocalizer implements USUser {
   private int edgeType; 
   private SampleProvider usSampleProvider;
   private float[] usData;
   private int distance;
-  private boolean localizing = false;
+  //private boolean localizing = false;
+  //TODO: might need to change uslocalizer and use this boolean
   
   /**
    * Runs the logic of the US localizer
@@ -95,25 +100,17 @@ public class USLocalizer implements USUser {
   
   
   /**
-   * Method to process us poller distance
-   * Uses a median filter
+   * Method to process US poller data
    */
   @Override
   public void processUSData(int distance) {
-    int[] tempData = new int[MEDIAN_FILTER];
-    if (!localizing) {
-      return;
-    }
-    else {
-      for (int i = 0; i < MEDIAN_FILTER; i++) {
-        tempData[i] = distance;
-      }
-      Arrays.sort(tempData);
-      if (tempData[MEDIAN_FILTER/2] > 255) {
-        this.distance = 255;
-      }
-      this.distance = tempData[MEDIAN_FILTER/2]; 
-    }
+    this.distance = distance;
+//    if (!localizing) {
+//      return;
+//    }
+//    else {
+//      this.distance = distance; 
+//    }
     
   }
   

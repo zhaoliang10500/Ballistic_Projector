@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.awt.Color;
 import ca.mcgill.ecse211.project.sensor.*;
 
+/**
+ * This class contains methods that controls the ultrasonic and color sensors
+ *
+ */
 public class SensorController {
   private static SensorController sensorCont = null;
   private ColorPoller colorPoll;
@@ -57,6 +61,20 @@ public class SensorController {
   }
   
   /**
+   * rotates US sensor motor
+   */
+  public void pauseUSMotor() {
+    usPoll.waving = false;
+  }
+  
+  /**
+   * Stops US sensor motor
+   */
+  public void resumeUSMotor() {
+    usPoll.waving = true;
+  }
+  
+  /**
    * Pause Color Poller
    */
   public void pauseColorPoller() {
@@ -101,14 +119,9 @@ public class SensorController {
    * Set color for all color sensor users
    * @param colorArray
    */
-  public void setColor(float[] colorArray) {
-    float R = colorArray[0];
-    float G = colorArray[1];
-    float B = colorArray[2];
-    
-    float color = new Color(R,G,B).getRGB();
+  public void setColor(int[] colors) { 
     for(ColorUser user : currColorUsers) {
-      user.processColorData(color);
+      user.processColorData(colors);
     }
   }
 
