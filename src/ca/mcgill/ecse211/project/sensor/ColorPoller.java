@@ -17,7 +17,7 @@ public class ColorPoller extends Thread {
 
   public void run(){
     long updateStart, updateEnd, sleepPeriod;
-    double[] colorRGB = new double[3];
+    float[] colorRGB = new float[3];
 
     while (true) {
 
@@ -27,7 +27,7 @@ public class ColorPoller extends Thread {
       colorRGB[0] = (data[0][0]); 
       colorRGB[1] = (data[0][1]);
       colorRGB[2] = (data[0][2]);
-      //sensorController.setColor(colorRGB);
+      sensorCont.setColor(colorRGB);
 
       updateEnd = System.currentTimeMillis();
       sleepPeriod = COLOR_POLLER_PERIOD - (updateEnd - updateStart);

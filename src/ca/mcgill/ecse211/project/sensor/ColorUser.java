@@ -4,6 +4,6 @@ import lejos.robotics.SampleProvider;
 
 public interface ColorUser {
   
-  public void processColorData(int color);
+  public void processColorData(float color);
   
 }

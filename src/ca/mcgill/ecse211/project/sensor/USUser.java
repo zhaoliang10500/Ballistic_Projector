@@ -1,5 +1,5 @@
 package ca.mcgill.ecse211.project.sensor;
 
-public class USUser {
-  
+public interface USUser {
+  public void processUSData(int distance);
 }

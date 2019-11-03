@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import lejos.hardware.Sound;
 
 import ca.mcgill.ecse211.project.game.SensorController;
+import ca.mcgill.ecse211.project.sensor.*;
+import ca.mcgill.ecse211.project.localization.*;
+import ca.mcgill.ecse211.project.odometry.*;
 
 /**
  * This class runs the entire game
@@ -11,24 +14,94 @@ import ca.mcgill.ecse211.project.game.SensorController;
  */
 public class GameController implements Runnable {
   private SensorController sensorCont;
+  private USLocalizer USLoc;
+  private ColorLocalizer colorLoc;
+  private OdometryCorrection odoCorrect;
+  public static GameState state;
+  
+  public GameController (SensorController sensorCont, USLocalizer USLoc, ColorLocalizer colorLoc, OdometryCorrection odoCorrect) {
+    this.sensorCont = sensorCont;
+    this.USLoc = USLoc;
+    this.colorLoc = colorLoc;
+  }
   
   public enum GameState {
-    INITIALIZATION,
-    USLOCALIZATION,
-    COLORLOCALIZATION,
+    INIT,
+    USLOC,
+    COLORLOC,
     NAVIGATION,
     TUNNEL,
     THROW,
     DONE,
-    TESTING;
+    TEST
   }
   
   @Override
   public void run() {
-    
+    startGame();
   }
   
-  public void changeState(GameState state) {
-    
+  public void startGame() {
+    changeState(GameState.USLOC);
   }
+  
+  public void changeState(GameState newState) {
+    state = newState;
+    ArrayList<USUser> currUSUsers = new ArrayList<USUser>();
+    ArrayList<ColorUser> currColorUsers = new ArrayList<ColorUser>();
+    
+    switch (state) {
+      case INIT:
+        sensorCont.pauseUSPoller();
+        sensorCont.pauseColorPoller();
+        break;
+        
+      case USLOC:
+        currUSUsers.add(USLoc);
+        sensorCont.resumeUSPoller();
+        sensorCont.pauseColorPoller();
+        break;
+        
+      case COLORLOC:
+        currColorUsers.add(colorLoc);
+        sensorCont.resumeUSPoller();
+        sensorCont.resumeColorPoller();
+        break;
+        
+      case NAVIGATION:
+        currColorUsers.add(odoCorrect);
+        sensorCont.pauseUSPoller();
+        sensorCont.resumeColorPoller();
+        break;
+        
+      case TUNNEL:
+        sensorCont.pauseUSPoller();
+        sensorCont.pauseColorPoller();
+        break;
+        
+      case THROW:
+        sensorCont.pauseUSPoller();
+        sensorCont.pauseColorPoller();
+        break;
+        
+      case DONE:
+        sensorCont.pauseUSPoller();
+        sensorCont.pauseColorPoller();
+        break;
+        
+      case TEST:
+        sensorCont.pauseUSPoller();
+        sensorCont.pauseColorPoller();
+        break;
+    }
+    sensorCont.setCurrUSUsers(currUSUsers);
+    sensorCont.setCurrColorUsers(currColorUsers);
+  }
+  
+  
+  
+  
+  
+  
+  
 }

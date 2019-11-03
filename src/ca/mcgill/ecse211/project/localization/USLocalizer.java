@@ -1,13 +1,14 @@
 package ca.mcgill.ecse211.project.localization;
 import static ca.mcgill.ecse211.project.game.Helper.*;
 import static ca.mcgill.ecse211.project.game.Resources.*;
+import ca.mcgill.ecse211.project.sensor.*;
 import java.util.Arrays;
 import lejos.hardware.Sound;
 import lejos.robotics.SampleProvider;
 
 import java.util.concurrent.CountDownLatch;
 
-public class USLocalizer extends Thread {
+public class USLocalizer extends Thread implements USUser {
   private int edgeType; 
   private SampleProvider usSampleProvider;
   private float[] usData;
@@ -134,6 +135,12 @@ public class USLocalizer extends Thread {
       return MAX;
     }
     return tempData[MEDIAN_FILTER/2]; //return median
+  }
+
+  @Override
+  public void processUSData(int distance) {
+    // TODO Auto-generated method stub
+    
   }
   
   

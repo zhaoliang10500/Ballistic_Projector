@@ -1,6 +1,7 @@
 package ca.mcgill.ecse211.project.game;
 
 import java.util.ArrayList;
+import java.awt.Color;
 import ca.mcgill.ecse211.project.sensor.*;
 
 public class SensorController {
@@ -70,5 +71,48 @@ public class SensorController {
   }
   
   
+  /**
+   * Add a USUser to the currUSUsers list
+   * @param currUSUsers
+   */
+  public void setCurrUSUsers (ArrayList<USUser> currUSUsers) {
+    this.currUSUsers = currUSUsers;
+  }
+  
+  /**
+   * Add a colorUser to the currColorUsers list
+   * @param currColorUsers
+   */
+  public void setCurrColorUsers (ArrayList<ColorUser> currColorUsers) {
+    this.currColorUsers = currColorUsers;
+  }
+  
+  /**
+   * Set distance for all ultrasonic sensor users
+   * @param distance
+   */
+  public void setDistance (int distance) {
+    for(USUser user : currUSUsers) {
+      user.processUSData(distance);
+    }
+  }
+  
+  /**
+   * Set color for all color sensor users
+   * @param colorArray
+   */
+  public void setColor(float[] colorArray) {
+    float R = colorArray[0];
+    float G = colorArray[1];
+    float B = colorArray[2];
+    
+    float color = new Color(R,G,B).getRGB();
+    for(ColorUser user : currColorUsers) {
+      user.processColorData(color);
+    }
+  }
 
 }
+
+
+
