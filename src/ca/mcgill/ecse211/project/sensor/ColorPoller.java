@@ -5,14 +5,14 @@ import ca.mcgill.ecse211.project.game.SensorController;
 
 public class ColorPoller extends Thread {
   private static final int COLOR_POLLER_PERIOD = 50;
-  private float[][] data;
+  private float[][] colorData;
   private SampleProvider[] sampleProvider;
   public SensorController sensorCont;
-  public boolean running;
+  public boolean running = false;
 
-  public ColorPoller(SampleProvider leftSamp, float[] leftData, SampleProvider rightSamp,float[] rightData) {
+  public ColorPoller(SampleProvider leftSamp, float[] leftcolorData, SampleProvider rightSamp,float[] rightcolorData) {
     this.sampleProvider = new SampleProvider[] {leftSamp, rightSamp};
-    this.data = new float[][] {leftData, rightData};
+    this.colorData = new float[][] {leftcolorData, rightcolorData};
   }
 
   public void run(){
@@ -23,10 +23,10 @@ public class ColorPoller extends Thread {
 
       updateStart = System.currentTimeMillis();
 
-      sampleProvider[0].fetchSample(data[0], 0); 
-      colorRGB[0] = (data[0][0]); 
-      colorRGB[1] = (data[0][1]);
-      colorRGB[2] = (data[0][2]);
+      sampleProvider[0].fetchSample(colorData[0], 0); 
+      colorRGB[0] = (colorData[0][0]); 
+      colorRGB[1] = (colorData[0][1]);
+      colorRGB[2] = (colorData[0][2]);
       sensorCont.setColor(colorRGB);
 
       updateEnd = System.currentTimeMillis();

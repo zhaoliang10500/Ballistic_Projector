@@ -17,12 +17,16 @@ public class GameController implements Runnable {
   private USLocalizer USLoc;
   private ColorLocalizer colorLoc;
   private OdometryCorrection odoCorrect;
+  private ObstacleAvoidance obAvoid;
   public static GameState state;
   
-  public GameController (SensorController sensorCont, USLocalizer USLoc, ColorLocalizer colorLoc, OdometryCorrection odoCorrect) {
+  public GameController (SensorController sensorCont, USLocalizer USLoc, ColorLocalizer colorLoc, 
+                         OdometryCorrection odoCorrect, ObstacleAvoidance obAvoid) {
     this.sensorCont = sensorCont;
     this.USLoc = USLoc;
     this.colorLoc = colorLoc;
+    this.odoCorrect = odoCorrect;
+    this.obAvoid = obAvoid;
   }
   
   public enum GameState {
@@ -30,6 +34,7 @@ public class GameController implements Runnable {
     USLOC,
     COLORLOC,
     NAVIGATION,
+    OBSTACLE,
     TUNNEL,
     THROW,
     DONE,
@@ -43,6 +48,11 @@ public class GameController implements Runnable {
   
   public void startGame() {
     changeState(GameState.USLOC);
+    USLoc.localize();
+    
+    changeState(GameState.COLORLOC);
+    colorLoc.localize();
+    
   }
   
   public void changeState(GameState newState) {
@@ -74,6 +84,12 @@ public class GameController implements Runnable {
         sensorCont.resumeColorPoller();
         break;
         
+      case OBSTACLE:
+        currUSUsers.add(obAvoid);
+        sensorCont.resumeUSPoller();
+        sensorCont.pauseColorPoller();
+        break;
+        
       case TUNNEL:
         sensorCont.pauseUSPoller();
         sensorCont.pauseColorPoller();
@@ -90,8 +106,8 @@ public class GameController implements Runnable {
         break;
         
       case TEST:
-        sensorCont.pauseUSPoller();
-        sensorCont.pauseColorPoller();
+        sensorCont.resumeUSPoller();
+        sensorCont.resumeColorPoller();
         break;
     }
     sensorCont.setCurrUSUsers(currUSUsers);

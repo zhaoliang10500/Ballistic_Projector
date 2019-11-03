@@ -6,42 +6,17 @@ import java.util.Arrays;
 import lejos.hardware.Sound;
 import lejos.robotics.SampleProvider;
 
-import java.util.concurrent.CountDownLatch;
-
-public class USLocalizer extends Thread implements USUser {
+public class USLocalizer implements USUser {
   private int edgeType; 
   private SampleProvider usSampleProvider;
   private float[] usData;
-  private CountDownLatch latch;
-  
-  /**
-   * class constructor
-   * @param buttonID  ID of chosen button
-   * @param usSampleProvider  ultrasonic sensor sample provider
-   * @param usData  array to store ultrasonic sensor data
-   */
-  public USLocalizer(int buttonID, SampleProvider usSampleProvider, float[] usData, CountDownLatch latch) {
-    this.edgeType = buttonID;
-    this.usSampleProvider = usSampleProvider;
-    this.usData = usData;
-    
-    leftMotor.setSpeed(US_SPEED);
-    rightMotor.setSpeed(US_SPEED);
-    
-    this.latch = latch;
-  }
+  private int distance;
+  private boolean localizing = false;
   
   /**
    * Runs the logic of the US localizer
    */
-  public void run() { 
-    // wait for odometer thread to start before localizing
-    try {
-      Thread.sleep(2000);
-    } catch(InterruptedException e) {
-      LCD.drawString("Interrupted Exception", 0, 0);
-    }
-    
+  public void localize() { 
     double dTheta;
     if (edgeType == RISING) {
       dTheta = risingEdge(); 
@@ -57,7 +32,6 @@ public class USLocalizer extends Thread implements USUser {
     
     // physically turn robot to a heading of 0 degrees 
     turnLeft(dTheta);
-    latch.countDown();
   }
   
   
@@ -68,7 +42,7 @@ public class USLocalizer extends Thread implements USUser {
    */
   private double risingEdge() {
     double theta1, theta2; //angles of first and second rising edge
-    while (medianFilter() < RISE_THRESHOLD) {
+    while (this.distance < RISE_THRESHOLD) {
       turnRight();
     }
     
@@ -79,7 +53,7 @@ public class USLocalizer extends Thread implements USUser {
     
     turnLeft(40);
     
-    while(medianFilter() < RISE_THRESHOLD) {
+    while(this.distance < RISE_THRESHOLD) {
       turnLeft();
     }
     
@@ -97,7 +71,7 @@ public class USLocalizer extends Thread implements USUser {
    */
   private double fallingEdge() {
     double theta1, theta2; //angles of first and second rising edge
-    while (medianFilter() > FALL_THRESHOLD) {
+    while (this.distance > FALL_THRESHOLD) {
       turnLeft();
     }
     
@@ -108,7 +82,7 @@ public class USLocalizer extends Thread implements USUser {
     
     turnRight(40);
     
-    while(medianFilter() > FALL_THRESHOLD) {
+    while(this.distance > FALL_THRESHOLD) {
       turnRight();
     }
     
@@ -119,27 +93,27 @@ public class USLocalizer extends Thread implements USUser {
     return FALL_ANGLE + (theta1 + theta2)/2;
   }
   
+  
   /**
-   * @param distance
-   * @return the median of MEDIAN_FILTER samples
+   * Method to process us poller distance
+   * Uses a median filter
    */
-  public double medianFilter () {
-    double[] tempData = new double[MEDIAN_FILTER];
-    int MAX = 255;
-    for (int i = 0; i < MEDIAN_FILTER; i++) {
-      this.usSampleProvider.fetchSample(usData, 0);
-      tempData[i] = usData[0] * 100.0; ;
-    }
-    Arrays.sort(tempData);
-    if (tempData[MEDIAN_FILTER/2] > MAX) {
-      return MAX;
-    }
-    return tempData[MEDIAN_FILTER/2]; //return median
-  }
-
   @Override
   public void processUSData(int distance) {
-    // TODO Auto-generated method stub
+    int[] tempData = new int[MEDIAN_FILTER];
+    if (!localizing) {
+      return;
+    }
+    else {
+      for (int i = 0; i < MEDIAN_FILTER; i++) {
+        tempData[i] = distance;
+      }
+      Arrays.sort(tempData);
+      if (tempData[MEDIAN_FILTER/2] > 255) {
+        this.distance = 255;
+      }
+      this.distance = tempData[MEDIAN_FILTER/2]; 
+    }
     
   }
   

@@ -3,7 +3,7 @@ import ca.mcgill.ecse211.project.sensor.ColorUser;
 
 public class OdometryCorrection implements ColorUser {
   
-  public void processColorData(int sensorData) {
+  public void processColorData(float color) {
     
   }
 }
