@@ -37,7 +37,6 @@ public class GameController implements Runnable {
     this.colorLoc = colorLoc;
     this.odoCorrect = odoCorrect;
     this.obAvoid = obAvoid;
-    this.launcher = launcher;
   }
   
   /**
