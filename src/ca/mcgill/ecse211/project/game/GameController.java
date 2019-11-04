@@ -7,7 +7,6 @@ import ca.mcgill.ecse211.project.game.SensorController;
 import ca.mcgill.ecse211.project.sensor.*;
 import ca.mcgill.ecse211.project.localization.*;
 import ca.mcgill.ecse211.project.odometry.*;
-import ca.mcgill.ecse211.project.game.*;
 
 /**
  * This class runs the entire game
@@ -19,7 +18,6 @@ public class GameController implements Runnable {
   private ColorLocalizer colorLoc;
   private OdometryCorrection odoCorrect;
   private ObstacleAvoidance obAvoid;
-  private Launcher launcher;
   public static GameState state;
   
   /**
@@ -187,11 +185,5 @@ public class GameController implements Runnable {
     sensorCont.setCurrUSUsers(currUSUsers);
     sensorCont.setCurrColorUsers(currColorUsers);
   }
-  
-  
-  
-  
-  
-  
   
 }

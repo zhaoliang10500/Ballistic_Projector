@@ -14,7 +14,7 @@ public class ColorPoller extends Thread {
   private SampleProvider[] sampleProvider;
   public SensorController sensorCont;
   public boolean running = false;
-  
+
   /**
    * ColorPoller class constructor
    * @param leftSamp
@@ -26,7 +26,7 @@ public class ColorPoller extends Thread {
     this.sampleProvider = new SampleProvider[] {leftSamp, rightSamp};
     this.colorData = new float[][] {leftcolorData, rightcolorData};
   }
-  
+
   /**
    * Method to run the color poller thread
    */
@@ -34,11 +34,11 @@ public class ColorPoller extends Thread {
     long updateStart, updateEnd, sleepPeriod;
     float[] colors = new float[2];
     int[] scaledColors = new int[2];
-    
+
     while (true) {
 
       updateStart = System.currentTimeMillis();
-      
+
       if (running) {
         //left sensor
         sampleProvider[0].fetchSample(colorData[0], 0); 
@@ -47,7 +47,7 @@ public class ColorPoller extends Thread {
         float B0 = (colorData[0][2]);
         colors[0] = new Color(R0, G0, B0).getRGB(); //range = 0-1.0
         scaledColors[0] = (int) (colors[0] * 100.0); //scale up by 100
-        
+
         //right sensor
         sampleProvider[1].fetchSample(colorData[0], 0); 
         float R1 = (colorData[1][0]); 
@@ -55,11 +55,11 @@ public class ColorPoller extends Thread {
         float B1 = (colorData[1][2]);
         colors[1] = new Color(R1, G1, B1).getRGB(); //range = 0-1.0
         scaledColors[1] = (int) (colors[1] * 100.0); //scale up by 100
-        
+
         //set colors
         sensorCont.setColor(scaledColors);
       }
-      
+
       updateEnd = System.currentTimeMillis();
       sleepPeriod = COLOR_POLLER_PERIOD - (updateEnd - updateStart);
       try {

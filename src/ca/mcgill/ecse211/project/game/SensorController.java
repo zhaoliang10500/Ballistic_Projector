@@ -1,7 +1,6 @@
 package ca.mcgill.ecse211.project.game;
 
 import java.util.ArrayList;
-import java.awt.Color;
 import ca.mcgill.ecse211.project.sensor.*;
 
 /**

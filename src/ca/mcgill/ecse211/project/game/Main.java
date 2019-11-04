@@ -6,7 +6,6 @@ import static ca.mcgill.ecse211.project.game.Resources.*;
 import ca.mcgill.ecse211.project.localization.*;
 import ca.mcgill.ecse211.project.sensor.*;
 import ca.mcgill.ecse211.project.odometry.*;
-import ca.mcgill.ecse211.project.game.*;
 
 /**
  * This class contains the main method of the program
@@ -37,7 +36,6 @@ public class Main {
     ColorLocalizer colorLoc = new ColorLocalizer();
     OdometryCorrection odoCorrect = new OdometryCorrection();
     ObstacleAvoidance obAvoid = new ObstacleAvoidance();
-    //TODO: make navigation completely static so no object construction needed for navigation
     //TODO: change Navigation class to suit current needs
     //Launcher is also completely static
     
@@ -51,7 +49,7 @@ public class Main {
     Thread gameThread = new Thread(gameControl);
     
     //Get parameters from WiFi class
-    WiFi.wifi();
+    //WiFi.wifi();
     
     odoThread.start();
     USThread.start();

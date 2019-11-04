@@ -15,7 +15,7 @@ public class USPoller extends Thread {
   public SensorController sensorCont;
   public boolean running = false;
   public boolean waving = false;
-  
+
   /**
    * USPoller class constructor
    * @param sampleProvider
@@ -25,7 +25,7 @@ public class USPoller extends Thread {
     this.sampleProvider = sampleProvider;
     this.USData = USData;
   }
-  
+
   /**
    * Method to run the USPoller thread
    */
@@ -41,7 +41,7 @@ public class USPoller extends Thread {
         sampleProvider.fetchSample(USData, 0); 
         distance = (int) (USData[0] * 100.0); 
         sensorCont.setDistance(distance);
-        
+
         //TODO: this might not work, need to test
         if (waving) {
           USMotor.rotate(130);

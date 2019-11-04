@@ -10,6 +10,6 @@ public class WiFi {
    * Method to get team color and corresponding boundary parameters from server
    */
   public static void wifi() {
-    
+    return;
   }
 }
