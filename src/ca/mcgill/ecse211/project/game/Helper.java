@@ -104,5 +104,9 @@ public class Helper{
     rightMotor.stop(false);
   }
   
+  public static void setLRMotorSpeed(int speed) {
+    leftMotor.setSpeed(speed);
+    rightMotor.setSpeed(speed);
+  }
   
 }

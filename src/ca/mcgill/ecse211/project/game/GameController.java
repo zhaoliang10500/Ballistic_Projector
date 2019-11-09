@@ -8,6 +8,10 @@ import ca.mcgill.ecse211.project.sensor.*;
 import ca.mcgill.ecse211.project.localization.*;
 import ca.mcgill.ecse211.project.odometry.*;
 
+import static ca.mcgill.ecse211.project.game.Helper.*;
+import static ca.mcgill.ecse211.project.game.Resources.*;
+
+
 /**
  * This class runs the entire game
  * It contains the game state machine 
@@ -69,14 +73,15 @@ public class GameController implements Runnable {
     //TODO: get team color and corresponding boundaries using WiFi*/
     
     changeState(GameState.USLOC);
+    setLRMotorSpeed(US_SPEED);
     USLoc.localize();
     
-    /*changeState(GameState.COLORLOC);
-    colorLoc.localize();
-    beep(3);
+    changeState(GameState.COLORLOC);
+    //colorLoc.localize();
+    //beep(3);
     
     //travel to tunnel
-    changeState(GameState.NAVIGATION);
+    /*changeState(GameState.NAVIGATION);
     //TODO: navigate to tunnel using WiFi info
     
     //travel through tunnel
@@ -142,9 +147,9 @@ public class GameController implements Runnable {
         break;
         
       case COLORLOC:
-        currColorUsers.add(colorLoc);
-        sensorCont.resumeUSPoller();
-        sensorCont.resumeColorPoller();
+        //currColorUsers.add(colorLoc);
+        sensorCont.pauseUSPoller();
+        //sensorCont.resumeColorPoller();
         break;
         
       case NAVIGATION:

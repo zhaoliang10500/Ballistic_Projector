@@ -40,7 +40,6 @@ public class USPoller extends Thread {
         //set distance 
         sampleProvider.fetchSample(USData, 0); 
         distance = (int) (USData[0] * 100.0); 
-        System.out.println("Poller " + distance);
         sensorCont.setDistance(distance);
 
         //TODO: this might not work, need to test

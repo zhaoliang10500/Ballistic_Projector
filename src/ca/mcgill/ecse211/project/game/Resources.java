@@ -42,7 +42,7 @@ public class Resources {
   public static final int FALLING = Button.ID_RIGHT; //for USLocalizer
   
   //USLocalizer
-  public static final int US_SPEED = 100; //80
+  public static final int US_SPEED = 130; //80
   public static final int RISE_THRESHOLD = 37; //38, 40
   public static final int RISE_ANGLE = 225;
   

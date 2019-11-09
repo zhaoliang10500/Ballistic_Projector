@@ -51,10 +51,21 @@ public class Main {
     //Get parameters from WiFi class
     //WiFi.wifi();
     
-    odoThread.start();
-    USThread.start();
-    colorThread.start();
-    gameThread.start();
+    int buttonChoice;
+    
+    do {
+      LCD.drawString("Press center", 0, 1);
+      LCD.drawString("to begin", 0, 2);
+      buttonChoice = Button.waitForAnyPress();
+    } while (buttonChoice != Button.ID_ENTER && buttonChoice != Button.ID_ESCAPE);
+    
+    if (buttonChoice == Button.ID_ENTER) {
+      LCD.clear();
+      odoThread.start();
+      USThread.start();
+      colorThread.start();
+      gameThread.start();
+    }
     
     while (Button.waitForAnyPress() != Button.ID_ESCAPE);
     System.exit(0);
