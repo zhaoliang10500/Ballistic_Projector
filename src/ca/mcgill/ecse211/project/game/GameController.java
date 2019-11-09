@@ -65,13 +65,13 @@ public class GameController implements Runnable {
    * Method for game state logic
    */
   public void startGame() {
-    changeState(GameState.INIT);
-    //TODO: get team color and corresponding boundaries using WiFi
+    /*changeState(GameState.INIT);
+    //TODO: get team color and corresponding boundaries using WiFi*/
     
     changeState(GameState.USLOC);
     USLoc.localize();
     
-    changeState(GameState.COLORLOC);
+    /*changeState(GameState.COLORLOC);
     colorLoc.localize();
     beep(3);
     
@@ -107,7 +107,7 @@ public class GameController implements Runnable {
     //TODO: navigate back to starting grid
     
     changeState(GameState.DONE);
-    beep(5);
+    beep(5);*/
   }
   
   /**

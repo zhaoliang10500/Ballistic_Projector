@@ -105,6 +105,7 @@ public class USLocalizer implements USUser {
   @Override
   public void processUSData(int distance) {
     this.distance = distance;
+    System.out.println("US dist: " + this.distance);
 //    if (!localizing) {
 //      return;
 //    }

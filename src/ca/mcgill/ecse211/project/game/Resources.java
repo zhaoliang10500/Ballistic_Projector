@@ -15,15 +15,15 @@ import lejos.hardware.sensor.EV3UltrasonicSensor;
 public class Resources {
   
   //Setup two motors here
-  public static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
-  public static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
-  public static final EV3LargeRegulatedMotor throwMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("B"));
-  public static final EV3LargeRegulatedMotor USMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("C"));
+  public static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
+  public static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
+  public static final EV3LargeRegulatedMotor throwMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("C"));
+  public static final EV3LargeRegulatedMotor USMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("B"));
   
   //Sensors
-  public static final EV3UltrasonicSensor US_SENSOR = new EV3UltrasonicSensor(SensorPort.S2);
+  public static final EV3UltrasonicSensor US_SENSOR = new EV3UltrasonicSensor(SensorPort.S3);
   public static final EV3ColorSensor COLOR_SENSOR_L = new EV3ColorSensor(SensorPort.S1);
-  public static final EV3ColorSensor COLOR_SENSOR_R = new EV3ColorSensor(SensorPort.S3);
+  public static final EV3ColorSensor COLOR_SENSOR_R = new EV3ColorSensor(SensorPort.S4);
   
   // Odometer
   public static Odometer odometer = Odometer.getOdometer();
