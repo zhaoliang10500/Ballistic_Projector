@@ -72,12 +72,12 @@ public class GameController implements Runnable {
     /*changeState(GameState.INIT);
     //TODO: get team color and corresponding boundaries using WiFi*/
     
-    changeState(GameState.USLOC);
-    setLRMotorSpeed(US_SPEED);
-    USLoc.localize();
+//    changeState(GameState.USLOC);
+//    setLRMotorSpeed(US_SPEED);
+//    USLoc.localize();
     
     changeState(GameState.COLORLOC);
-    //colorLoc.localize();
+    colorLoc.localize();
     //beep(3);
     
     //travel to tunnel
@@ -147,9 +147,9 @@ public class GameController implements Runnable {
         break;
         
       case COLORLOC:
-        //currColorUsers.add(colorLoc);
+        currColorUsers.add(colorLoc);
         sensorCont.pauseUSPoller();
-        //sensorCont.resumeColorPoller();
+        sensorCont.resumeColorPoller();
         break;
         
       case NAVIGATION:

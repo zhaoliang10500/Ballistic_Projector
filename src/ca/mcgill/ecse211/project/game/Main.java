@@ -23,6 +23,7 @@ public class Main {
     
     SampleProvider colorSampL = COLOR_SENSOR_L.getRGBMode();
     float[] colorDataL = new float[colorSampL.sampleSize()];
+    
     SampleProvider colorSampR = COLOR_SENSOR_R.getRGBMode();
     float[] colorDataR = new float[colorSampR.sampleSize()];
     

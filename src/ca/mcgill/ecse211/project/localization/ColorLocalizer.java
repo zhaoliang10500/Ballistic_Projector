@@ -18,6 +18,8 @@ public class ColorLocalizer implements ColorUser {
   private double correction = 0;
   public int isDetectedBlackLineOfXSide = 0;
   public int isDetectedBlackLineOfYSide = 0;
+  
+  private boolean localizing = false;
 
   /**
    * Runs the logic of the light localizer
@@ -62,6 +64,10 @@ public class ColorLocalizer implements ColorUser {
     }
   }   
 
+//  public void localize() {
+//    localizing = true;
+//    while (localizing);
+//  }
   
   public static void sleepFor(long duration) {
     try {
@@ -74,7 +80,12 @@ public class ColorLocalizer implements ColorUser {
 
   @Override
   public void processColorData(int[] color) {
-    // TODO Auto-generated method stub
+    if (!localizing) {
+      return;
+    }
+    else {
+      System.out.println("left: " + color[0] + " " + "right: " + color[1]);
+    }
     
   }
 
