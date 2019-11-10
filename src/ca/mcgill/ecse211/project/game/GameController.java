@@ -77,6 +77,7 @@ public class GameController implements Runnable {
 //    USLoc.localize();
     
     changeState(GameState.COLORLOC);
+    setLRMotorSpeed(CS_SPEED);
     colorLoc.localize();
     //beep(3);
     

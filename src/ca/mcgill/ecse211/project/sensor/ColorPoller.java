@@ -32,7 +32,7 @@ public class ColorPoller extends Thread {
    */
   public void run(){
     long updateStart, updateEnd, sleepPeriod;
-    int[] colors = new int[2];
+    double[] colors = new double[2];
 
     while (true) {
 
@@ -44,17 +44,14 @@ public class ColorPoller extends Thread {
         int R0 = (int)(colorData[0][0]*100000.0); 
         int G0 = (int)(colorData[0][1]*100000.0);
         int B0 = (int)(colorData[0][2]*100000.0);
-        colors[0] = (int)Math.sqrt(R0^2 + G0^2 + B0^2);     
+        colors[0] = Math.sqrt(R0^2 + G0^2 + B0^2);     
 
         //right sensor
         sampleProvider[1].fetchSample(colorData[1], 0); 
         int R1 = (int)(colorData[1][0]*100000.0); 
         int G1 = (int)(colorData[1][1]*100000.0);
         int B1 = (int)(colorData[1][2]*100000.0);
-        colors[1] = (int)Math.sqrt(R1^2 + G1^2 + B1^2);     
-        
-        System.out.println("color0: " + colors[0]);
-        System.out.println("color1: " + colors[1]);
+        colors[1] = Math.sqrt(R1^2 + G1^2 + B1^2);     
         
         //set colors
         sensorCont.setColor(colors);

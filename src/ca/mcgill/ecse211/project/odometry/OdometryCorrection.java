@@ -12,7 +12,7 @@ public class OdometryCorrection implements ColorUser {
    * Uses both color sensors for odometry correction
    */
   @Override
-  public void processColorData(int[] colors) {
+  public void processColorData(double[] colors) {
     
   }
 }

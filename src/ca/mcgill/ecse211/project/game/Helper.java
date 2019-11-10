@@ -104,9 +104,25 @@ public class Helper{
     rightMotor.stop(false);
   }
   
+  /**
+   * Helper method, set left and right motor to the same speed
+   * @param speed
+   */
   public static void setLRMotorSpeed(int speed) {
     leftMotor.setSpeed(speed);
     rightMotor.setSpeed(speed);
+  }
+  
+  /**
+   * Helper method, sleeps a thread for a set duration
+   * @param duration
+   */
+  public static void sleepFor(long duration) {
+    try {
+      Thread.sleep(duration);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
   }
   
 }

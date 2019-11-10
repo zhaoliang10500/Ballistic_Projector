@@ -22,11 +22,7 @@ public class USLocalizer implements USUser {
    */
   public void localize() { 
     //wait for odometer thread to start
-    try {
-      Thread.sleep(2000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+    sleepFor(2000);
     
     localizing = true;
     step = 0;
@@ -65,16 +61,14 @@ public class USLocalizer implements USUser {
     else if (distance < FALL_THRESHOLD) {
       switch(step) {
         case 1:
-          leftMotor.stop(true);
-          rightMotor.stop(false);
+          stopMotors();
           theta1 = 360 - odometer.getXYT()[2]; 
           turnRight();
           step++;
           break;
         case 3:
           theta2 = odometer.getXYT()[2];    
-          leftMotor.stop(true);
-          rightMotor.stop(false);
+          stopMotors();
           step++;
           localizing = false;
           break;

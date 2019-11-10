@@ -50,9 +50,9 @@ public class Resources {
   public static final int FALL_ANGLE = 45; //45
   
   //ColorLocalizer
-  public static final double COLOR_THRESHOLD = 50;
+  public static final double COLOR_THRESHOLD = 0.55; //0.60
   public static final double CS_DISTANCE = 7; // sensor distance from center of rotation
-  public static final int CS_SPEED = 80; //70
+  public static final int CS_SPEED = 90; //70
   
   //LightLocalizer
   public static final int CORRECTION_PERIOD = 10;

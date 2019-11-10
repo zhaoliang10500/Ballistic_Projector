@@ -5,6 +5,6 @@ package ca.mcgill.ecse211.project.sensor;
  */
 public interface ColorUser {
   
-  public void processColorData(int[] color);
+  public void processColorData(double[] color);
   
 }

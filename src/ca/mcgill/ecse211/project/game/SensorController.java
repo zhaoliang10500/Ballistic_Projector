@@ -118,7 +118,7 @@ public class SensorController {
    * Set color for all color sensor users
    * @param colorArray
    */
-  public void setColor(int[] colors) { 
+  public void setColor(double[] colors) { 
     for(ColorUser user : currColorUsers) {
       user.processColorData(colors);
     }
