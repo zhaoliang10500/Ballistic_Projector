@@ -72,9 +72,9 @@ public class GameController implements Runnable {
     /*changeState(GameState.INIT);
     //TODO: get team color and corresponding boundaries using WiFi*/
     
-//    changeState(GameState.USLOC);
-//    setLRMotorSpeed(US_SPEED);
-//    USLoc.localize();
+    changeState(GameState.USLOC);
+    setLRMotorSpeed(US_SPEED);
+    USLoc.localize();
     
     changeState(GameState.COLORLOC);
     setLRMotorSpeed(CS_SPEED);

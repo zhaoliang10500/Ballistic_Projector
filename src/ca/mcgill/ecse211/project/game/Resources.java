@@ -42,7 +42,7 @@ public class Resources {
   public static final int FALLING = Button.ID_RIGHT; //for USLocalizer
   
   //USLocalizer
-  public static final int US_SPEED = 130; //80
+  public static final int US_SPEED = 150; //80
   public static final int RISE_THRESHOLD = 37; //38, 40
   public static final int RISE_ANGLE = 225;
   
@@ -52,7 +52,7 @@ public class Resources {
   //ColorLocalizer
   public static final double COLOR_THRESHOLD = 0.55; //0.60
   public static final double CS_DISTANCE = 7; // sensor distance from center of rotation
-  public static final int CS_SPEED = 90; //70
+  public static final int CS_SPEED = 120; //70
   
   //LightLocalizer
   public static final int CORRECTION_PERIOD = 10;

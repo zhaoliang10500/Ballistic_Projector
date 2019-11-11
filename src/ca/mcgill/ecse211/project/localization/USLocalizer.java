@@ -35,7 +35,9 @@ public class USLocalizer implements USUser {
     odometer.setTheta(dTheta);
     
     // physically turn robot to a heading of 0 degrees 
-    turnLeft(dTheta);
+    if (dTheta > 90) {
+      turnLeft(dTheta - 90);
+    }
   }
   
   
