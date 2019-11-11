@@ -68,10 +68,7 @@ public class GameController implements Runnable {
   /**
    * Method for game state logic
    */
-  public void startGame() {
-    /*changeState(GameState.INIT);
-    //TODO: get team color and corresponding boundaries using WiFi*/
-    
+  public void startGame() {    
     changeState(GameState.USLOC);
     setLRMotorSpeed(US_SPEED);
     USLoc.localize();
@@ -79,7 +76,7 @@ public class GameController implements Runnable {
     changeState(GameState.COLORLOC);
     setLRMotorSpeed(CS_SPEED);
     colorLoc.localize();
-    //beep(3);
+    beep(1);
     
     //travel to tunnel
     /*changeState(GameState.NAVIGATION);

@@ -15,7 +15,7 @@ public class ColorLocalizer implements ColorUser {
   private volatile double[]  offset = new double[2];
   private volatile boolean turnRight;
   private volatile boolean findingX;
-  private final double angleOffset = 5; //for y, turn 5 degrees less than 90 to better localize
+  private final double angleOffset = 7; //for y, turn less than 90 to better localize
 
   public void localize() {
     //get xDistFromLine roughly
