@@ -20,8 +20,8 @@ public class Navigation {
   public static double turnAngle;
 
 
-  public static void travelTo (int xCoord, int yCoord) { //travelTo 
-    int[] xyCoord = {xCoord, yCoord};
+  public static void travelTo (double xCoord, double yCoord) { //travelTo 
+    double[] xyCoord = {xCoord, yCoord};
     
     // Gets current x, y positions (already in cm) 
     x = odometer.getXYT()[0];
@@ -53,6 +53,11 @@ public class Navigation {
     
   }
   
+  /**
+   * Calculates and returns the minimal turn angle to face a given angle theta
+   * @param theta
+   * @return
+   */
   public static double calcTurnAngle(double theta) {
     if (theta > 180) {
       theta = 360 - theta;
@@ -65,9 +70,8 @@ public class Navigation {
   }
   
   /**
-   * Causes the robot to turn (on point) to the absolute heading theta. 
-   * This method should turn a MINIMAL angle to its target. 
-   * @param theta  robot turning angle before each waypoint
+   * Method to turn the robot theta degrees
+   * @param theta
    */
   public static void turnTo(double theta) {
     setLRMotorSpeed(NAV_TURN);
@@ -75,6 +79,17 @@ public class Navigation {
     leftMotor.rotate(convertAngle(theta, WHEEL_RADIUS), true);
     rightMotor.rotate(-convertAngle(theta, WHEEL_RADIUS), false);
     
+  }
+  
+  /**
+   * Method to travel through a tunnel
+   * The robot must begin with its center of rotation (between wheels) 
+   * one tile away from the entrance of the tunnel
+   * Four tile sizes are traveled and the robot ends up with its center of rotation 
+   * one tile size away from the tunnel exit
+   */
+  public static void travelThroughTunnel() {
+    moveForward(TILE_SIZE*4);
   }
 
 

@@ -6,6 +6,8 @@ import static ca.mcgill.ecse211.project.game.Helper.*;
 
 /**
  * This class contains methods for color sensor localization
+ * The robot uses two color sensors placed at each side at the back of its body 
+ * to read grid lines and correct its heading (angle) as necesary
  */
 public class ColorLocalizer implements ColorUser {
   private boolean localizing = false;
@@ -16,7 +18,10 @@ public class ColorLocalizer implements ColorUser {
   private volatile boolean turnRight;
   private volatile boolean findingX;
   private final double angleOffset = 7; //for y, turn less than 90 to better localize
-
+  
+  /**
+   * Method to begin color localization
+   */
   public void localize() {
     //get xDistFromLine roughly
     localizing = true;
@@ -42,15 +47,22 @@ public class ColorLocalizer implements ColorUser {
     
     odometer.setXYT(TILE_SIZE, TILE_SIZE, 0);
   }
-
+  
+  /**
+   * Method to process color poller data
+   * Implemented from interface ColorUser
+   */
   @Override
   public void processColorData(double[] color) {
     if (!localizing) {
       return;
     }
     else if (!gotInitialSample) {
-      moveForward(4);
+      //moveForward(3);
+      //moveBackward(2);
+      moveForward(2);
       moveBackward(2);
+      
       initialColor[0] = color[0];
       initialColor[1] = color[1];
       moveForward();

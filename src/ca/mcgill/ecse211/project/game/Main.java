@@ -8,14 +8,16 @@ import ca.mcgill.ecse211.project.sensor.*;
 import ca.mcgill.ecse211.project.odometry.*;
 
 /**
- * This class contains the main method of the program
+ * This class contains the main method of the program.
+ * This program allows an EV3 robot to autonomously localize and navigate a course (traversing a tunnel and avoiding obstacles)
+ * The robot then navigates to a specified launch point and throws 5 balls at a target
  *
  */
 public class Main {
 
   /**
    * Program entry point
-   * @param args
+   * @param args WiFi input parameters
    */
   public static void main(String[] args) {
     SampleProvider usSamp = US_SENSOR.getMode("Distance");
@@ -38,8 +40,6 @@ public class Main {
     ColorTunnelLocalizer colorTunnelLoc = new ColorTunnelLocalizer();
     OdometryCorrection odoCorrect = new OdometryCorrection();
     ObstacleAvoidance obAvoid = new ObstacleAvoidance();
-    //TODO: change Navigation class to suit current needs
-    //Launcher is also completely static
     
     GameController gameControl = new GameController(sensorControl, USLoc, colorLoc, colorTunnelLoc, odoCorrect, obAvoid);
     //TODO: obstacle avoidance might not work this way
@@ -53,8 +53,8 @@ public class Main {
     //Get parameters from WiFi class
     //Server file included now in project, cd to the jar (java -jar EV3WifiServer.jar)
     //Make sure to change the SERVER_IP in WifiResources to your that of your computer (hostname -I)
-    //WiFi.wifi();
-    //while (!WiFi.recievedParameters);
+    WiFi.wifi();
+    while (!WiFi.recievedParameters);
     
     LCD.clear();
     odoThread.start();

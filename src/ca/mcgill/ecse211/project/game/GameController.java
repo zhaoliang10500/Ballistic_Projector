@@ -24,15 +24,17 @@ public class GameController implements Runnable {
   private ColorTunnelLocalizer colorTunnelLoc;
   private OdometryCorrection odoCorrect;
   private ObstacleAvoidance obAvoid;
+  private final int[] testCoords = {4,3};
   public static GameState state;
   
   /**
    * Constructor for the GameController class
-   * @param sensorCont
-   * @param USLoc
-   * @param colorLoc
-   * @param odoCorrect
-   * @param obAvoid
+   * @param sensorCont The sensor controller
+   * @param USLoc The ultrasonic localizer
+   * @param colorLoc The color localizer
+   * @paran colorTunnelLoc The color localizer for localizing before and after a tunnel
+   * @param odoCorrect The odometer correction 
+   * @param obAvoid The obstacle avoidance
    */
   public GameController (SensorController sensorCont, USLocalizer USLoc, ColorLocalizer colorLoc, 
                          ColorTunnelLocalizer colorTunnelLoc, OdometryCorrection odoCorrect, ObstacleAvoidance obAvoid) {
@@ -46,13 +48,14 @@ public class GameController implements Runnable {
   
   /**
    * Enum used to define game states
+   * Each state turns on/off the ultrasonic poller and the color poller
    *
    */
   public enum GameState {
     US_LOC,
     COLOR_LOC,
     NAVIGATION,
-    LOC_BEFORE_TUNNEL,
+    TUNNEL_LOC,
     NAV_WITH_OBSTACLE,
     TUNNEL,
     LAUNCH,
@@ -69,7 +72,8 @@ public class GameController implements Runnable {
   }
   
   /**
-   * Method for game state logic
+   * This method runs the logic of the game by changing 
+   * the GameState and calling the corresponding methods for each state
    */
   public void startGame() {
     //US localization
@@ -83,26 +87,48 @@ public class GameController implements Runnable {
     colorLoc.localize();
     beep(1);
     
-    //travel to tunnel
+    //navigation: travel to tunnel
     changeState(GameState.NAVIGATION);
-    //int[] xyCoords = {tng.ll.x, tng.ll.y};
-    //Navigation.travelTo(xyCoords);
-    Navigation.travelTo(4,3);
+    Navigation.travelTo(tng.ll.x, tng.ll.y);
+    //Navigation.travelTo(testCoords[0],testCoords[1]);
     setLRMotorSpeed(NAV_TURN);
-    Navigation.turnTo(-Navigation.turnAngle);
+    Navigation.turnTo(-Navigation.turnAngle); //turn robot back to 0°
     
     // color localization before tunnel
-    changeState(GameState.LOC_BEFORE_TUNNEL);
+    changeState(GameState.TUNNEL_LOC);
     setLRMotorSpeed(CS_TUNNEL_SPEED);
-    colorTunnelLoc.localize();
+    colorTunnelLoc.localize(true); //boolean before = true
     
     //travel through tunnel
-//    double backupDist = colorTunnelLoc.backedupDist;
-    /*changeState(GameState.TUNNEL);
-    //TODO: navigate through tunnel
+    //double backupDist = colorTunnelLoc.backedupDist;
+    
+    //TODO: Keep track of back up distance to fool proof tunnel localization (eg in case backs up one extra tile)
+    
+    changeState(GameState.TUNNEL);
+    Navigation.travelThroughTunnel();
+    
+    // color localization after tunnel
+    changeState(GameState.TUNNEL_LOC);
+    setLRMotorSpeed(CS_TUNNEL_SPEED);
+    colorTunnelLoc.localize(false); //boolean before = false -> after
+    
+    // navigation: travel to launch point
+    changeState(GameState.NAVIGATION);
+    Navigation.travelTo(bin.x, bin.y);
+    setLRMotorSpeed(NAV_TURN);
+    Navigation.turnTo(tnr.ll.x); //turn to specified orientation
+    beep(3);
+    
+    // throw balls
+    changeState(GameState.LAUNCH);
+    for (int i = 0; i<5; i++) {
+      Launcher.launch();
+    }
+    beep(1);
+    
     
     //travel to ideal launch point while avoiding obstacles
-    changeState(GameState.NAV_WITH_OBSTACLE);
+    /*changeState(GameState.NAV_WITH_OBSTACLE);
     //TODO: navigate to ideal launch point
     beep(3);
     
@@ -139,8 +165,8 @@ public class GameController implements Runnable {
   }
   
   /**
-   * Method to define which threads are running for every state of the game
-   * @param newState
+   * Method that defines which threads are running for every state of the game
+   * @param newState GameState enum 
    */
   public void changeState(GameState newState) {
     state = newState;
@@ -163,13 +189,11 @@ public class GameController implements Runnable {
       case NAVIGATION:
         currUSUsers.remove(USLoc);
         currColorUsers.remove(colorLoc);
-        //currColorUsers.add(odoCorrect);
         sensorCont.pauseUSPoller();
-        //sensorCont.resumeColorPoller();
-        //sensorCont.pauseColorPoller();
+        sensorCont.pauseColorPoller();
         break;
         
-      case LOC_BEFORE_TUNNEL:
+      case TUNNEL_LOC:
         currColorUsers.add(colorTunnelLoc);
         sensorCont.pauseUSPoller();
         sensorCont.resumeColorPoller();

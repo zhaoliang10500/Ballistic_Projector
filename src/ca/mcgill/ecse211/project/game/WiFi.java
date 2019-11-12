@@ -10,7 +10,7 @@ public class WiFi {
   public static volatile boolean recievedParameters = false;
   
   /**
-   * Method to get team color and corresponding boundary parameters from server
+   * Method to get team color and corresponding boundary parameters from server and print them out
    */
   public static void wifi() {
     System.out.println("Map:\n" + wifiParameters);

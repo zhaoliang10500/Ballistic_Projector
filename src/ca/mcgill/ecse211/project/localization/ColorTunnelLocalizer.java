@@ -1,8 +1,13 @@
 package ca.mcgill.ecse211.project.localization;
 import static ca.mcgill.ecse211.project.game.Resources.*;
+import static ca.mcgill.ecse211.project.game.WifiResources.*;
 import ca.mcgill.ecse211.project.sensor.ColorUser;
 import static ca.mcgill.ecse211.project.game.Helper.*;
 
+/**
+ * This class contains methods for localization before and after traversing a tunnel
+ *
+ */
 public class ColorTunnelLocalizer implements ColorUser {
   private boolean localizing = false;
   private double[] initialColor = new double[2];
@@ -10,10 +15,16 @@ public class ColorTunnelLocalizer implements ColorUser {
   private volatile int step;
   private volatile double[]  offset = new double[2];
   private volatile boolean turnRight;
+  private volatile boolean before;
   public double backedupDist;
-      
-  public void localize() {    
-    sleepFor(1000);
+  
+  /**
+   * Method to begin tunnel before/after localization
+   * @param before boolean to specify whether the localization is happening before or after traversing a tunnel
+   */
+  public void localize(boolean before) {    
+    sleepFor(500);
+    this.before = before;
     
     //get yDistFromLine and adjust heading after localization
     localizing = true;
@@ -35,23 +46,35 @@ public class ColorTunnelLocalizer implements ColorUser {
     double yDistFromLine = odometer.getXYT()[1];
     moveBackward(yDistFromLine);
   }
+
+   //TODO: fool proof tunnel localization
+   //  public double backupDist() {
+   //    return backedupDist;
+   //  }
   
-//  public double backupDist() {
-//    return backedupDist;
-//  }
-  
+  /**
+   * Method to process color Poller data
+   * Implemented from ColorUser
+   */
   @Override
   public void processColorData(double[] color) {
     if (!localizing) {
       return;
     }
     else if (!gotInitialSample) {
-      moveForward(6.5);
+      moveForward(2);
       moveBackward(2);
       initialColor[0] = color[0];
       initialColor[1] = color[1];
-      moveBackward();
+      
+      if (before) {
+        moveBackward();
+      }
+      else {
+        moveForward();
+      }
       sleepFor(50);
+      
       gotInitialSample = true; 
     }
   //for y, left sensor sees line and right doesn't
@@ -61,10 +84,16 @@ public class ColorTunnelLocalizer implements ColorUser {
           stopMotors();
           turnRight = false;
           offset[0] = odometer.getXYT()[1];
-          moveBackward();
+          if (before) {
+            moveBackward();
+          }
+          else {
+            moveForward();
+          }
           //sleepFor(50);
           step ++;
           break;
+          
         case 1:
           stopMotors();
           offset[1] = odometer.getXYT()[1];
@@ -80,10 +109,16 @@ public class ColorTunnelLocalizer implements ColorUser {
           stopMotors();
           turnRight = true;
           offset[0] = odometer.getXYT()[1];
-          moveBackward();
+          if (before) {
+            moveBackward();
+          }
+          else {
+            moveForward();
+          }
           //sleepFor(50);
           step++;
           break;
+          
         case 1:
           stopMotors();
           offset[1] = odometer.getXYT()[1];

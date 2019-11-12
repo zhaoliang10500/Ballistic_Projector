@@ -44,6 +44,7 @@ public class USLocalizer implements USUser {
   /**
    * Method to process US poller data
    * Uses falling edge localization (facing away from wall)
+   * Implemented from interface USUser
    */
   @Override
   public void processUSData(int distance) {
