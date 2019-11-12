@@ -12,18 +12,17 @@ public class Navigation {
   private static double x, y; 
   private static double deltaX, deltaY;
 
-  private static double minDist, travelDist;
+  private static double minDist;
   private static double theta1, theta2;
 
   public static double[] launch;
+  
+  public static double turnAngle;
 
 
-  public static void travelTo (double[] target) { //travelTo 
-    double[] xyCoord = target;
-    rightMotor.setSpeed(NAV_FORWARD);
-    leftMotor.setSpeed(NAV_FORWARD);
-
-    LCD.drawString("Target: " + (int)target[0] + ", " + (int)target[1], 0, 4);
+  public static void travelTo (int xCoord, int yCoord) { //travelTo 
+    int[] xyCoord = {xCoord, yCoord};
+    
     // Gets current x, y positions (already in cm) 
     x = odometer.getXYT()[0];
     y = odometer.getXYT()[1];
@@ -40,49 +39,42 @@ public class Navigation {
     x = odometer.getXYT()[0];
     y = odometer.getXYT()[1];
 
-    deltaX = x - TILE_SIZE*xyCoord[0] + TILE_SIZE/2;
-    deltaY = TILE_SIZE*xyCoord[1] - y + TILE_SIZE/2;
-
     //Turn
-    turnTo(theta2 - theta1);
+    turnAngle = calcTurnAngle(theta2 - theta1);
+    turnTo(turnAngle);
 
 
     // Move 
     minDist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
-    travelDist = minDist - NAV_OFFSET;
-    leftMotor.rotate(Helper.convertDistance(travelDist, WHEEL_RADIUS), true);
-    rightMotor.rotate(Helper.convertDistance(travelDist, WHEEL_RADIUS), false);
+    setLRMotorSpeed(NAV_FORWARD);
+    //no NAV_OFFSET this time b/c robot destination coordinates were directly given 
+    leftMotor.rotate(Helper.convertDistance(minDist, WHEEL_RADIUS), true);
+    rightMotor.rotate(Helper.convertDistance(minDist, WHEEL_RADIUS), false);
+    
   }
-
+  
+  public static double calcTurnAngle(double theta) {
+    if (theta > 180) {
+      theta = 360 - theta;
+    }
+    else if (theta < -180) {
+      theta = 360 + theta;
+    }
+    //else theta = theta
+    return theta;
+  }
+  
   /**
    * Causes the robot to turn (on point) to the absolute heading theta. 
    * This method should turn a MINIMAL angle to its target. 
    * @param theta  robot turning angle before each waypoint
    */
-  private static void turnTo(double theta) {
-    double turnAngle;
-    if (theta > 180) {
-      turnAngle = 360 - theta;
-    }
-    else if (theta < -180) {
-      turnAngle = 360 + theta;
-    }
-    else {
-      turnAngle = theta;
-    }
+  public static void turnTo(double theta) {
+    setLRMotorSpeed(NAV_TURN);
 
-    // Calculate launch coordinates for display
-    launch[0] = travelDist*Math.sin(Math.toRadians(turnAngle)) + TILE_SIZE; //x
-    launch[1] = travelDist*Math.cos(Math.toRadians(turnAngle)) + TILE_SIZE; //y
-
-    LCD.drawString("Lauch: " + (int)launch[0] + ", " + (int)launch[1], 0, 5);
-
-    leftMotor.setSpeed(NAV_ROTATE);
-    rightMotor.setSpeed(NAV_ROTATE);
-
-
-    leftMotor.rotate(convertAngle(turnAngle, WHEEL_RADIUS), true);
-    rightMotor.rotate(-convertAngle(turnAngle, WHEEL_RADIUS), false);
+    leftMotor.rotate(convertAngle(theta, WHEEL_RADIUS), true);
+    rightMotor.rotate(-convertAngle(theta, WHEEL_RADIUS), false);
+    
   }
 
 

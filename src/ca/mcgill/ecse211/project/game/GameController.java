@@ -10,7 +10,8 @@ import ca.mcgill.ecse211.project.odometry.*;
 
 import static ca.mcgill.ecse211.project.game.Helper.*;
 import static ca.mcgill.ecse211.project.game.Resources.*;
-
+import static ca.mcgill.ecse211.project.localization.Navigation.*;
+import static ca.mcgill.ecse211.project.game.WifiResources.*;
 
 /**
  * This class runs the entire game
@@ -20,6 +21,7 @@ public class GameController implements Runnable {
   private SensorController sensorCont;
   private USLocalizer USLoc;
   private ColorLocalizer colorLoc;
+  private ColorTunnelLocalizer colorTunnelLoc;
   private OdometryCorrection odoCorrect;
   private ObstacleAvoidance obAvoid;
   public static GameState state;
@@ -33,10 +35,11 @@ public class GameController implements Runnable {
    * @param obAvoid
    */
   public GameController (SensorController sensorCont, USLocalizer USLoc, ColorLocalizer colorLoc, 
-                         OdometryCorrection odoCorrect, ObstacleAvoidance obAvoid) {
+                         ColorTunnelLocalizer colorTunnelLoc, OdometryCorrection odoCorrect, ObstacleAvoidance obAvoid) {
     this.sensorCont = sensorCont;
     this.USLoc = USLoc;
     this.colorLoc = colorLoc;
+    this.colorTunnelLoc = colorTunnelLoc;
     this.odoCorrect = odoCorrect;
     this.obAvoid = obAvoid;
   }
@@ -46,11 +49,11 @@ public class GameController implements Runnable {
    *
    */
   public enum GameState {
-    INIT,
-    USLOC,
-    COLORLOC,
+    US_LOC,
+    COLOR_LOC,
     NAVIGATION,
-    NAVWITHOBSTACLE,
+    LOC_BEFORE_TUNNEL,
+    NAV_WITH_OBSTACLE,
     TUNNEL,
     LAUNCH,
     DONE,
@@ -68,26 +71,38 @@ public class GameController implements Runnable {
   /**
    * Method for game state logic
    */
-  public void startGame() {    
-    changeState(GameState.USLOC);
+  public void startGame() {
+    //US localization
+    changeState(GameState.US_LOC);
     setLRMotorSpeed(US_SPEED);
     USLoc.localize();
     
-    changeState(GameState.COLORLOC);
+    // color localization
+    changeState(GameState.COLOR_LOC);
     setLRMotorSpeed(CS_SPEED);
     colorLoc.localize();
     beep(1);
     
     //travel to tunnel
-    /*changeState(GameState.NAVIGATION);
-    //TODO: navigate to tunnel using WiFi info
+    changeState(GameState.NAVIGATION);
+    //int[] xyCoords = {tng.ll.x, tng.ll.y};
+    //Navigation.travelTo(xyCoords);
+    Navigation.travelTo(4,3);
+    setLRMotorSpeed(NAV_TURN);
+    Navigation.turnTo(-Navigation.turnAngle);
+    
+    // color localization before tunnel
+    changeState(GameState.LOC_BEFORE_TUNNEL);
+    setLRMotorSpeed(CS_TUNNEL_SPEED);
+    colorTunnelLoc.localize();
     
     //travel through tunnel
-    changeState(GameState.TUNNEL);
+//    double backupDist = colorTunnelLoc.backedupDist;
+    /*changeState(GameState.TUNNEL);
     //TODO: navigate through tunnel
     
     //travel to ideal launch point while avoiding obstacles
-    changeState(GameState.NAVWITHOBSTACLE);
+    changeState(GameState.NAV_WITH_OBSTACLE);
     //TODO: navigate to ideal launch point
     beep(3);
     
@@ -98,7 +113,7 @@ public class GameController implements Runnable {
     }
     
     //travel back to tunnel
-    changeState(GameState.NAVWITHOBSTACLE);
+    changeState(GameState.NAV_WITH_OBSTACLE);
     //TODO: navigate back to tunnel with obstacle avoidance
     
     //travel through tunnel
@@ -132,19 +147,14 @@ public class GameController implements Runnable {
     ArrayList<USUser> currUSUsers = new ArrayList<USUser>();
     ArrayList<ColorUser> currColorUsers = new ArrayList<ColorUser>();
     
-    switch (state) {
-      case INIT:
-        sensorCont.pauseUSPoller();
-        sensorCont.pauseColorPoller();
-        break;
-        
-      case USLOC:
+    switch (state) { 
+      case US_LOC:
         currUSUsers.add(USLoc);
         sensorCont.resumeUSPoller();
         sensorCont.pauseColorPoller();
         break;
         
-      case COLORLOC:
+      case COLOR_LOC:
         currColorUsers.add(colorLoc);
         sensorCont.pauseUSPoller();
         sensorCont.resumeColorPoller();
@@ -153,12 +163,19 @@ public class GameController implements Runnable {
       case NAVIGATION:
         currUSUsers.remove(USLoc);
         currColorUsers.remove(colorLoc);
-        currColorUsers.add(odoCorrect);
+        //currColorUsers.add(odoCorrect);
+        sensorCont.pauseUSPoller();
+        //sensorCont.resumeColorPoller();
+        //sensorCont.pauseColorPoller();
+        break;
+        
+      case LOC_BEFORE_TUNNEL:
+        currColorUsers.add(colorTunnelLoc);
         sensorCont.pauseUSPoller();
         sensorCont.resumeColorPoller();
         break;
         
-      case NAVWITHOBSTACLE:
+      case NAV_WITH_OBSTACLE:
         currUSUsers.add(obAvoid);
         sensorCont.resumeUSPoller();
         sensorCont.pauseColorPoller();

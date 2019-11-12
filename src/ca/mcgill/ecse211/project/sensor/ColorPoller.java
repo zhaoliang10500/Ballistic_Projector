@@ -52,7 +52,7 @@ public class ColorPoller extends Thread {
         int G1 = (int)(colorData[1][1]*100000.0);
         int B1 = (int)(colorData[1][2]*100000.0);
         colors[1] = Math.sqrt(R1^2 + G1^2 + B1^2);     
-        
+
         //set colors
         sensorCont.setColor(colors);
       }

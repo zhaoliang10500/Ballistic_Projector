@@ -35,12 +35,13 @@ public class Main {
     
     USLocalizer USLoc = new USLocalizer();
     ColorLocalizer colorLoc = new ColorLocalizer();
+    ColorTunnelLocalizer colorTunnelLoc = new ColorTunnelLocalizer();
     OdometryCorrection odoCorrect = new OdometryCorrection();
     ObstacleAvoidance obAvoid = new ObstacleAvoidance();
     //TODO: change Navigation class to suit current needs
     //Launcher is also completely static
     
-    GameController gameControl = new GameController(sensorControl, USLoc, colorLoc, odoCorrect, obAvoid);
+    GameController gameControl = new GameController(sensorControl, USLoc, colorLoc, colorTunnelLoc, odoCorrect, obAvoid);
     //TODO: obstacle avoidance might not work this way
     
     Thread odoThread = new Thread(odometer); //odometer created in Resources
@@ -52,8 +53,8 @@ public class Main {
     //Get parameters from WiFi class
     //Server file included now in project, cd to the jar (java -jar EV3WifiServer.jar)
     //Make sure to change the SERVER_IP in WifiResources to your that of your computer (hostname -I)
-    WiFi.wifi();
-    while (!WiFi.recievedParameters);
+    //WiFi.wifi();
+    //while (!WiFi.recievedParameters);
     
     LCD.clear();
     odoThread.start();
