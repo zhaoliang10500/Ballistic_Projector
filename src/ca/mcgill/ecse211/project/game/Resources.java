@@ -61,6 +61,7 @@ public class Resources {
   public static final int NAV_FORWARD = 200;
   public static final double NAV_OFFSET = 4.5*TILE_SIZE; //min offset = 4.5
   public static final int NAV_TURN = 90;
+  public static final int NAV_TURN2 = 120;
   public static final int TUNNEL_SPEED = 200;
   
   //Obstacle Avoidance
