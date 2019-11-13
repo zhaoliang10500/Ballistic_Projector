@@ -89,7 +89,7 @@ public class GameController implements Runnable {
     
     //navigation: travel to tunnel
     changeState(GameState.NAVIGATION);
-    Navigation.travelTo(tng.ll.x, tng.ll.y);
+    Navigation.travelTo(tng.ll.x-0.15, tng.ll.y, 7);
     //Navigation.travelTo(testCoords[0],testCoords[1]);
     setLRMotorSpeed(NAV_TURN);
     Navigation.turnTo(-Navigation.turnAngle); //turn robot back to 0°
@@ -115,8 +115,8 @@ public class GameController implements Runnable {
     
     // navigation: travel to launch point
     changeState(GameState.NAVIGATION);
-    Navigation.travelTo(bin.x - 0.5, bin.y - 0.5);
-    setLRMotorSpeed(NAV_TURN);
+    Navigation.travelTo(bin.x - 0.5, bin.y - 0.5, 0);
+    setLRMotorSpeed(NAV_TURN2);
     Navigation.turnTo(tnr.ll.x); //turn to specified orientation
     beep(3);
     

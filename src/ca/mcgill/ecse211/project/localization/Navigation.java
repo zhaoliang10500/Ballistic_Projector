@@ -20,7 +20,7 @@ public class Navigation {
   public static double turnAngle;
 
 
-  public static void travelTo (double xCoord, double yCoord) { //travelTo 
+  public static void travelTo (double xCoord, double yCoord, double angleOffset) { //travelTo 
     double[] xyCoord = {xCoord, yCoord};
     
     // Gets current x, y positions (already in cm) 
@@ -40,7 +40,7 @@ public class Navigation {
     y = odometer.getXYT()[1];
 
     //Turn
-    turnAngle = calcTurnAngle(theta2 - theta1);
+    turnAngle = calcTurnAngle(theta2 - theta1, angleOffset);
     turnTo(turnAngle);
 
 
@@ -58,7 +58,7 @@ public class Navigation {
    * @param theta
    * @return
    */
-  public static double calcTurnAngle(double theta) {
+  public static double calcTurnAngle(double theta, double angleOffset) {
     if (theta > 180) {
       theta = 360 - theta;
     }
@@ -66,7 +66,7 @@ public class Navigation {
       theta = 360 + theta;
     }
     //else theta = theta
-    return theta;
+    return theta + angleOffset; //to compensate for overturning in navigation
   }
   
   /**

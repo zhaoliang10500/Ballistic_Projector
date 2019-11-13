@@ -17,7 +17,7 @@ public class ColorLocalizer implements ColorUser {
   private volatile double[]  offset = new double[2];
   private volatile boolean turnRight;
   private volatile boolean findingX;
-  private final double angleOffset = 7; //for y, turn less than 90 to better localize
+  private final double angleOffset = 8; //7 or y, turn less than 90 to better localize
   
   /**
    * Method to begin color localization
@@ -60,8 +60,8 @@ public class ColorLocalizer implements ColorUser {
     else if (!gotInitialSample) {
       //moveForward(3);
       //moveBackward(2);
-      moveForward(2);
-      moveBackward(2);
+      moveForward(5);
+      moveBackward(3);
       
       initialColor[0] = color[0];
       initialColor[1] = color[1];
@@ -85,7 +85,7 @@ public class ColorLocalizer implements ColorUser {
           turnRight = false;
           offset[0] = odometer.getXYT()[1];
           moveForward();
-          sleepFor(100);
+          sleepFor(150);
           step ++;
           break;
         case 1:
@@ -104,7 +104,7 @@ public class ColorLocalizer implements ColorUser {
           turnRight = true;
           offset[0] = odometer.getXYT()[1];
           moveForward();
-          sleepFor(100);
+          sleepFor(150);
           step++;
           break;
         case 1:
