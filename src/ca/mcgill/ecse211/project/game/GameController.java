@@ -105,16 +105,17 @@ public class GameController implements Runnable {
     //TODO: Keep track of back up distance to fool proof tunnel localization (eg in case backs up one extra tile)
     
     changeState(GameState.TUNNEL);
+    setLRMotorSpeed(TUNNEL_SPEED);
     Navigation.travelThroughTunnel();
     
     // color localization after tunnel
     changeState(GameState.TUNNEL_LOC);
     setLRMotorSpeed(CS_TUNNEL_SPEED);
-    colorTunnelLoc.localize(false); //boolean before = false -> after
+    //colorTunnelLoc.localize(false); //boolean before = false -> after
     
     // navigation: travel to launch point
     changeState(GameState.NAVIGATION);
-    Navigation.travelTo(bin.x, bin.y);
+    Navigation.travelTo(bin.x - 0.5, bin.y - 0.5);
     setLRMotorSpeed(NAV_TURN);
     Navigation.turnTo(tnr.ll.x); //turn to specified orientation
     beep(3);
@@ -206,6 +207,7 @@ public class GameController implements Runnable {
         break;
         
       case TUNNEL:
+        currColorUsers.remove(colorTunnelLoc);
         sensorCont.pauseUSPoller();
         sensorCont.pauseColorPoller();
         break;

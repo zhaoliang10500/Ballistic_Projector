@@ -14,6 +14,6 @@ public class Launcher {
   public static void launch() {
 
     throwMotor.setSpeed(90);
-    throwMotor.rotate(-1000, true);
+    throwMotor.rotate(-1800, true);
   }
 }

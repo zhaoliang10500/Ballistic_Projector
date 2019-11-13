@@ -22,7 +22,7 @@ public class USLocalizer implements USUser {
    */
   public void localize() { 
     //wait for odometer thread to start
-    sleepFor(2000);
+    sleepFor(1000);
     
     localizing = true;
     step = 0;

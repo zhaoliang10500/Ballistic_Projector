@@ -23,7 +23,7 @@ public class ColorTunnelLocalizer implements ColorUser {
    * @param before boolean to specify whether the localization is happening before or after traversing a tunnel
    */
   public void localize(boolean before) {    
-    sleepFor(500);
+    //sleepFor(500);
     this.before = before;
     
     //get yDistFromLine and adjust heading after localization
@@ -42,9 +42,10 @@ public class ColorTunnelLocalizer implements ColorUser {
     }
     
     //backedupDist = odometer.getXYT()[1]; //used to make the localization work even if backed up one extra tile
-        
-    double yDistFromLine = odometer.getXYT()[1];
-    moveBackward(yDistFromLine);
+
+    //moveBackward(yDistFromLine);
+    double currentY = odometer.getXYT()[1];
+    odometer.setY(currentY + CS_DISTANCE);
   }
 
    //TODO: fool proof tunnel localization
@@ -62,7 +63,7 @@ public class ColorTunnelLocalizer implements ColorUser {
       return;
     }
     else if (!gotInitialSample) {
-      moveForward(2);
+      moveForward(5);
       moveBackward(2);
       initialColor[0] = color[0];
       initialColor[1] = color[1];
@@ -84,7 +85,7 @@ public class ColorTunnelLocalizer implements ColorUser {
           stopMotors();
           turnRight = false;
           offset[0] = odometer.getXYT()[1];
-          if (before) {
+          if (this.before) {
             moveBackward();
           }
           else {
@@ -109,7 +110,7 @@ public class ColorTunnelLocalizer implements ColorUser {
           stopMotors();
           turnRight = true;
           offset[0] = odometer.getXYT()[1];
-          if (before) {
+          if (this.before) {
             moveBackward();
           }
           else {

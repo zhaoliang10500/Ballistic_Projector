@@ -50,10 +50,10 @@ public class Resources {
   public static final int FALL_ANGLE = 45; //45
   
   //ColorLocalizer
-  public static final double COLOR_THRESHOLD_R = 0.57; //0.55
-  public static final double COLOR_THRESHOLD_L = 0.57; 
+  public static final double COLOR_THRESHOLD_R = 0.55; //0.55
+  public static final double COLOR_THRESHOLD_L = 0.55; 
   
-  public static final double CS_DISTANCE = 7; // sensor distance from center of rotation
+  public static final double CS_DISTANCE = 12; // sensor distance from center of rotation
   public static final int CS_SPEED = 120; //70
   public static final int CS_TUNNEL_SPEED = 100;
   
@@ -61,6 +61,7 @@ public class Resources {
   public static final int NAV_FORWARD = 190;
   public static final double NAV_OFFSET = 4.5*TILE_SIZE; //min offset = 4.5
   public static final int NAV_TURN = 90;
+  public static final int TUNNEL_SPEED = 200;
   
   //Obstacle Avoidance
   public static final int OBS_THRESHOLD = 30;

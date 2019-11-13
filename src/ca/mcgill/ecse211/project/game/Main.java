@@ -54,13 +54,14 @@ public class Main {
     //Server file included now in project, cd to the jar (java -jar EV3WifiServer.jar)
     //Make sure to change the SERVER_IP in WifiResources to your that of your computer (hostname -I)
     WiFi.wifi();
-    while (!WiFi.recievedParameters);
     
-    LCD.clear();
-    odoThread.start();
-    USThread.start();
-    colorThread.start();
-    gameThread.start();
+    if (WiFi.recievedParameters) {
+      LCD.clear();
+      odoThread.start();
+      USThread.start();
+      colorThread.start();
+      gameThread.start();
+    }
     
     while (Button.waitForAnyPress() != Button.ID_ESCAPE);
     System.exit(0);
