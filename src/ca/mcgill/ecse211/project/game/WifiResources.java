@@ -18,13 +18,13 @@ public class WifiResources{
   /**
    * The default server IP used by the profs and TA's.
    */
-  public static final String DEFAULT_SERVER_IP = "192.168.2.3";
+  public static final String DEFAULT_SERVER_IP = "192.168.2.53";
   
   /**
    * The IP address of the server that transmits data to the robot. Set this to the default for the
    * beta demo and competition.
    */
-  public static final String SERVER_IP = "192.168.2.110";
+  public static final String SERVER_IP = "192.168.2.53";
   
   /**
    * Your team number.
@@ -90,8 +90,8 @@ public class WifiResources{
   /**
    * The red tunnel footprint.
    */
-  public static Region tnr = new Region("TNR_LL_x", "TNR_LL_y", "TNR_UR_x", "TNR_UR_y");
-
+ // public static Region tnr = new Region("TNR_LL_x", "TNR_LL_y", "TNR_UR_x", "TNR_UR_y");
+   public static double targetAngle = Math.max(get("TNR_LL_x"), get("TNR_UR_x"));
   /**
    * The green tunnel footprint.
    */

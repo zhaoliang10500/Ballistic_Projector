@@ -81,51 +81,51 @@ public class GameController implements Runnable {
     setLRMotorSpeed(US_SPEED);
     USLoc.localize();
     
-    // color localization
-    changeState(GameState.COLOR_LOC);
-    setLRMotorSpeed(CS_SPEED);
-    colorLoc.localize();
-    beep(1);
-    
-    //navigation: travel to tunnel
-    changeState(GameState.NAVIGATION);
-    Navigation.travelTo(tng.ll.x-0.15, tng.ll.y, 7);
-    //Navigation.travelTo(testCoords[0],testCoords[1]);
-    setLRMotorSpeed(NAV_TURN);
-    Navigation.turnTo(-Navigation.turnAngle); //turn robot back to 0°
-    
-    // color localization before tunnel
-    changeState(GameState.TUNNEL_LOC);
-    setLRMotorSpeed(CS_TUNNEL_SPEED);
-    colorTunnelLoc.localize(true); //boolean before = true
-    
-    //travel through tunnel
-    //double backupDist = colorTunnelLoc.backedupDist;
-    
-    //TODO: Keep track of back up distance to fool proof tunnel localization (eg in case backs up one extra tile)
-    
-    changeState(GameState.TUNNEL);
-    setLRMotorSpeed(TUNNEL_SPEED);
-    Navigation.travelThroughTunnel();
-    
-    // color localization after tunnel
-    changeState(GameState.TUNNEL_LOC);
-    setLRMotorSpeed(CS_TUNNEL_SPEED);
-    //colorTunnelLoc.localize(false); //boolean before = false -> after
-    
-    // navigation: travel to launch point
-    changeState(GameState.NAVIGATION);
-    Navigation.travelTo(bin.x - 0.5, bin.y - 0.5, 0);
-    setLRMotorSpeed(NAV_TURN2);
-    Navigation.turnTo(tnr.ll.x); //turn to specified orientation
-    beep(3);
-    
-    // throw balls
-    changeState(GameState.LAUNCH);
-    for (int i = 0; i<5; i++) {
-      Launcher.launch();
-    }
-    beep(1);
+//    // color localization
+//    changeState(GameState.COLOR_LOC);
+//    setLRMotorSpeed(CS_SPEED);
+//    colorLoc.localize();
+//    beep(1);
+//    
+//    //navigation: travel to tunnel
+//    changeState(GameState.NAVIGATION);
+//    Navigation.travelTo(tng.ll.x-0.15, tng.ll.y, 7);
+//    //Navigation.travelTo(testCoords[0],testCoords[1]);
+//    setLRMotorSpeed(NAV_TURN);
+//    Navigation.turnTo(-Navigation.turnAngle); //turn robot back to 0°
+//    
+//    // color localization before tunnel
+//    changeState(GameState.TUNNEL_LOC);
+//    setLRMotorSpeed(CS_TUNNEL_SPEED);
+//    colorTunnelLoc.localize(true); //boolean before = true
+//    
+//    //travel through tunnel
+//    //double backupDist = colorTunnelLoc.backedupDist;
+//    
+//    //TODO: Keep track of back up distance to fool proof tunnel localization (eg in case backs up one extra tile)
+//    
+//    changeState(GameState.TUNNEL);
+//    setLRMotorSpeed(TUNNEL_SPEED);
+//    Navigation.travelThroughTunnel();
+//    
+//    // color localization after tunnel
+//    changeState(GameState.TUNNEL_LOC);
+//    setLRMotorSpeed(CS_TUNNEL_SPEED);
+//    //colorTunnelLoc.localize(false); //boolean before = false -> after
+//    
+//    // navigation: travel to launch point
+//    changeState(GameState.NAVIGATION);
+//    Navigation.travelTo(bin.x - 1.0, bin.y - 1.5, 0);
+//    setLRMotorSpeed(NAV_TURN2);
+//    Navigation.turnTo(targetAngle); //turn to specified orientation
+//    beep(3);
+//    
+//    // throw balls
+//    changeState(GameState.LAUNCH);
+//    for (int i = 0; i<5; i++) {
+//      Launcher.launch();
+//    }
+//    beep(1);
     
     
     //travel to ideal launch point while avoiding obstacles

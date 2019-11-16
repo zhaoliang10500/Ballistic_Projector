@@ -3,6 +3,7 @@ package ca.mcgill.ecse211.project.sensor;
 import lejos.robotics.SampleProvider;
 import ca.mcgill.ecse211.project.game.SensorController;
 import static ca.mcgill.ecse211.project.game.Resources.USMotor;
+import java.util.Arrays;
 
 /**
  * This class contains the ultrasonic poller thread
@@ -32,14 +33,20 @@ public class USPoller extends Thread {
   public void run() {
     long updateStart, updateEnd, sleepPeriod;
     int distance;
+    int filterSize = 5;
+    int[] tempDists = new int[filterSize];
 
     while (true) {
       updateStart = System.currentTimeMillis();
 
       if (running) {
-        //set distance 
-        sampleProvider.fetchSample(USData, 0); 
-        distance = (int) (USData[0] * 100.0); 
+        //median filter
+        for (int i = 0; i < filterSize; i++) { 
+          sampleProvider.fetchSample(USData, 0); 
+          tempDists[i] = (int) (USData[0] * 100.0); 
+        }
+        Arrays.sort(tempDists);
+        distance = tempDists[filterSize/2]; //java rounds down for int division
         sensorCont.setDistance(distance);
 
         //TODO: this might not work, need to test

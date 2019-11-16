@@ -38,12 +38,10 @@ public class Resources {
   public static final int ACCELERATION = 600;
   public static final int FORWARD_SPEED = 60;
   public static final double TILE_SIZE = 30.48;
-  public static final int RISING = Button.ID_LEFT; //for USLocalizer
-  public static final int FALLING = Button.ID_RIGHT; //for USLocalizer
   
   //USLocalizer
   public static final int US_SPEED = 150; //80
-  public static final int RISE_THRESHOLD = 37; //38, 40
+  public static final int RISE_THRESHOLD = 37; //37, 38, 40
   public static final int RISE_ANGLE = 225;
   
   public static final int FALL_THRESHOLD = 25; //25

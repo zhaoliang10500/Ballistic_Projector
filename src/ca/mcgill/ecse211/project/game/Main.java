@@ -63,6 +63,12 @@ public class Main {
       gameThread.start();
     }
     
+//    LCD.clear();
+//    odoThread.start();
+//    USThread.start();
+//    colorThread.start();
+//    gameThread.start();
+    
     while (Button.waitForAnyPress() != Button.ID_ESCAPE);
     System.exit(0);
   }
