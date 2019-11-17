@@ -16,6 +16,8 @@ public class USPoller extends Thread {
   public SensorController sensorCont;
   public boolean running = false;
   public boolean waving = false;
+  private int filterSize = 5;
+  private int[] tempDists = new int[filterSize];
 
   /**
    * USPoller class constructor
@@ -33,8 +35,6 @@ public class USPoller extends Thread {
   public void run() {
     long updateStart, updateEnd, sleepPeriod;
     int distance;
-    int filterSize = 5;
-    int[] tempDists = new int[filterSize];
 
     while (true) {
       updateStart = System.currentTimeMillis();
@@ -45,6 +45,7 @@ public class USPoller extends Thread {
           sampleProvider.fetchSample(USData, 0); 
           tempDists[i] = (int) (USData[0] * 100.0); 
         }
+        
         Arrays.sort(tempDists);
         distance = tempDists[filterSize/2]; //java rounds down for int division
         sensorCont.setDistance(distance);

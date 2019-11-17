@@ -23,30 +23,30 @@ public class Main {
     SampleProvider usSamp = US_SENSOR.getMode("Distance");
     float[] usData = new float[usSamp.sampleSize()];
     
-    SampleProvider colorSampL = COLOR_SENSOR_L.getRGBMode();
-    float[] colorDataL = new float[colorSampL.sampleSize()];
+    SampleProvider lightSampL = LIGHT_SENSOR_L.getMode("Red");
+    float[] lightDataL = new float[lightSampL.sampleSize()];
     
-    SampleProvider colorSampR = COLOR_SENSOR_R.getRGBMode();
-    float[] colorDataR = new float[colorSampR.sampleSize()];
+    SampleProvider lightSampR = LIGHT_SENSOR_R.getMode("Red");
+    float[] lightDataR = new float[lightSampR.sampleSize()];
     
     USPoller USPoll = new USPoller(usSamp, usData);
-    ColorPoller colorPoll = new ColorPoller(colorSampL, colorDataL, colorSampR, colorDataR);
+    LightPoller lightPoll = new LightPoller(lightSampL, lightDataL, lightSampR, lightDataR);
     
     //synchronized method to control sensor threads
-    SensorController sensorControl = SensorController.getSensorController(USPoll, colorPoll);
+    SensorController sensorControl = SensorController.getSensorController(USPoll, lightPoll);
     
     USLocalizer USLoc = new USLocalizer();
-    ColorLocalizer colorLoc = new ColorLocalizer();
-    ColorTunnelLocalizer colorTunnelLoc = new ColorTunnelLocalizer();
+    LightLocalizer lightLoc = new LightLocalizer();
+    LightTunnelLocalizer lightTunnelLoc = new LightTunnelLocalizer();
     OdometryCorrection odoCorrect = new OdometryCorrection();
     ObstacleAvoidance obAvoid = new ObstacleAvoidance();
     
-    GameController gameControl = new GameController(sensorControl, USLoc, colorLoc, colorTunnelLoc, odoCorrect, obAvoid);
+    GameController gameControl = new GameController(sensorControl, USLoc, lightLoc, lightTunnelLoc, odoCorrect, obAvoid);
     //TODO: obstacle avoidance might not work this way
     
     Thread odoThread = new Thread(odometer); //odometer created in Resources
     Thread USThread = new Thread(USPoll);
-    Thread colorThread = new Thread(colorPoll);
+    Thread lightThread = new Thread(lightPoll);
     //TODO: might have to implement odometry correction inside odometer, currently it is separate
     Thread gameThread = new Thread(gameControl);
     
@@ -59,14 +59,14 @@ public class Main {
       LCD.clear();
       odoThread.start();
       USThread.start();
-      colorThread.start();
+      lightThread.start();
       gameThread.start();
     }
     
 //    LCD.clear();
 //    odoThread.start();
 //    USThread.start();
-//    colorThread.start();
+//    lightThread.start();
 //    gameThread.start();
     
     while (Button.waitForAnyPress() != Button.ID_ESCAPE);

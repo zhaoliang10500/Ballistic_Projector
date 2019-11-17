@@ -20,8 +20,8 @@ import static ca.mcgill.ecse211.project.game.WifiResources.*;
 public class GameController implements Runnable {
   private SensorController sensorCont;
   private USLocalizer USLoc;
-  private ColorLocalizer colorLoc;
-  private ColorTunnelLocalizer colorTunnelLoc;
+  private LightLocalizer lightLoc;
+  private LightTunnelLocalizer lightTunnelLoc;
   private OdometryCorrection odoCorrect;
   private ObstacleAvoidance obAvoid;
   private final int[] testCoords = {4,3};
@@ -31,24 +31,24 @@ public class GameController implements Runnable {
    * Constructor for the GameController class
    * @param sensorCont The sensor controller
    * @param USLoc The ultrasonic localizer
-   * @param colorLoc The color localizer
-   * @paran colorTunnelLoc The color localizer for localizing before and after a tunnel
+   * @param lightLoc The light localizer
+   * @paran lightTunnelLoc The light localizer for localizing before and after a tunnel
    * @param odoCorrect The odometer correction 
    * @param obAvoid The obstacle avoidance
    */
-  public GameController (SensorController sensorCont, USLocalizer USLoc, ColorLocalizer colorLoc, 
-                         ColorTunnelLocalizer colorTunnelLoc, OdometryCorrection odoCorrect, ObstacleAvoidance obAvoid) {
+  public GameController (SensorController sensorCont, USLocalizer USLoc, LightLocalizer lightLoc, 
+                         LightTunnelLocalizer lightTunnelLoc, OdometryCorrection odoCorrect, ObstacleAvoidance obAvoid) {
     this.sensorCont = sensorCont;
     this.USLoc = USLoc;
-    this.colorLoc = colorLoc;
-    this.colorTunnelLoc = colorTunnelLoc;
+    this.lightLoc = lightLoc;
+    this.lightTunnelLoc = lightTunnelLoc;
     this.odoCorrect = odoCorrect;
     this.obAvoid = obAvoid;
   }
   
   /**
    * Enum used to define game states
-   * Each state turns on/off the ultrasonic poller and the color poller
+   * Each state turns on/off the ultrasonic poller and the light poller
    *
    */
   public enum GameState {
@@ -81,51 +81,66 @@ public class GameController implements Runnable {
     setLRMotorSpeed(US_SPEED);
     USLoc.localize();
     
-//    // color localization
-//    changeState(GameState.COLOR_LOC);
-//    setLRMotorSpeed(CS_SPEED);
-//    colorLoc.localize();
-//    beep(1);
-//    
-//    //navigation: travel to tunnel
-//    changeState(GameState.NAVIGATION);
-//    Navigation.travelTo(tng.ll.x-0.15, tng.ll.y, 7);
-//    //Navigation.travelTo(testCoords[0],testCoords[1]);
-//    setLRMotorSpeed(NAV_TURN);
-//    Navigation.turnTo(-Navigation.turnAngle); //turn robot back to 0°
-//    
-//    // color localization before tunnel
-//    changeState(GameState.TUNNEL_LOC);
-//    setLRMotorSpeed(CS_TUNNEL_SPEED);
-//    colorTunnelLoc.localize(true); //boolean before = true
-//    
-//    //travel through tunnel
-//    //double backupDist = colorTunnelLoc.backedupDist;
-//    
-//    //TODO: Keep track of back up distance to fool proof tunnel localization (eg in case backs up one extra tile)
-//    
-//    changeState(GameState.TUNNEL);
-//    setLRMotorSpeed(TUNNEL_SPEED);
-//    Navigation.travelThroughTunnel();
-//    
-//    // color localization after tunnel
-//    changeState(GameState.TUNNEL_LOC);
-//    setLRMotorSpeed(CS_TUNNEL_SPEED);
-//    //colorTunnelLoc.localize(false); //boolean before = false -> after
-//    
-//    // navigation: travel to launch point
-//    changeState(GameState.NAVIGATION);
-//    Navigation.travelTo(bin.x - 1.0, bin.y - 1.5, 0);
-//    setLRMotorSpeed(NAV_TURN2);
-//    Navigation.turnTo(targetAngle); //turn to specified orientation
-//    beep(3);
-//    
-//    // throw balls
-//    changeState(GameState.LAUNCH);
-//    for (int i = 0; i<5; i++) {
-//      Launcher.launch();
-//    }
-//    beep(1);
+    // light localization
+    changeState(GameState.COLOR_LOC);
+    setLRMotorSpeed(CS_SPEED);
+    lightLoc.localize();
+    beep(3);
+    
+    //navigation: travel to tunnel
+    changeState(GameState.NAVIGATION);
+    Navigation.travelTo(tng.ll.x-0.15, tng.ll.y, 7);
+    //Navigation.travelTo(testCoords[0],testCoords[1]);
+    setLRMotorSpeed(NAV_TURN);
+    Navigation.turnTo(-Navigation.turnAngle); //turn robot back to 0°
+    
+    // light localization before tunnel
+    changeState(GameState.TUNNEL_LOC);
+    setLRMotorSpeed(CS_TUNNEL_SPEED);
+    lightTunnelLoc.localize(true); //boolean before = true
+    
+    //travel through tunnel
+    //double backupDist = lightTunnelLoc.backedupDist;
+    
+    //TODO: Keep track of back up distance to fool proof tunnel localization (eg in case backs up one extra tile)
+    
+    changeState(GameState.TUNNEL);
+    setLRMotorSpeed(TUNNEL_SPEED);
+    Navigation.travelThroughTunnel();
+    
+    // light localization after tunnel
+    changeState(GameState.TUNNEL_LOC);
+    setLRMotorSpeed(CS_TUNNEL_SPEED);
+    //lightTunnelLoc.localize(false); //boolean before = false -> after
+    
+    // navigation: travel to launch point
+    changeState(GameState.NAVIGATION);
+    Navigation.travelTo(bin.x - 1.0, bin.y - 1.5, 0);
+    setLRMotorSpeed(NAV_TURN2);
+    Navigation.turnTo(targetAngle); //turn to specified orientation
+    beep(3);
+    
+    // throw balls
+    changeState(GameState.LAUNCH);
+    for (int i = 0; i<5; i++) {
+      Launcher.launch();
+    }
+    
+    //travel back to tunnel
+    //TODO
+    
+    //localize
+    //TODO
+    
+    //travel through tunnel
+    //TODO
+    
+    //localize
+    //TODO
+    
+    // navigation: back to starting point
+    //TODO
+    //beep(5);
     
     
     //travel to ideal launch point while avoiding obstacles
@@ -172,64 +187,64 @@ public class GameController implements Runnable {
   public void changeState(GameState newState) {
     state = newState;
     ArrayList<USUser> currUSUsers = new ArrayList<USUser>();
-    ArrayList<ColorUser> currColorUsers = new ArrayList<ColorUser>();
+    ArrayList<LightUser> currLightUsers = new ArrayList<LightUser>();
     
     switch (state) { 
       case US_LOC:
         currUSUsers.add(USLoc);
         sensorCont.resumeUSPoller();
-        sensorCont.pauseColorPoller();
+        sensorCont.pauseLightPoller();
         break;
         
       case COLOR_LOC:
-        currColorUsers.add(colorLoc);
+        currLightUsers.add(lightLoc);
         sensorCont.pauseUSPoller();
-        sensorCont.resumeColorPoller();
+        sensorCont.resumeLightPoller();
         break;
         
       case NAVIGATION:
         currUSUsers.remove(USLoc);
-        currColorUsers.remove(colorLoc);
+        currLightUsers.remove(lightLoc);
         sensorCont.pauseUSPoller();
-        sensorCont.pauseColorPoller();
+        sensorCont.pauseLightPoller();
         break;
         
       case TUNNEL_LOC:
-        currColorUsers.add(colorTunnelLoc);
+        currLightUsers.add(lightTunnelLoc);
         sensorCont.pauseUSPoller();
-        sensorCont.resumeColorPoller();
+        sensorCont.resumeLightPoller();
         break;
         
       case NAV_WITH_OBSTACLE:
         currUSUsers.add(obAvoid);
         sensorCont.resumeUSPoller();
-        sensorCont.pauseColorPoller();
+        sensorCont.pauseLightPoller();
         break;
         
       case TUNNEL:
-        currColorUsers.remove(colorTunnelLoc);
+        currLightUsers.remove(lightTunnelLoc);
         sensorCont.pauseUSPoller();
-        sensorCont.pauseColorPoller();
+        sensorCont.pauseLightPoller();
         break;
         
       case LAUNCH:
         sensorCont.pauseUSPoller();
-        sensorCont.pauseColorPoller();
+        sensorCont.pauseLightPoller();
         break;
         
       case DONE:
         sensorCont.pauseUSPoller();
-        sensorCont.pauseColorPoller();
+        sensorCont.pauseLightPoller();
         break;
         
       case TEST:
         //TODO: change this as necessary for any test
         sensorCont.resumeUSPoller();
-        sensorCont.resumeColorPoller();
+        sensorCont.resumeLightPoller();
         break;
     }
     sensorCont.setCurrUSUsers(currUSUsers);
-    sensorCont.setCurrColorUsers(currColorUsers);
+    sensorCont.setCurrLightUsers(currLightUsers);
   }
   
 }

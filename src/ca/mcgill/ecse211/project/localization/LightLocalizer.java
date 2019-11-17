@@ -1,26 +1,26 @@
 package ca.mcgill.ecse211.project.localization;
 import static ca.mcgill.ecse211.project.game.Resources.*;
-import ca.mcgill.ecse211.project.sensor.ColorUser;
+import ca.mcgill.ecse211.project.sensor.LightUser;
 import static ca.mcgill.ecse211.project.game.Helper.*;
 
 
 /**
- * This class contains methods for color sensor localization
- * The robot uses two color sensors placed at each side at the back of its body 
+ * This class contains methods for light sensor localization
+ * The robot uses two light sensors placed at each side at the back of its body 
  * to read grid lines and correct its heading (angle) as necesary
  */
-public class ColorLocalizer implements ColorUser {
+public class LightLocalizer implements LightUser {
   private boolean localizing = false;
-  private double[] initialColor = new double[2];
+  private double[] initialLight = new double[2];
   private volatile boolean gotInitialSample = false;
   private volatile int step;
   private volatile double[]  offset = new double[2];
   private volatile boolean turnRight;
   private volatile boolean findingX;
-  private final double angleOffset = 8; //7 or y, turn less than 90 to better localize
+  private final double angleOffset = 5; //7 or y, turn less than 90 to better localize
   
   /**
-   * Method to begin color localization
+   * Method to begin light localization
    */
   public void localize() {
     //get xDistFromLine roughly
@@ -49,11 +49,11 @@ public class ColorLocalizer implements ColorUser {
   }
   
   /**
-   * Method to process color poller data
-   * Implemented from interface ColorUser
+   * Method to process light poller data
+   * Implemented from interface LightUser
    */
   @Override
-  public void processColorData(double[] color) {
+  public void processLightData(int[] light) {
     if (!localizing) {
       return;
     }
@@ -63,14 +63,14 @@ public class ColorLocalizer implements ColorUser {
       moveForward(5);
       moveBackward(3);
       
-      initialColor[0] = color[0];
-      initialColor[1] = color[1];
+      initialLight[0] = light[0];
+      initialLight[1] = light[1];
       moveForward();
       sleepFor(100);
       gotInitialSample = true; 
     }
     //find xDistFromLine roughly, no adjustments (to save time)
-    else if (findingX == true && (color[0]/initialColor[0] < COLOR_THRESHOLD_L || color[1]/initialColor[1] < COLOR_THRESHOLD_R)) {
+    else if (findingX == true && (light[0]/initialLight[0] < LIGHT_THRESHOLD_L || light[1]/initialLight[1] < LIGHT_THRESHOLD_R)) {
       stopMotors();
       double xDistFromLine = odometer.getXYT()[0];
       moveBackward(xDistFromLine + WHEEL_BASE*Math.sin(Math.PI*angleOffset/180)); //backup x more to compensate for angleOffset
@@ -78,7 +78,7 @@ public class ColorLocalizer implements ColorUser {
       localizing = false;
     }
     //for y, left sensor sees line and right doesn't
-    else if (color[0]/initialColor[0] < COLOR_THRESHOLD_L && color[1]/initialColor[1] > COLOR_THRESHOLD_R) {
+    else if (light[0]/initialLight[0] < LIGHT_THRESHOLD_L && light[1]/initialLight[1] > LIGHT_THRESHOLD_R) {
       switch(step) {
         case 0:
           stopMotors();
@@ -97,7 +97,7 @@ public class ColorLocalizer implements ColorUser {
       }
     }
     //for x, right sensor sees line and left doesn't
-    else if (color[0]/initialColor[0] > COLOR_THRESHOLD_L && color[1]/initialColor[1] < COLOR_THRESHOLD_R) {
+    else if (light[0]/initialLight[0] > LIGHT_THRESHOLD_L && light[1]/initialLight[1] < LIGHT_THRESHOLD_R) {
       switch (step) {
         case 0:
           stopMotors();
@@ -116,7 +116,7 @@ public class ColorLocalizer implements ColorUser {
       }
     }
     //both sensors see line at the same time
-    else if (color[0]/initialColor[0] < COLOR_THRESHOLD_L && color[1]/initialColor[1] < COLOR_THRESHOLD_R) {
+    else if (light[0]/initialLight[0] < LIGHT_THRESHOLD_L && light[1]/initialLight[1] < LIGHT_THRESHOLD_R) {
       stopMotors();
       offset[0] = 0;
       offset[1] = 0;

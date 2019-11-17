@@ -2,16 +2,16 @@ package ca.mcgill.ecse211.project.localization;
 
 import static ca.mcgill.ecse211.project.game.Resources.*;
 import static ca.mcgill.ecse211.project.game.WifiResources.*;
-import ca.mcgill.ecse211.project.sensor.ColorUser;
+import ca.mcgill.ecse211.project.sensor.LightUser;
 import static ca.mcgill.ecse211.project.game.Helper.*;
 
 /**
  * This class contains methods for localization before and after traversing a tunnel
  *
  */
-public class ColorTunnelLocalizer implements ColorUser {
+public class LightTunnelLocalizer implements LightUser {
   private boolean localizing = false;
-  private double[] initialColor = new double[2];
+  private double[] initialLight = new double[2];
   private volatile boolean gotInitialSample = false;
   private volatile int step;
   private volatile double[] offset = new double[2];
@@ -55,11 +55,11 @@ public class ColorTunnelLocalizer implements ColorUser {
   // }
 
   /**
-   * Method to process color Poller data
-   * Implemented from ColorUser
+   * Method to process light Poller data
+   * Implemented from LightUser
    */
   @Override
-  public void processColorData(double[] color) {
+  public void processLightData(int[] light) {
     if (!localizing) {
       return;
     }
@@ -69,8 +69,8 @@ public class ColorTunnelLocalizer implements ColorUser {
       setLRMotorSpeed(CS_TUNNEL_SPEED);
       moveForward(5);
       moveBackward(2);
-      initialColor[0] = color[0];
-      initialColor[1] = color[1];
+      initialLight[0] = light[0];
+      initialLight[1] = light[1];
       
 //      if (before) {
 //        moveBackward();
@@ -84,7 +84,7 @@ public class ColorTunnelLocalizer implements ColorUser {
       gotInitialSample = true; 
     }
   //for y, left sensor sees line and right doesn't
-    else if (color[0]/initialColor[0] < COLOR_THRESHOLD_L && color[1]/initialColor[1] > COLOR_THRESHOLD_R) {
+    else if (light[0]/initialLight[0] < LIGHT_THRESHOLD_L && light[1]/initialLight[1] > LIGHT_THRESHOLD_R) {
       switch(step) {
         case 0:
           stopMotors();
@@ -111,7 +111,7 @@ public class ColorTunnelLocalizer implements ColorUser {
       }
     }
     //for x, right sensor sees line and left doesn't
-    else if (color[0]/initialColor[0] > COLOR_THRESHOLD_L && color[1]/initialColor[1] < COLOR_THRESHOLD_R) {
+    else if (light[0]/initialLight[0] > LIGHT_THRESHOLD_L && light[1]/initialLight[1] < LIGHT_THRESHOLD_R) {
       switch (step) {
         case 0:
           stopMotors();
@@ -138,7 +138,7 @@ public class ColorTunnelLocalizer implements ColorUser {
       }
     }
     //both sensors see line at the same time
-    else if (color[0]/initialColor[0] < COLOR_THRESHOLD_L && color[1]/initialColor[1] < COLOR_THRESHOLD_R) {
+    else if (light[0]/initialLight[0] < LIGHT_THRESHOLD_L && light[1]/initialLight[1] < LIGHT_THRESHOLD_R) {
       stopMotors();
       offset[0] = 0;
       offset[1] = 0;

@@ -4,43 +4,43 @@ import java.util.ArrayList;
 import ca.mcgill.ecse211.project.sensor.*;
 
 /**
- * This class contains methods that controls the ultrasonic and color sensors
+ * This class contains methods that controls the ultrasonic and light sensors
  *
  */
 public class SensorController {
   private static SensorController sensorCont = null;
-  private ColorPoller colorPoll;
+  private LightPoller lightPoll;
   private USPoller usPoll;
   
-  // array lists to hold the current US and color users, should be two each
+  // array lists to hold the current US and light users, should be two each
   private ArrayList<USUser> currUSUsers = new ArrayList<USUser>();
-  private ArrayList<ColorUser> currColorUsers = new ArrayList<ColorUser>();
+  private ArrayList<LightUser> currLightUsers = new ArrayList<LightUser>();
   
   /**
    * Private SensorController constructor
    * @param usPoll
-   * @param colorPoll
+   * @param lightPoll
    */
-  private SensorController(USPoller usPoll, ColorPoller colorPoll) {
+  private SensorController(USPoller usPoll, LightPoller lightPoll) {
     this.usPoll = usPoll;
-    this.colorPoll = colorPoll;
+    this.lightPoll = lightPoll;
     this.usPoll.sensorCont = this;
-    this.colorPoll.sensorCont = this;
+    this.lightPoll.sensorCont = this;
   }
   
   /**
    * Synchronized method used to only allow the next sensor thread to enter after the previous has completed
    * This prevents problems such as the game actions beginning before the localization completes
    * @param usPoll
-   * @param colorPoll
+   * @param lightPoll
    * @return SensorController object
    */
-  public synchronized static SensorController getSensorController(USPoller usPoll, ColorPoller colorPoll) {
+  public synchronized static SensorController getSensorController(USPoller usPoll, LightPoller lightPoll) {
     if (sensorCont != null) {
       return sensorCont;
     }
     else {
-      sensorCont = new SensorController(usPoll, colorPoll);
+      sensorCont = new SensorController(usPoll, lightPoll);
       return sensorCont;
     }
   }
@@ -74,17 +74,17 @@ public class SensorController {
   }
   
   /**
-   * Pause Color Poller
+   * Pause Light Poller
    */
-  public void pauseColorPoller() {
-    colorPoll.running = false;
+  public void pauseLightPoller() {
+    lightPoll.running = false;
   }
   
   /**
-   * Resume Color Poller
+   * Resume Light Poller
    */
-  public void resumeColorPoller() {
-    colorPoll.running = true;
+  public void resumeLightPoller() {
+    lightPoll.running = true;
   }
   
   
@@ -97,11 +97,11 @@ public class SensorController {
   }
   
   /**
-   * Add a colorUser to the currColorUsers list
-   * @param currColorUsers
+   * Add a lightUser to the currLightUsers list
+   * @param currLightUsers
    */
-  public void setCurrColorUsers (ArrayList<ColorUser> currColorUsers) {
-    this.currColorUsers = currColorUsers;
+  public void setCurrLightUsers (ArrayList<LightUser> currLightUsers) {
+    this.currLightUsers = currLightUsers;
   }
   
   /**
@@ -115,12 +115,12 @@ public class SensorController {
   }
   
   /**
-   * Set color for all color sensor users
-   * @param colorArray
+   * Set light for all light sensor users
+   * @param lightArray
    */
-  public void setColor(double[] colors) { 
-    for(ColorUser user : currColorUsers) {
-      user.processColorData(colors);
+  public void setLight(int[] lights) { 
+    for(LightUser user : currLightUsers) {
+      user.processLightData(lights);
     }
   }
 

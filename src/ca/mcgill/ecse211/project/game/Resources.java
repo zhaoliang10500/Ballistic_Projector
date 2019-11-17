@@ -1,7 +1,6 @@
 package ca.mcgill.ecse211.project.game;
 
 import ca.mcgill.ecse211.project.odometry.Odometer;
-import lejos.hardware.Button;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
@@ -22,8 +21,8 @@ public class Resources {
   
   //Sensors
   public static final EV3UltrasonicSensor US_SENSOR = new EV3UltrasonicSensor(SensorPort.S3);
-  public static final EV3ColorSensor COLOR_SENSOR_L = new EV3ColorSensor(SensorPort.S1);
-  public static final EV3ColorSensor COLOR_SENSOR_R = new EV3ColorSensor(SensorPort.S4);
+  public static final EV3ColorSensor LIGHT_SENSOR_L = new EV3ColorSensor(SensorPort.S1);
+  public static final EV3ColorSensor LIGHT_SENSOR_R = new EV3ColorSensor(SensorPort.S4);
   
   // Odometer
   public static Odometer odometer = Odometer.getOdometer();
@@ -47,9 +46,9 @@ public class Resources {
   public static final int FALL_THRESHOLD = 25; //25
   public static final int FALL_ANGLE = 45; //45
   
-  //ColorLocalizer
-  public static final double COLOR_THRESHOLD_R = 0.55; //0.55
-  public static final double COLOR_THRESHOLD_L = 0.58; //0.60
+  //LightLocalizer
+  public static final double LIGHT_THRESHOLD_R = 0.55; //0.55
+  public static final double LIGHT_THRESHOLD_L = 0.58; //0.60
   
   public static final double CS_DISTANCE = 12; // sensor distance from center of rotation
   public static final int CS_SPEED = 120; //70
