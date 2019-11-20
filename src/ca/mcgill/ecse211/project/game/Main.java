@@ -14,7 +14,11 @@ import ca.mcgill.ecse211.project.odometry.*;
  *
  */
 public class Main {
-
+  //TODO: ReadMe in documentation
+  //TODO: record videos of robot for presentation
+  //TODO: debreif document put questions in, record data of sucess/failure during competition
+  
+  
   /**
    * Program entry point
    * @param args WiFi input parameters
@@ -37,11 +41,14 @@ public class Main {
     
     USLocalizer USLoc = new USLocalizer();
     LightLocalizer lightLoc = new LightLocalizer();
-    LightTunnelLocalizer lightTunnelLoc = new LightTunnelLocalizer();
-    OdometryCorrection odoCorrect = new OdometryCorrection();
-    ObstacleAvoidance obAvoid = new ObstacleAvoidance();
+    LightTunnelLocalizer lightTunnelLoc1 = new LightTunnelLocalizer();
+    LightTunnelLocalizer lightTunnelLoc2 = new LightTunnelLocalizer();
+    LightTunnelLocalizer lightTunnelLoc3 = new LightTunnelLocalizer();
+    LightTunnelLocalizer lightTunnelLoc4 = new LightTunnelLocalizer();
+    ObstacleAvoidance obAvoid1 = new ObstacleAvoidance();
+    ObstacleAvoidance obAvoid2 = new ObstacleAvoidance();
     
-    GameController gameControl = new GameController(sensorControl, USLoc, lightLoc, lightTunnelLoc, odoCorrect, obAvoid);
+    GameController gameControl = new GameController(sensorControl, USLoc, lightLoc, lightTunnelLoc1, lightTunnelLoc2, lightTunnelLoc3, lightTunnelLoc4, obAvoid1, obAvoid2);
     //TODO: obstacle avoidance might not work this way
     
     Thread odoThread = new Thread(odometer); //odometer created in Resources
@@ -53,15 +60,17 @@ public class Main {
     //Get parameters from WiFi class
     //Server file included now in project, cd to the jar (java -jar EV3WifiServer.jar)
     //Make sure to change the SERVER_IP in WifiResources to your that of your computer (hostname -I)
-    WiFi.wifi();
+//    WiFi.wifi();
+//    
+//    if (WiFi.recievedParameters) {
+//      LCD.clear();
+//      odoThread.start();
+//      USThread.start();
+//      lightThread.start();
+//      gameThread.start();
+//    }
     
-    if (WiFi.recievedParameters) {
-      LCD.clear();
-      odoThread.start();
-      USThread.start();
-      lightThread.start();
-      gameThread.start();
-    }
+    WiFi.wifi();
     
 //    LCD.clear();
 //    odoThread.start();

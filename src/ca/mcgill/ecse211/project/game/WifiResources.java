@@ -12,19 +12,19 @@ import java.util.Map;
  * 
  * @author Younes Boubekeur
  */
-public class WifiResources{
+public class WifiResources {
   
   // Set these as appropriate for your team and current situation
   /**
    * The default server IP used by the profs and TA's.
    */
-  public static final String DEFAULT_SERVER_IP = "192.168.2.53";
+  public static final String DEFAULT_SERVER_IP = "192.168.2.3";
   
   /**
    * The IP address of the server that transmits data to the robot. Set this to the default for the
    * beta demo and competition.
    */
-  public static final String SERVER_IP = "192.168.2.53";
+  public static final String SERVER_IP = "192.168.2.110";
   
   /**
    * Your team number.
@@ -40,6 +40,10 @@ public class WifiResources{
    * Enable this to attempt to receive Wi-Fi parameters at the start of the program.
    */
   public static final boolean RECEIVE_WIFI_PARAMS = true;
+  
+  // DECLARE YOUR CURRENT RESOURCES HERE
+  // eg, motors, sensors, constants, etc
+  //////////////////////////////////////
   
   /**
    * Container for the Wi-Fi parameters.
@@ -90,17 +94,24 @@ public class WifiResources{
   /**
    * The red tunnel footprint.
    */
- // public static Region tnr = new Region("TNR_LL_x", "TNR_LL_y", "TNR_UR_x", "TNR_UR_y");
-   public static double targetAngle = Math.max(get("TNR_LL_x"), get("TNR_UR_x"));
+  public static Region tnr = new Region("TNR_LL_x", "TNR_LL_y", "TNR_UR_x", "TNR_UR_y");
+  
+  //public static double targetTheta = Math.max(get("TNR_LL_x"), get("TNR_UR_x")); // only for beta
+
   /**
    * The green tunnel footprint.
    */
   public static Region tng = new Region("TNG_LL_x", "TNG_LL_y", "TNG_UR_x", "TNG_UR_y");
 
   /**
-   * The location of the target bin.
+   * The location of the red target bin.
    */
-  public static Point bin = new Point(get("BIN_x"), get("BIN_y"));
+  public static Point redBin = new Point(get("Red_BIN_x"), get("Red_BIN_y"));
+
+  /**
+   * The location of the green target bin.
+   */
+  public static Point greenBin = new Point(get("Green_BIN_x"), get("Green_BIN_y"));
   
   /**
    * Receives Wi-Fi parameters from the server program.
