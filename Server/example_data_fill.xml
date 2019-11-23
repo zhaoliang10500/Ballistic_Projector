@@ -1,6 +1,6 @@
 <xml>
-  <value key="RedTeam"></value>
-  <value key="RedCorner"></value>
+  <value key="RedTeam">1</value>
+  <value key="RedCorner">3</value>
 
   <value key="GreenTeam">3</value>
   <value key="GreenCorner">1</value>
