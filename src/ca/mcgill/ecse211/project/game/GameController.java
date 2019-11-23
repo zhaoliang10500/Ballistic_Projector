@@ -20,43 +20,53 @@ import static ca.mcgill.ecse211.project.game.WifiResources.*;
 public class GameController implements Runnable {
   private SensorController sensorCont;
   private USLocalizer USLoc;
-  private ColorLocalizer colorLoc;
-  private ColorTunnelLocalizer colorTunnelLoc;
-  private OdometryCorrection odoCorrect;
-  private ObstacleAvoidance obAvoid;
+  private LightLocalizer lightLoc;
+  private LightTunnelLocalizer lightTunnelLoc1, lightTunnelLoc2, lightTunnelLoc3, lightTunnelLoc4;
+  private ObstacleAvoidance obAvoid1, obAvoid2;
   private final int[] testCoords = {4,3};
   public static GameState state;
+  public volatile ArrayList<USUser> currUSUsers = new ArrayList<USUser>();
+  public volatile ArrayList<LightUser> currLightUsers = new ArrayList<LightUser>();
   
   /**
    * Constructor for the GameController class
    * @param sensorCont The sensor controller
    * @param USLoc The ultrasonic localizer
-   * @param colorLoc The color localizer
-   * @paran colorTunnelLoc The color localizer for localizing before and after a tunnel
+   * @param lightLoc The light localizer
+   * @paran lightTunnelLoc The light localizer for localizing before and after a tunnel
    * @param odoCorrect The odometer correction 
    * @param obAvoid The obstacle avoidance
    */
-  public GameController (SensorController sensorCont, USLocalizer USLoc, ColorLocalizer colorLoc, 
-                         ColorTunnelLocalizer colorTunnelLoc, OdometryCorrection odoCorrect, ObstacleAvoidance obAvoid) {
+  public GameController (SensorController sensorCont, USLocalizer USLoc, LightLocalizer lightLoc, 
+                         LightTunnelLocalizer lightTunnelLoc1, LightTunnelLocalizer lightTunnelLoc2, 
+                         LightTunnelLocalizer lightTunnelLoc3, LightTunnelLocalizer lightTunnelLoc4,
+                         ObstacleAvoidance obAvoid1, ObstacleAvoidance obAvoid2) {
     this.sensorCont = sensorCont;
     this.USLoc = USLoc;
-    this.colorLoc = colorLoc;
-    this.colorTunnelLoc = colorTunnelLoc;
-    this.odoCorrect = odoCorrect;
-    this.obAvoid = obAvoid;
+    this.lightLoc = lightLoc;
+    this.lightTunnelLoc1 = lightTunnelLoc1;
+    this.lightTunnelLoc2 = lightTunnelLoc2;
+    this.lightTunnelLoc3 = lightTunnelLoc3;
+    this.lightTunnelLoc4 = lightTunnelLoc4;
+    this.obAvoid1 = obAvoid1;
+    this.obAvoid2 = obAvoid2;
   }
   
   /**
    * Enum used to define game states
-   * Each state turns on/off the ultrasonic poller and the color poller
+   * Each state turns on/off the ultrasonic poller and the light poller
    *
    */
   public enum GameState {
     US_LOC,
     COLOR_LOC,
     NAVIGATION,
-    TUNNEL_LOC,
-    NAV_WITH_OBSTACLE,
+    TUNNEL_LOC1,
+    TUNNEL_LOC2,
+    TUNNEL_LOC3,
+    TUNNEL_LOC4,
+    NAV_WITH_OBSTACLE1,
+    NAV_WITH_OBSTACLE2,
     TUNNEL,
     LAUNCH,
     DONE,
@@ -81,26 +91,33 @@ public class GameController implements Runnable {
     setLRMotorSpeed(US_SPEED);
     USLoc.localize();
     
-//    // color localization
-//    changeState(GameState.COLOR_LOC);
-//    setLRMotorSpeed(CS_SPEED);
-//    colorLoc.localize();
-//    beep(1);
-//    
-//    //navigation: travel to tunnel
-//    changeState(GameState.NAVIGATION);
-//    Navigation.travelTo(tng.ll.x-0.15, tng.ll.y, 7);
-//    //Navigation.travelTo(testCoords[0],testCoords[1]);
-//    setLRMotorSpeed(NAV_TURN);
-//    Navigation.turnTo(-Navigation.turnAngle); //turn robot back to 0°
-//    
-//    // color localization before tunnel
-//    changeState(GameState.TUNNEL_LOC);
+    // light localization
+    changeState(GameState.COLOR_LOC);
+    setLRMotorSpeed(CS_SPEED);
+    lightLoc.localize();
+    beep(3);
+    
+    //navigation: travel to tunnel
+    changeState(GameState.NAVIGATION);
+    Navigation.travelTo(WiFi.TUNNEL_LL.x, WiFi.TUNNEL_LL.y, 0);
+    //Navigation.travelTo(tng.ll.x-0.15, tng.ll.y, 7);
+    //Navigation.travelTo(testCoords[0],testCoords[1]);
+    //setLRMotorSpeed(NAV_TURN);
+    if (WiFi.TUNNEL_LL.x + 1 == WiFi.TUNNEL_UR.x) {//vertical tunnel = turn left to enter tunnel straight
+      Navigation.turnTo(-Navigation.turnAngle); //turn left
+    }
+    else if (WiFi.TUNNEL_LL.x + 2 == WiFi.TUNNEL_UR.x) { //horizontal tunnel = turn right to enter tunnel straight
+      Navigation.turnTo(90-Navigation.turnAngle); //turn right
+    }
+      
+    
+//    // light localization before tunnel
+//    changeState(GameState.TUNNEL_LOC1);
 //    setLRMotorSpeed(CS_TUNNEL_SPEED);
-//    colorTunnelLoc.localize(true); //boolean before = true
+//    lightTunnelLoc1.localize(true); //boolean before = true
 //    
 //    //travel through tunnel
-//    //double backupDist = colorTunnelLoc.backedupDist;
+//    //double backupDist = lightTunnelLoc.backedupDist;
 //    
 //    //TODO: Keep track of back up distance to fool proof tunnel localization (eg in case backs up one extra tile)
 //    
@@ -108,11 +125,11 @@ public class GameController implements Runnable {
 //    setLRMotorSpeed(TUNNEL_SPEED);
 //    Navigation.travelThroughTunnel();
 //    
-//    // color localization after tunnel
-//    changeState(GameState.TUNNEL_LOC);
+//    // light localization after tunnel
+//    changeState(GameState.TUNNEL_LOC2);
 //    setLRMotorSpeed(CS_TUNNEL_SPEED);
-//    //colorTunnelLoc.localize(false); //boolean before = false -> after
-//    
+//    lightTunnelLoc2.localize(false); //boolean before = false -> after
+    
 //    // navigation: travel to launch point
 //    changeState(GameState.NAVIGATION);
 //    Navigation.travelTo(bin.x - 1.0, bin.y - 1.5, 0);
@@ -125,7 +142,22 @@ public class GameController implements Runnable {
 //    for (int i = 0; i<5; i++) {
 //      Launcher.launch();
 //    }
-//    beep(1);
+    
+    //travel back to tunnel
+    //TODO
+    
+    //localize
+    //TODO
+    
+    //travel through tunnel
+    //TODO
+    
+    //localize
+    //TODO
+    
+    // navigation: back to starting point
+    //TODO
+    //beep(5);
     
     
     //travel to ideal launch point while avoiding obstacles
@@ -171,65 +203,90 @@ public class GameController implements Runnable {
    */
   public void changeState(GameState newState) {
     state = newState;
-    ArrayList<USUser> currUSUsers = new ArrayList<USUser>();
-    ArrayList<ColorUser> currColorUsers = new ArrayList<ColorUser>();
     
     switch (state) { 
       case US_LOC:
         currUSUsers.add(USLoc);
         sensorCont.resumeUSPoller();
-        sensorCont.pauseColorPoller();
+        sensorCont.pauseLightPoller();
         break;
         
       case COLOR_LOC:
-        currColorUsers.add(colorLoc);
+        currLightUsers.add(lightLoc);
         sensorCont.pauseUSPoller();
-        sensorCont.resumeColorPoller();
+        sensorCont.resumeLightPoller();
         break;
         
       case NAVIGATION:
         currUSUsers.remove(USLoc);
-        currColorUsers.remove(colorLoc);
+        currLightUsers.remove(lightLoc);
         sensorCont.pauseUSPoller();
-        sensorCont.pauseColorPoller();
+        sensorCont.pauseLightPoller();
         break;
         
-      case TUNNEL_LOC:
-        currColorUsers.add(colorTunnelLoc);
+      case TUNNEL_LOC1:
+        currLightUsers.add(lightTunnelLoc1);
         sensorCont.pauseUSPoller();
-        sensorCont.resumeColorPoller();
+        sensorCont.resumeLightPoller();
+        break;
+      
+      case TUNNEL_LOC2:
+        currLightUsers.remove(lightTunnelLoc1);
+        currLightUsers.add(lightTunnelLoc2);
+        sensorCont.pauseUSPoller();
+        sensorCont.resumeLightPoller();
+        break;
+      
+      case TUNNEL_LOC3:
+        currLightUsers.remove(lightTunnelLoc2);
+        currLightUsers.add(lightTunnelLoc3);
+        sensorCont.pauseUSPoller();
+        sensorCont.resumeLightPoller();
         break;
         
-      case NAV_WITH_OBSTACLE:
-        currUSUsers.add(obAvoid);
+      case TUNNEL_LOC4:
+        currLightUsers.remove(lightTunnelLoc3);
+        currLightUsers.add(lightTunnelLoc4);
+        sensorCont.pauseUSPoller();
+        sensorCont.resumeLightPoller();
+        break;
+        
+      case NAV_WITH_OBSTACLE1:
+        currUSUsers.add(obAvoid1);
         sensorCont.resumeUSPoller();
-        sensorCont.pauseColorPoller();
+        sensorCont.pauseLightPoller();
         break;
-        
+      
+      case NAV_WITH_OBSTACLE2:
+        currUSUsers.remove(obAvoid1);
+        currUSUsers.add(obAvoid2);
+        sensorCont.resumeUSPoller();
+        sensorCont.pauseLightPoller();
+        break;
+
       case TUNNEL:
-        currColorUsers.remove(colorTunnelLoc);
         sensorCont.pauseUSPoller();
-        sensorCont.pauseColorPoller();
+        sensorCont.pauseLightPoller();
         break;
         
       case LAUNCH:
         sensorCont.pauseUSPoller();
-        sensorCont.pauseColorPoller();
+        sensorCont.pauseLightPoller();
         break;
         
       case DONE:
         sensorCont.pauseUSPoller();
-        sensorCont.pauseColorPoller();
+        sensorCont.pauseLightPoller();
         break;
         
       case TEST:
         //TODO: change this as necessary for any test
         sensorCont.resumeUSPoller();
-        sensorCont.resumeColorPoller();
+        sensorCont.resumeLightPoller();
         break;
     }
     sensorCont.setCurrUSUsers(currUSUsers);
-    sensorCont.setCurrColorUsers(currColorUsers);
+    sensorCont.setCurrLightUsers(currLightUsers);
   }
   
 }

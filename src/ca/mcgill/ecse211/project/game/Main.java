@@ -2,10 +2,12 @@ package ca.mcgill.ecse211.project.game;
 
 import lejos.robotics.SampleProvider;
 import lejos.hardware.Button;
+import static ca.mcgill.ecse211.project.game.Helper.sleepFor;
 import static ca.mcgill.ecse211.project.game.Resources.*;
 import ca.mcgill.ecse211.project.localization.*;
 import ca.mcgill.ecse211.project.sensor.*;
 import ca.mcgill.ecse211.project.odometry.*;
+import static ca.mcgill.ecse211.project.game.WifiResources.GOT_WIFI_PARAMS;
 
 /**
  * This class contains the main method of the program.
@@ -57,21 +59,22 @@ public class Main {
     //TODO: might have to implement odometry correction inside odometer, currently it is separate
     Thread gameThread = new Thread(gameControl);
     
+    //start threads
+    odoThread.start();
+    USThread.start();
+    lightThread.start();
+    
     //Get parameters from WiFi class
     //Server file included now in project, cd to the jar (java -jar EV3WifiServer.jar)
     //Make sure to change the SERVER_IP in WifiResources to your that of your computer (hostname -I)
-//    WiFi.wifi();
-//    
-//    if (WiFi.recievedParameters) {
-//      LCD.clear();
-//      odoThread.start();
-//      USThread.start();
-//      lightThread.start();
-//      gameThread.start();
-//    }
+    WiFi.wifi(); //inside WiFi, sleeps for 2sec to wait for above threads to start
     
-    WiFi.wifi();
+    if (GOT_WIFI_PARAMS) {
+      //wait for odometer thread to start
+      gameThread.start();
+    }
     
+
 //    LCD.clear();
 //    odoThread.start();
 //    USThread.start();

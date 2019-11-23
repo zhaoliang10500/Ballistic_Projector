@@ -1,6 +1,7 @@
 package ca.mcgill.ecse211.project.game;
 
 import ca.mcgill.ecse211.wificlient.WifiConnection;
+import lejos.hardware.lcd.LCD;
 import java.math.BigDecimal;
 import java.util.Map;
 
@@ -31,10 +32,11 @@ public class WifiResources {
    */
   public static final int TEAM_NUMBER = 12;
   
+  public static boolean GOT_WIFI_PARAMS = false;
   /** 
    * Enables printing of debug info from the WiFi class. 
    */
-  public static final boolean ENABLE_DEBUG_WIFI_PRINT = true;
+  public static final boolean ENABLE_DEBUG_WIFI_PRINT = false;
   
   /**
    * Enable this to attempt to receive Wi-Fi parameters at the start of the program.
@@ -121,7 +123,7 @@ public class WifiResources {
     if (!RECEIVE_WIFI_PARAMS || wifiParameters != null) {
       return;
     }
-    System.out.println("Waiting to receive Wi-Fi parameters.");
+    LCD.drawString("Waiting to receive Wi-Fi parameters.", 0, 0);
 
     // Connect to server and get the data, catching any errors that might occur
     try (WifiConnection conn =
@@ -138,6 +140,8 @@ public class WifiResources {
        * an exception letting you know.
        */
       wifiParameters = conn.getData();
+      GOT_WIFI_PARAMS = true;
+      LCD.clear();
     } catch (Exception e) {
       System.err.println("Error: " + e.getMessage());
     }

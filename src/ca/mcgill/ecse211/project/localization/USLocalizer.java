@@ -30,8 +30,6 @@ public class USLocalizer implements USUser {
    * Method to begin US localization
    */
   public void localize() { 
-    //wait for odometer thread to start
-    sleepFor(1000);
 
     localizing = true;
     step = 0;

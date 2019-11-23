@@ -2,6 +2,8 @@ package ca.mcgill.ecse211.project.localization;
 import static ca.mcgill.ecse211.project.game.Resources.*;
 import ca.mcgill.ecse211.project.sensor.LightUser;
 import static ca.mcgill.ecse211.project.game.Helper.*;
+import static ca.mcgill.ecse211.project.game.WiFi.*;
+import ca.mcgill.ecse211.project.game.WiFi;
 
 
 /**
@@ -45,7 +47,18 @@ public class LightLocalizer implements LightUser {
     double yDistFromLine = odometer.getXYT()[1];
     moveBackward(yDistFromLine);
     
-    odometer.setXYT(TILE_SIZE, TILE_SIZE, 0);
+    if (WiFi.CORNER == 0) {
+      odometer.setXYT(TILE_SIZE, TILE_SIZE, 0);
+    }
+    else if (WiFi.CORNER == 1) {
+      odometer.setXYT(14*TILE_SIZE, TILE_SIZE, 270);
+    }
+    else if (WiFi.CORNER == 2) {
+      odometer.setXYT(14*TILE_SIZE, 8*TILE_SIZE, 180);
+    }
+    else if (WiFi.CORNER == 3) {
+      odometer.setXYT(TILE_SIZE, 8*TILE_SIZE, 90);
+    }
   }
   
   /**
