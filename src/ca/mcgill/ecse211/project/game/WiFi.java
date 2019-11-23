@@ -29,7 +29,6 @@ public class WiFi {
   public static void wifi() {
     //System.out.println("Map:\n" + wifiParameters);
     //recievedParameters = true;  
-    sleepFor(2000); //for for odometer, us, light thread to start
     
     ISLAND_LL = island.ll;
     ISLAND_UR = island.ur;

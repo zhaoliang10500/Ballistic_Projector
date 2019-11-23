@@ -69,7 +69,6 @@ public class GameController implements Runnable {
     NAV_WITH_OBSTACLE2,
     TUNNEL,
     LAUNCH,
-    DONE,
     TEST
   }
   
@@ -93,98 +92,246 @@ public class GameController implements Runnable {
     
     // light localization
     changeState(GameState.COLOR_LOC);
-    setLRMotorSpeed(CS_SPEED);
+    //setLRMotorSpeed(LS_SPEED);
     lightLoc.localize();
     beep(3);
     
-    //navigation: travel to tunnel
+    //Travel to tunnel and face it
     changeState(GameState.NAVIGATION);
-    Navigation.travelTo(WiFi.TUNNEL_LL.x, WiFi.TUNNEL_LL.y, 0);
-    //Navigation.travelTo(tng.ll.x-0.15, tng.ll.y, 7);
-    //Navigation.travelTo(testCoords[0],testCoords[1]);
-    //setLRMotorSpeed(NAV_TURN);
-    if (WiFi.TUNNEL_LL.x + 1 == WiFi.TUNNEL_UR.x) {//vertical tunnel = turn left to enter tunnel straight
-      Navigation.turnTo(-Navigation.turnAngle); //turn left
-    }
-    else if (WiFi.TUNNEL_LL.x + 2 == WiFi.TUNNEL_UR.x) { //horizontal tunnel = turn right to enter tunnel straight
-      Navigation.turnTo(90-Navigation.turnAngle); //turn right
-    }
-      
+    travelToTunnel(calcTunnelCoords(), WiFi.CORNER);
+    straighten(WiFi.CORNER);
     
-//    // light localization before tunnel
-//    changeState(GameState.TUNNEL_LOC1);
-//    setLRMotorSpeed(CS_TUNNEL_SPEED);
-//    lightTunnelLoc1.localize(true); //boolean before = true
-//    
-//    //travel through tunnel
-//    //double backupDist = lightTunnelLoc.backedupDist;
-//    
-//    //TODO: Keep track of back up distance to fool proof tunnel localization (eg in case backs up one extra tile)
-//    
-//    changeState(GameState.TUNNEL);
-//    setLRMotorSpeed(TUNNEL_SPEED);
-//    Navigation.travelThroughTunnel();
-//    
-//    // light localization after tunnel
-//    changeState(GameState.TUNNEL_LOC2);
-//    setLRMotorSpeed(CS_TUNNEL_SPEED);
-//    lightTunnelLoc2.localize(false); //boolean before = false -> after
+    // light localization before tunnel
+    //TODO: tunnel localizer doesn't turn properly...maybe thresholds are wrong?//////////////////////////////////////
+    changeState(GameState.TUNNEL_LOC1);
+    setLRMotorSpeed(LS_TUNNEL_SPEED);
+    lightTunnelLoc1.localize(true); //boolean before = true
+
+    changeState(GameState.TUNNEL);
+    setLRMotorSpeed(TUNNEL_SPEED);
+    Navigation.travelThroughTunnel();
     
-//    // navigation: travel to launch point
-//    changeState(GameState.NAVIGATION);
-//    Navigation.travelTo(bin.x - 1.0, bin.y - 1.5, 0);
-//    setLRMotorSpeed(NAV_TURN2);
-//    Navigation.turnTo(targetAngle); //turn to specified orientation
-//    beep(3);
-//    
-//    // throw balls
-//    changeState(GameState.LAUNCH);
-//    for (int i = 0; i<5; i++) {
-//      Launcher.launch();
-//    }
+    // light localization after tunnel
+    changeState(GameState.TUNNEL_LOC2);
+    setLRMotorSpeed(LS_TUNNEL_SPEED);
+    lightTunnelLoc2.localize(false); //boolean before = false -> after
     
-    //travel back to tunnel
-    //TODO
-    
-    //localize
-    //TODO
-    
-    //travel through tunnel
-    //TODO
-    
-    //localize
-    //TODO
-    
-    // navigation: back to starting point
-    //TODO
-    //beep(5);
-    
-    
-    //travel to ideal launch point while avoiding obstacles
-    /*changeState(GameState.NAV_WITH_OBSTACLE);
-    //TODO: navigate to ideal launch point
+    // navigation: travel to launch point
+    changeState(GameState.NAVIGATION);
+    //TODO: this travels for a longer distance than it's suppose to///////////////////
+    Navigation.travelTo(WiFi.BIN.x, WiFi.BIN.y, 0, true);
     beep(3);
     
-    //throw balls
+    // throw balls
     changeState(GameState.LAUNCH);
-    for (int i = 0; i< 5; i++) {
+    for (int i = 0; i<5; i++) {
       Launcher.launch();
     }
     
-    //travel back to tunnel
-    changeState(GameState.NAV_WITH_OBSTACLE);
-    //TODO: navigate back to tunnel with obstacle avoidance
+    sleepFor(25000);
+    /////////////////////////////////////////////////////////////////////////
     
-    //travel through tunnel
-    changeState(GameState.TUNNEL);
-    //TODO: navigate through tunnel
-    
-    //travel back to starting grid
+    // travel back to tunnel and face it
     changeState(GameState.NAVIGATION);
-    //TODO: navigate back to starting grid
+    int currCorner = calcCurrCorner();
+    travelToTunnel(calcTunnelCoords(), currCorner);
+    straighten(currCorner);
     
-    changeState(GameState.DONE);
-    beep(5);*/
+    // light localization before tunnel
+    changeState(GameState.TUNNEL_LOC3);
+    setLRMotorSpeed(LS_TUNNEL_SPEED);
+    lightTunnelLoc3.localize(true); //boolean before = true
+
+    changeState(GameState.TUNNEL);
+    setLRMotorSpeed(TUNNEL_SPEED);
+    Navigation.travelThroughTunnel();
+    
+    // light localization after tunnel
+    changeState(GameState.TUNNEL_LOC4);
+    setLRMotorSpeed(LS_TUNNEL_SPEED);
+    lightTunnelLoc4.localize(false); //boolean before = false -> after
+    
+    // travel back to starting position
+    changeState(GameState.NAVIGATION);
+    double[] initialXY = calcInitialPos();
+    //TODO: this keeps moving, not right ////////////////////////////////////////////
+    Navigation.travelTo(initialXY[0], initialXY[1], 0, false);
+    beep(5);
+    
+  }
+  
+  /**
+   * Straightens the robot to face the tunnel entrance 
+   * based on the robot's current corner relative to the tunnel
+   * @param currCorner
+   */
+  public void straighten(int currCorner) {
+    if (tunnelOrientation() == 1) { //vertical tunnel
+      if (currCorner == 0 || currCorner == 1) {
+        Navigation.turnToFace(0);
+      }
+      else if (currCorner == 2 || currCorner == 3) {
+        Navigation.turnToFace(180);
+      }
+    }
+    else if (tunnelOrientation() == 2) { //horizontal tunnel
+      if (currCorner == 0 || currCorner == 3) {
+        Navigation.turnToFace(90);
+      }
+      else if (currCorner == 1 || currCorner == 2) {
+        Navigation.turnToFace(270);
+      }
+    }
+  }
+  
+  /**
+   * Method to calculate tunnel orientation
+   * @return
+   */
+  public int tunnelOrientation() {
+    int orientation = -1;
+    if (WiFi.TUNNEL_LL.x + 1 == WiFi.TUNNEL_UR.x) { //vertical tunnel
+      orientation = 1;
+    }
+    else if (WiFi.TUNNEL_LL.x + 2 == WiFi.TUNNEL_UR.x) { //horizontal tunnel
+      orientation = 2;
+    }
+    return orientation;
+  }
+  
+  /**
+   * Calculates the closest tunnel entrance coordinates
+   * @return
+   */
+  public Point calcTunnelCoords() {
+    double currX = odometer.getXYT()[0];
+    double currY = odometer.getXYT()[1];
+    
+    double deltaX_LL = TILE_SIZE* WiFi.TUNNEL_LL.x - currX;  
+    double deltaY_L = TILE_SIZE* WiFi.TUNNEL_LL.y - currY;
+    
+    double deltaX_LR = TILE_SIZE* (WiFi.TUNNEL_LL.x + 1) - currX;  
+    
+    double deltaX_UR = TILE_SIZE* WiFi.TUNNEL_UR.x - currX;  
+    double deltaY_U = TILE_SIZE* WiFi.TUNNEL_UR.y - currY;
+    
+    double deltaX_UL = TILE_SIZE* (WiFi.TUNNEL_LL.x -1 )- currX;  
+    
+    double minDistLL = Math.sqrt(Math.pow(deltaX_LL, 2) + Math.pow(deltaY_L, 2));
+    double minDistLR = Math.sqrt(Math.pow(deltaX_LR, 2) + Math.pow(deltaY_L, 2));
+    double minDistUR = Math.sqrt(Math.pow(deltaX_UR, 2) + Math.pow(deltaY_U, 2));
+    double minDistUL = Math.sqrt(Math.pow(deltaX_UL, 2) + Math.pow(deltaY_U, 2));
+    
+
+    Point correctCoords = WiFi.TUNNEL_LL; //just initializing
+    // lower tunnel coordinates is closer to robot
+    if (minDistLL < minDistLR && minDistLL < minDistUR && minDistLL < minDistUL ||
+        minDistLR < minDistLL && minDistLR < minDistUR && minDistLR < minDistUL) {
+      correctCoords = WiFi.TUNNEL_LL;
+    }
+    // upper tunnel coordinates is closer to robot
+    else if (minDistUR < minDistLL && minDistUR < minDistLR && minDistUR < minDistUL ||
+             minDistUL < minDistLL && minDistUL < minDistLR && minDistLL < minDistUL) {
+      correctCoords = WiFi.TUNNEL_UR;
+    }
+    return correctCoords;
+    
+  }
+  
+  /**
+   * Calculated the robot's current corner relative to the tunnel
+   * @return
+   */
+  public int calcCurrCorner() {
+    double currX = odometer.getXYT()[0];
+    double currY = odometer.getXYT()[1];
+    
+    double deltaX_LL = TILE_SIZE* WiFi.TUNNEL_LL.x - currX;  
+    double deltaY_L = TILE_SIZE* WiFi.TUNNEL_LL.y - currY;
+    
+    double deltaX_LR = TILE_SIZE* (WiFi.TUNNEL_LL.x + 1) - currX;  
+    
+    double deltaX_UR = TILE_SIZE* WiFi.TUNNEL_UR.x - currX;  
+    double deltaY_U = TILE_SIZE* WiFi.TUNNEL_UR.y - currY;
+    
+    double deltaX_UL = TILE_SIZE* (WiFi.TUNNEL_LL.x -1 )- currX;  
+    
+    double minDistLL = Math.sqrt(Math.pow(deltaX_LL, 2) + Math.pow(deltaY_L, 2));
+    double minDistLR = Math.sqrt(Math.pow(deltaX_LR, 2) + Math.pow(deltaY_L, 2));
+    double minDistUR = Math.sqrt(Math.pow(deltaX_UR, 2) + Math.pow(deltaY_U, 2));
+    double minDistUL = Math.sqrt(Math.pow(deltaX_UL, 2) + Math.pow(deltaY_U, 2));
+    
+    int currCorner = 0; //just initializing
+    // lower tunnel coordinates is closer to robot
+    if (minDistLL < minDistLR && minDistLL < minDistUR && minDistLL < minDistUL) {
+      currCorner = 0;
+    }
+    else if (minDistLR < minDistLL && minDistLR < minDistUR && minDistLR < minDistUL) { 
+      currCorner = 1;
+    }
+    
+    // upper tunnel coordinates is closer to robot
+    else if (minDistUR < minDistLL && minDistUR < minDistLR && minDistUR < minDistUL ) {
+      currCorner = 2;
+    }
+    else if (minDistUL < minDistLL && minDistUL < minDistLR && minDistLL < minDistUL) {
+      currCorner = 3;
+    }
+    return currCorner;
+    
+  }
+  
+  /**
+   * Method to travel to a tunnel, vertical or horizontal
+   * @param correctCoords
+   */
+  public void travelToTunnel(Point correctCoords, int corner){
+    if (tunnelOrientation() == 1) { //vertical tunnel
+      if (corner == 2 || corner == 3) {
+        Navigation.travelTo(correctCoords.x - 0.5, correctCoords.y + 0.5, 0, false);
+      }
+      else if (corner == 0 || corner == 1) {
+        Navigation.travelTo(correctCoords.x + 0.5, correctCoords.y - 0.5, 0, false);
+      }
+    }
+    else if (tunnelOrientation() == 2) { //horizontal tunnel
+      if (corner == 0 || corner == 3) {
+        Navigation.travelTo(correctCoords.x - 0.5, correctCoords.y + 0.5, 0, false);
+      }
+      else if (corner == 1 || corner == 2) {
+        Navigation.travelTo(correctCoords.x + 0.5, correctCoords.y - 0.5, 0, false);
+      }
+    }
+  }
+
+  /**
+   * calculates the robot's initial position based on the starting corner
+   * @return
+   */
+  public double[] calcInitialPos() {
+    double initialX = 0;
+    double initialY = 0;
+    double[] initialPos;;
+    
+    if (WiFi.CORNER == 0) {
+      initialX = TILE_SIZE;
+      initialY = TILE_SIZE;
+    }
+    else if (WiFi.CORNER == 1) {
+      initialX = 14*TILE_SIZE;
+      initialY = TILE_SIZE;
+    }
+    else if (WiFi.CORNER == 2) {
+      initialX = 14*TILE_SIZE;
+      initialY = 8*TILE_SIZE;
+    }
+    else if (WiFi.CORNER == 3) {
+      initialX = TILE_SIZE;
+      initialY = 8*TILE_SIZE;
+    }
+    
+    initialPos = new double[]{initialX, initialY};
+    return initialPos;
   }
   
   /**
@@ -274,11 +421,6 @@ public class GameController implements Runnable {
         sensorCont.pauseLightPoller();
         break;
         
-      case DONE:
-        sensorCont.pauseUSPoller();
-        sensorCont.pauseLightPoller();
-        break;
-        
       case TEST:
         //TODO: change this as necessary for any test
         sensorCont.resumeUSPoller();
@@ -288,5 +430,4 @@ public class GameController implements Runnable {
     sensorCont.setCurrUSUsers(currUSUsers);
     sensorCont.setCurrLightUsers(currLightUsers);
   }
-  
 }

@@ -39,24 +39,27 @@ public class Resources {
   public static final double TILE_SIZE = 30.48;
   
   //USLocalizer
-  public static final int US_SPEED = 150; //80
-  public static final int RISE_THRESHOLD = 37; //37, 38, 40
+  public static final int US_SPEED = 170; //80
+  public static final int RISE_THRESHOLD = 30; //37, 38, 40
   public static final int RISE_ANGLE = 225;
   
   public static final int FALL_THRESHOLD = 25; //25
   public static final int FALL_ANGLE = 45; //45
   
   //LightLocalizer
-  public static final double LIGHT_THRESHOLD_R = 0.55; //0.55
-  public static final double LIGHT_THRESHOLD_L = 0.58; //0.60
+  public static final double LIGHT_THRESHOLD_R = 0.75; //0.62, 0.55
+  public static final double LIGHT_THRESHOLD_L = 0.75; //0.73, 0.60
   
-  public static final double CS_DISTANCE = 12; // sensor distance from center of rotation
-  public static final int CS_SPEED = 120; //70
-  public static final int CS_TUNNEL_SPEED = 120;//120
+  public static final double LS_DISTANCE = 12.3; // sensor distance from center of rotation
+  public static final int LS_SPEED_FAST = 180; //70
+  public static final int LS_SPEED_SLOW = 90;
+  public static final int LS_TUNNEL_SPEED = 120;//120
   
+  //launcher
+  public static final double LAUNCH_GRID_DIST = 5.5;
   //Navigation
   public static final int NAV_FORWARD = 200;
-  public static final double NAV_OFFSET = 4.5*TILE_SIZE; //min offset = 4.5
+  public static final double NAV_OFFSET = LAUNCH_GRID_DIST*TILE_SIZE; //min offset = 4.5
   public static final int NAV_TURN = 90;
   public static final int NAV_TURN2 = 120;
   public static final int TUNNEL_SPEED = 200;

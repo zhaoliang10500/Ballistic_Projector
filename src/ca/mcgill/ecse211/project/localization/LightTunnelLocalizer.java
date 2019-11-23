@@ -33,26 +33,16 @@ public class LightTunnelLocalizer implements LightUser {
     step = 0;
     while (localizing);
 
-    double yTheta = Math.atan((offset[1] - offset[0]) / WHEEL_BASE);
-    double yThetaDeg = 180 * yTheta / Math.PI;
+    double turnTheta = Math.atan(Math.abs((offset[1] - offset[0])) / WHEEL_BASE);
+    double turnThetaDeg = 180 * turnTheta / Math.PI;
 
     if (turnRight) {
-      turnRight(yThetaDeg);
+      turnRight(turnThetaDeg);
     } else {
-      turnLeft(yThetaDeg);
+      turnLeft(turnThetaDeg);
     }
-
-    // backedupDist = odometer.getXYT()[1]; //used to make the localization work even if backed up one extra tile
-
-    // moveBackward(yDistFromLine);
-    double currentY = odometer.getXYT()[1];
-    odometer.setY(currentY + CS_DISTANCE);
+    sleepFor(1000);
   }
-
-  // TODO: fool proof tunnel localization
-  // public double backupDist() {
-  // return backedupDist;
-  // }
 
   /**
    * Method to process light Poller data
@@ -65,10 +55,10 @@ public class LightTunnelLocalizer implements LightUser {
     }
     else if (!gotInitialSample) {
       setLRMotorSpeed(170);
-      moveBackward(TILE_SIZE-3);
-      setLRMotorSpeed(CS_TUNNEL_SPEED);
+      moveBackward(TILE_SIZE/2);
+      setLRMotorSpeed(LS_TUNNEL_SPEED);
       moveForward(5);
-      moveBackward(2);
+      //moveBackward(2);
       initialLight[0] = light[0];
       initialLight[1] = light[1];
       
@@ -83,7 +73,7 @@ public class LightTunnelLocalizer implements LightUser {
       
       gotInitialSample = true; 
     }
-  //for y, left sensor sees line and right doesn't
+  //left sensor sees line and right doesn't
     else if (light[0]/initialLight[0] < LIGHT_THRESHOLD_L && light[1]/initialLight[1] > LIGHT_THRESHOLD_R) {
       switch(step) {
         case 0:
@@ -110,7 +100,7 @@ public class LightTunnelLocalizer implements LightUser {
           break;  
       }
     }
-    //for x, right sensor sees line and left doesn't
+    //right sensor sees line and left doesn't
     else if (light[0]/initialLight[0] > LIGHT_THRESHOLD_L && light[1]/initialLight[1] < LIGHT_THRESHOLD_R) {
       switch (step) {
         case 0:

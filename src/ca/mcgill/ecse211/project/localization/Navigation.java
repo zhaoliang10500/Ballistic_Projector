@@ -3,6 +3,7 @@ package ca.mcgill.ecse211.project.localization;
 import static ca.mcgill.ecse211.project.game.Resources.*;
 import static ca.mcgill.ecse211.project.game.Helper.*;
 import ca.mcgill.ecse211.project.game.Helper;
+import ca.mcgill.ecse211.project.game.WiFi;
 
 /**
  * This class contains methods for navigations
@@ -20,36 +21,36 @@ public class Navigation {
   public static double turnAngle;
 
 
-  public static void travelTo (double xCoord, double yCoord, double angleOffset) { //travelTo 
+  public static void travelTo (double xCoord, double yCoord, double angleOffset, boolean bin) { //travelTo 
     double[] xyCoord = {xCoord, yCoord};
     
     // Gets current x, y positions (already in cm) 
     x = odometer.getXYT()[0];
     y = odometer.getXYT()[1];
 
-    //TILE_SIZE/2 because true desired point at center of tile
-    deltaX = TILE_SIZE*xyCoord[0] - x + TILE_SIZE/2;  
-    deltaY = TILE_SIZE*xyCoord[1] - y + TILE_SIZE/2;
+    deltaX = TILE_SIZE*xyCoord[0] - x;  
+    deltaY = TILE_SIZE*xyCoord[1] - y;
 
     //Calculate angles, atan = first/second
     theta2 = Math.toDegrees(Math.atan2(deltaX, deltaY)); //theta2 now in degrees
     theta1 = odometer.getXYT()[2]; // theta1 in degrees
 
-    // Gets current x, y positions (already in cm) 
-    x = odometer.getXYT()[0];
-    y = odometer.getXYT()[1];
-
     //Turn
     turnAngle = calcTurnAngle(theta2 - theta1, angleOffset);
-    turnTo(turnAngle);
-
+    turn(turnAngle);
 
     // Move 
     minDist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
     setLRMotorSpeed(NAV_FORWARD);
-    //no NAV_OFFSET this time b/c robot destination coordinates were directly given 
-    leftMotor.rotate(Helper.convertDistance(minDist, WHEEL_RADIUS), true);
-    rightMotor.rotate(Helper.convertDistance(minDist, WHEEL_RADIUS), false);
+    
+    if (!bin) {
+      leftMotor.rotate(Helper.convertDistance(minDist, WHEEL_RADIUS), true);
+      rightMotor.rotate(Helper.convertDistance(minDist, WHEEL_RADIUS), false);
+    } 
+    else {
+      leftMotor.rotate(Helper.convertDistance(Math.abs(minDist -LAUNCH_GRID_DIST), WHEEL_RADIUS), true);
+      rightMotor.rotate(Helper.convertDistance(Math.abs(minDist-LAUNCH_GRID_DIST), WHEEL_RADIUS), false);
+    }
     
   }
   
@@ -71,14 +72,33 @@ public class Navigation {
   
   /**
    * Method to turn the robot theta degrees
+   * +theta = right turn, -theta = left turn
    * @param theta
    */
-  public static void turnTo(double theta) {
+  public static void turn(double theta) {
     setLRMotorSpeed(NAV_TURN);
 
     leftMotor.rotate(convertAngle(theta, WHEEL_RADIUS), true);
     rightMotor.rotate(-convertAngle(theta, WHEEL_RADIUS), false);
     
+  }
+  
+  /**
+   * Method to face the robot towards an input angle heading
+   * @param heading
+   */
+  public static void turnToFace(int heading) {
+    double currTheta = odometer.getXYT()[2];
+    double turnAngle = heading - currTheta;
+   
+    if (turnAngle < -180) {
+      turnAngle = 360 + turnAngle;
+    }
+    else if (turnAngle > 180) {
+      turnAngle = 360 - turnAngle;
+    }
+    
+    turn(turnAngle);
   }
   
   /**

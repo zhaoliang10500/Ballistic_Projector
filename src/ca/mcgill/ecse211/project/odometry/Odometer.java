@@ -21,7 +21,7 @@ public class Odometer extends Thread {
   private static int lastTachoR = 0; //Tacho R at last sample
   private double dx = 0, dy = 0;
   private double distL = 0,distR = 0,deltaD = 0,deltaT = 0;
-  
+  private boolean clearedOnce = false;
   /**
    * The x-axis position in cm.
    */
@@ -126,6 +126,10 @@ public class Odometer extends Thread {
       }
       
       if (GOT_WIFI_PARAMS) {
+        if (!clearedOnce) {
+          LCD.clear();
+          clearedOnce = true;
+        }
         //display
         DecimalFormat numberFormat = new DecimalFormat("######0.00");
         double[] position = odo.getXYT();

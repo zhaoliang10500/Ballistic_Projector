@@ -2,6 +2,7 @@ package ca.mcgill.ecse211.project.game;
 
 import ca.mcgill.ecse211.wificlient.WifiConnection;
 import lejos.hardware.lcd.LCD;
+import static ca.mcgill.ecse211.project.game.Helper.sleepFor;
 import java.math.BigDecimal;
 import java.util.Map;
 
@@ -123,7 +124,9 @@ public class WifiResources {
     if (!RECEIVE_WIFI_PARAMS || wifiParameters != null) {
       return;
     }
-    LCD.drawString("Waiting to receive Wi-Fi parameters.", 0, 0);
+    LCD.drawString("Waiting to", 0, 0);
+    LCD.drawString("receive Wi-Fi", 0, 1);
+    LCD.drawString("parameters.", 0, 2);
 
     // Connect to server and get the data, catching any errors that might occur
     try (WifiConnection conn =
@@ -140,6 +143,7 @@ public class WifiResources {
        * an exception letting you know.
        */
       wifiParameters = conn.getData();
+      //sleepFor(3000);
       GOT_WIFI_PARAMS = true;
       LCD.clear();
     } catch (Exception e) {

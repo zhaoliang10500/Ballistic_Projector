@@ -10,13 +10,13 @@ import java.util.Arrays;
  *
  */
 public class USPoller extends Thread {
-  private final int US_POLLER_PERIOD = 50;
+  private final int US_POLLER_PERIOD = 0; //50
   private float[] USData;
   private SampleProvider sampleProvider;
   public SensorController sensorCont;
   public boolean running = false;
   public boolean waving = false;
-  private int filterSize = 5;
+  private int filterSize = 3;
   private int[] tempDists = new int[filterSize];
 
   /**
@@ -30,7 +30,7 @@ public class USPoller extends Thread {
   }
 
   /**
-   * Method to run the USPoller thread
+   * Method to run the USPoller thread, uses a median filter
    */
   public void run() {
     long updateStart, updateEnd, sleepPeriod;
@@ -49,12 +49,6 @@ public class USPoller extends Thread {
         Arrays.sort(tempDists);
         distance = tempDists[filterSize/2]; //java rounds down for int division
         sensorCont.setDistance(distance);
-
-        //TODO: this might not work, need to test
-        if (waving) {
-          USMotor.rotate(130);
-          USMotor.rotate(-130);     
-        }
       }
 
       updateEnd = System.currentTimeMillis();
