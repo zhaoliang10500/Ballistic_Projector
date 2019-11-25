@@ -1,10 +1,13 @@
 package ca.mcgill.ecse211.project.odometry;
 
 import static ca.mcgill.ecse211.project.game.Resources.*;
+import static ca.mcgill.ecse211.project.game.WifiResources.GOT_WIFI_PARAMS;
 import java.text.DecimalFormat;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import ca.mcgill.ecse211.project.game.WiFi;
+
 
 
 /**
@@ -18,7 +21,7 @@ public class Odometer extends Thread {
   private static int lastTachoR = 0; //Tacho R at last sample
   private double dx = 0, dy = 0;
   private double distL = 0,distR = 0,deltaD = 0,deltaT = 0;
-  
+  private boolean clearedOnce = false;
   /**
    * The x-axis position in cm.
    */
@@ -122,12 +125,18 @@ public class Odometer extends Thread {
         }
       }
       
-      //display
-      DecimalFormat numberFormat = new DecimalFormat("######0.00");
-      double[] position = odo.getXYT();
-      LCD.drawString("X: " + numberFormat.format(position[0]), 0, 0);
-      LCD.drawString("Y: " + numberFormat.format(position[1]), 0, 1);
-      LCD.drawString("T: " + numberFormat.format(position[2]), 0, 2);
+      if (GOT_WIFI_PARAMS) {
+        if (!clearedOnce) {
+          LCD.clear();
+          clearedOnce = true;
+        }
+        //display
+        DecimalFormat numberFormat = new DecimalFormat("######0.00");
+        double[] position = odo.getXYT();
+        LCD.drawString("X: " + numberFormat.format(position[0]), 0, 0);
+        LCD.drawString("Y: " + numberFormat.format(position[1]), 0, 1);
+        LCD.drawString("T: " + numberFormat.format(position[2]), 0, 2);
+      }
       
     }
   }

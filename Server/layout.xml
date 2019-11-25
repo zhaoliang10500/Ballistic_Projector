@@ -42,8 +42,11 @@
 		<coordinate keyx="TNG_UR_x" keyy="TNG_UR_y">
 			<label>Upper right hand corner of the green tunnel footprint</label>
 		</coordinate>
-		<coordinate keyx="BIN_x" keyy="BIN_y">
-			<label>Location of target bin</label>
+		<coordinate keyx="Red_BIN_x" keyy="Red_BIN_y">
+			<label>Location of red target bin</label>
+		</coordinate>
+		<coordinate keyx="Green_BIN_x" keyy="Green_BIN_y">
+			<label>Location of green target bin</label>
 		</coordinate>
 	</inputs>
 </XML>

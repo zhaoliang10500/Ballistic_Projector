@@ -9,7 +9,7 @@ import ca.mcgill.ecse211.project.game.SensorController;
  *
  */
 public class LightPoller extends Thread {
-  private static final int LIGHT_POLLER_PERIOD = 50;
+  private static final int LIGHT_POLLER_PERIOD = 35;
   private float[][] lightData;
   private SampleProvider[] sampleProvider;
   public SensorController sensorCont;

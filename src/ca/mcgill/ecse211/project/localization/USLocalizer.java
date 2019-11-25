@@ -15,11 +15,15 @@ public class USLocalizer implements USUser {
   private int step;
   private double theta1, theta2;
   private double dTheta;
-  private int edgeThreshold = 40; // distance threshold for deciding edge type
+  private int edgeThreshold = 50; // distance threshold for deciding edge type
   private volatile int initialDistance;
+  private volatile int initialSamp1, initialSamp2;
+  //private volatile int[] initialDists = new int[3];
   private volatile EdgeType USLocType;
   private volatile boolean gotInitialSample = false;
-
+  private volatile boolean gotInitialSample1 = false;
+  private volatile boolean gotInitialSample2 = false;
+  //private volatile int initialSampleCounter = 3;
 
   private enum EdgeType {
     RISING_EDGE,
@@ -30,25 +34,27 @@ public class USLocalizer implements USUser {
    * Method to begin US localization
    */
   public void localize() { 
-    //wait for odometer thread to start
-    sleepFor(1000);
-
+    //sleepFor(1000); //wait for odometer
     localizing = true;
     step = 0;
+    USMotor.setSpeed(150);
 
     while(localizing); //don't continue program until localizing = false
     
+    sleepFor(300);
     if (USLocType == EdgeType.FALLING_EDGE) {
       dTheta = FALL_ANGLE + (theta1 + theta2)/2;
-      //turnLeft(dTheta); turn to 0 
-      turnLeft(dTheta - 90); //turn to 90
+      turnLeft(dTheta); //turn to 0 
+      moveForward(2);
+      turnRight(90); //turn to 90
     }
     else {
       dTheta = RISE_ANGLE - (theta1 + theta2)/2;
-      //turnRight(dTheta - 90); turn to 0 
-      turnRight(dTheta); //turn to 90
+      turnRight(dTheta - 90); //turn to 0 
+      moveForward(4);
+      turnRight(90); //turn to 90
     }
-    odometer.setTheta(90);
+    //odometer.setTheta(90);
   }
 
 
@@ -63,13 +69,16 @@ public class USLocalizer implements USUser {
       return;
     }
     else if (!gotInitialSample) {
+      USMotor.rotate(-20);
       initialDistance = distance;
+      USMotor.rotate(20);
       if (initialDistance < edgeThreshold) {
         USLocType = EdgeType.RISING_EDGE;
       }
       else {
         USLocType = EdgeType.FALLING_EDGE;
       }
+      sleepFor(1500); //wait for other threads;
       turnLeft();
       gotInitialSample = true;
     }
@@ -90,7 +99,7 @@ public class USLocalizer implements USUser {
             stopMotors();
             theta1 = 360 - odometer.getXYT()[2]; 
             turnRight();
-            sleepFor(100);
+            sleepFor(300);
             step++;
             break;
           case 3:
@@ -119,7 +128,7 @@ public class USLocalizer implements USUser {
             stopMotors();
             theta1 = 360 - odometer.getXYT()[2]; 
             turnRight();
-            sleepFor(100);
+            sleepFor(300);
             step++;
             break;
           case 3:

@@ -1,0 +1,5 @@
+https://mcgill-dpm.github.io/Utilities/wifi/competition-map
+
+The "auto fill from xml file" button in the Server GUI doesn't work if the maps are altered at all (deleting numbers, changing numbers). 
+I don't know why but it seems like to only way to create test maps (besides filling in the Server GUI manually every time)
+is to copy the layout from a map created in the competition website into a xml file (copy layout.xml and paste any new maps created from the competition website)

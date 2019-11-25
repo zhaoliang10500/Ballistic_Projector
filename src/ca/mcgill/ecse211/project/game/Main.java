@@ -2,10 +2,12 @@ package ca.mcgill.ecse211.project.game;
 
 import lejos.robotics.SampleProvider;
 import lejos.hardware.Button;
+import static ca.mcgill.ecse211.project.game.Helper.sleepFor;
 import static ca.mcgill.ecse211.project.game.Resources.*;
 import ca.mcgill.ecse211.project.localization.*;
 import ca.mcgill.ecse211.project.sensor.*;
 import ca.mcgill.ecse211.project.odometry.*;
+import static ca.mcgill.ecse211.project.game.WifiResources.GOT_WIFI_PARAMS;
 
 /**
  * This class contains the main method of the program.
@@ -14,7 +16,11 @@ import ca.mcgill.ecse211.project.odometry.*;
  *
  */
 public class Main {
-
+  //TODO: ReadMe in documentation
+  //TODO: record videos of robot for presentation
+  //TODO: debreif document put questions in, record data of sucess/failure during competition
+  
+  
   /**
    * Program entry point
    * @param args WiFi input parameters
@@ -37,11 +43,13 @@ public class Main {
     
     USLocalizer USLoc = new USLocalizer();
     LightLocalizer lightLoc = new LightLocalizer();
-    LightTunnelLocalizer lightTunnelLoc = new LightTunnelLocalizer();
-    OdometryCorrection odoCorrect = new OdometryCorrection();
     ObstacleAvoidance obAvoid = new ObstacleAvoidance(odometer, leftMotor, rightMotor, USMotor, usSamp, usData);
+    LightTunnelLocalizer lightTunnelLoc1 = new LightTunnelLocalizer();
+    LightTunnelLocalizer lightTunnelLoc2 = new LightTunnelLocalizer();
+    LightTunnelLocalizer lightTunnelLoc3 = new LightTunnelLocalizer();
+    LightTunnelLocalizer lightTunnelLoc4 = new LightTunnelLocalizer();
     
-    GameController gameControl = new GameController(sensorControl, USLoc, lightLoc, lightTunnelLoc, odoCorrect, obAvoid);
+    GameController gameControl = new GameController(sensorControl, USLoc, lightLoc, lightTunnelLoc1, lightTunnelLoc2, lightTunnelLoc3, lightTunnelLoc4, obAvoid1, obAvoid2);
     //TODO: obstacle avoidance might not work this way
     
     Thread odoThread = new Thread(odometer); //odometer created in Resources
@@ -50,24 +58,20 @@ public class Main {
     //TODO: might have to implement odometry correction inside odometer, currently it is separate
     Thread gameThread = new Thread(gameControl);
     
+    //start threads
+    odoThread.start();
+    USThread.start();
+    lightThread.start();
+    
     //Get parameters from WiFi class
     //Server file included now in project, cd to the jar (java -jar EV3WifiServer.jar)
     //Make sure to change the SERVER_IP in WifiResources to your that of your computer (hostname -I)
-    WiFi.wifi();
+    WiFi.wifi(); //inside WiFi, sleeps for 2sec to wait for above threads to start
     
-    if (WiFi.recievedParameters) {
-      LCD.clear();
-      odoThread.start();
-      USThread.start();
-      lightThread.start();
+    if (GOT_WIFI_PARAMS) {
+      //wait for odometer thread to start
       gameThread.start();
     }
-    
-//    LCD.clear();
-//    odoThread.start();
-//    USThread.start();
-//    lightThread.start();
-//    gameThread.start();
     
     while (Button.waitForAnyPress() != Button.ID_ESCAPE);
     System.exit(0);
