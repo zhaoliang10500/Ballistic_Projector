@@ -85,78 +85,79 @@ public class GameController implements Runnable {
    * the GameState and calling the corresponding methods for each state
    */
   public void startGame() {
-    //US localization
-    changeState(GameState.US_LOC);
-    setLRMotorSpeed(US_SPEED);
-    USLoc.localize();
-    
-    // light localization
-    changeState(GameState.COLOR_LOC);
-    //setLRMotorSpeed(LS_SPEED);
-    lightLoc.localize();
-    beep(3);
-    
-    //Travel to tunnel and face it
-    changeState(GameState.NAVIGATION);
-    travelToTunnel(calcTunnelCoords(), WiFi.CORNER);
-    straighten(WiFi.CORNER);
-    
-    // light localization before tunnel
-    //TODO: tunnel localizer doesn't turn properly...maybe thresholds are wrong?//////////////////////////////////////
-    changeState(GameState.TUNNEL_LOC1);
-    setLRMotorSpeed(LS_TUNNEL_SPEED);
-    lightTunnelLoc1.localize(true); //boolean before = true
-
-    changeState(GameState.TUNNEL);
-    setLRMotorSpeed(TUNNEL_SPEED);
-    Navigation.travelThroughTunnel();
-    
-    // light localization after tunnel
-    changeState(GameState.TUNNEL_LOC2);
-    setLRMotorSpeed(LS_TUNNEL_SPEED);
-    lightTunnelLoc2.localize(false); //boolean before = false -> after
+//    //US localization
+//    changeState(GameState.US_LOC);
+//    setLRMotorSpeed(US_SPEED);
+//    USLoc.localize();
+//    
+//    // light localization
+//    changeState(GameState.COLOR_LOC);
+//    //setLRMotorSpeed(LS_SPEED);
+//    lightLoc.localize();
+//    beep(3);
+//    
+//    //Travel to tunnel and face it
+//    changeState(GameState.NAVIGATION);
+//    travelToTunnel(calcTunnelCoords(), WiFi.CORNER);
+//    straighten(WiFi.CORNER);
+//    
+//    // light localization before tunnel
+//    //TODO: tunnel localizer doesn't turn properly...maybe thresholds are wrong?//////////////////////////////////////
+//    changeState(GameState.TUNNEL_LOC1);
+//    setLRMotorSpeed(LS_TUNNEL_SPEED);
+//    lightTunnelLoc1.localize(true); //boolean before = true
+//
+//    changeState(GameState.TUNNEL);
+//    setLRMotorSpeed(TUNNEL_SPEED);
+//    Navigation.travelThroughTunnel();
+//    
+//    // light localization after tunnel
+//    changeState(GameState.TUNNEL_LOC2);
+//    setLRMotorSpeed(LS_TUNNEL_SPEED);
+//    lightTunnelLoc2.localize(false); //boolean before = false -> after
     
     // navigation: travel to launch point
+    odometer.setXYT(5*TILE_SIZE,2*TILE_SIZE, 270); //for testing nav alone
     changeState(GameState.NAVIGATION);
     //TODO: this travels for a longer distance than it's suppose to///////////////////
     Navigation.travelTo(WiFi.BIN.x, WiFi.BIN.y, 0, true);
     beep(3);
     
-    // throw balls
-    changeState(GameState.LAUNCH);
-    for (int i = 0; i<5; i++) {
-      Launcher.launch();
-    }
-    
-    sleepFor(25000);
+//    // throw balls
+//    changeState(GameState.LAUNCH);
+//    for (int i = 0; i<5; i++) {
+//      Launcher.launch();
+//    }
+//    
+//    sleepFor(25000);
     /////////////////////////////////////////////////////////////////////////
     
-    // travel back to tunnel and face it
-    changeState(GameState.NAVIGATION);
-    int currCorner = calcCurrCorner();
-    travelToTunnel(calcTunnelCoords(), currCorner);
-    straighten(currCorner);
+//    // travel back to tunnel and face it
+//    changeState(GameState.NAVIGATION);
+//    int currCorner = calcCurrCorner();
+//    travelToTunnel(calcTunnelCoords(), currCorner);
+//    straighten(currCorner);
     
-    // light localization before tunnel
-    changeState(GameState.TUNNEL_LOC3);
-    setLRMotorSpeed(LS_TUNNEL_SPEED);
-    lightTunnelLoc3.localize(true); //boolean before = true
-
-    changeState(GameState.TUNNEL);
-    setLRMotorSpeed(TUNNEL_SPEED);
-    Navigation.travelThroughTunnel();
-    
-    // light localization after tunnel
-    changeState(GameState.TUNNEL_LOC4);
-    setLRMotorSpeed(LS_TUNNEL_SPEED);
-    lightTunnelLoc4.localize(false); //boolean before = false -> after
-    
-    // travel back to starting position
-    changeState(GameState.NAVIGATION);
-    double[] initialXY = calcInitialPos();
-    //TODO: this keeps moving, not right ////////////////////////////////////////////
-    Navigation.travelTo(initialXY[0], initialXY[1], 0, false);
-    beep(5);
+//    // light localization before tunnel
+//    changeState(GameState.TUNNEL_LOC3);
+//    setLRMotorSpeed(LS_TUNNEL_SPEED);
+//    lightTunnelLoc3.localize(true); //boolean before = true
+//
+//    changeState(GameState.TUNNEL);
+//    setLRMotorSpeed(TUNNEL_SPEED);
+//    Navigation.travelThroughTunnel();
+//    
+//    // light localization after tunnel
+//    changeState(GameState.TUNNEL_LOC4);
+//    setLRMotorSpeed(LS_TUNNEL_SPEED);
+//    lightTunnelLoc4.localize(false); //boolean before = false -> after
+//    
+//    // travel back to starting position
+//    changeState(GameState.NAVIGATION);
+//    double[] initialXY = calcInitialPos();
+//    //TODO: this keeps moving, not right ////////////////////////////////////////////
+//    Navigation.travelTo(initialXY[0], initialXY[1], 0, false);
+//    beep(5);
     
   }
   

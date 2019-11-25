@@ -34,7 +34,7 @@ public class USLocalizer implements USUser {
    * Method to begin US localization
    */
   public void localize() { 
-    //sleepFor(1000); //wait for odometer
+    sleepFor(1000); //wait for odometer
     localizing = true;
     step = 0;
     USMotor.setSpeed(150);
