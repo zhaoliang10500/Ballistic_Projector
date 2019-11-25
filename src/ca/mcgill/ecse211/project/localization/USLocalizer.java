@@ -70,6 +70,7 @@ public class USLocalizer implements USUser {
     }
     else if (!gotInitialSample) {
       USMotor.rotate(-20);
+      USMotor.stop();
       initialDistance = distance;
       USMotor.rotate(20);
       if (initialDistance < edgeThreshold) {

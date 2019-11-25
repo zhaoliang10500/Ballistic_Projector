@@ -60,9 +60,10 @@ public class Navigation {
     } 
     else if (bin) {
       sleepFor(1000);
+      //System.out.println("minDist: " + minDist);
       //System.out.println("bin travel: " + Math.abs(minDist - (LAUNCH_GRID_DIST*TILE_SIZE)));
-      leftMotor.rotate(Helper.convertDistance(minDist - (LAUNCH_GRID_DIST*TILE_SIZE), WHEEL_RADIUS), true);
-      rightMotor.rotate(Helper.convertDistance(minDist- (LAUNCH_GRID_DIST*TILE_SIZE), WHEEL_RADIUS), false);
+      leftMotor.rotate(Helper.convertDistance(Math.abs(minDist - (LAUNCH_GRID_DIST*TILE_SIZE)), WHEEL_RADIUS), true);
+      rightMotor.rotate(Helper.convertDistance(Math.abs(minDist- (LAUNCH_GRID_DIST*TILE_SIZE)), WHEEL_RADIUS), false);
     }
     
   }
@@ -111,6 +112,7 @@ public class Navigation {
       turnAngle = 360 - turnAngle;
     }
     
+    //System.out.println("turntoface angle:" + turnAngle);
     turn(turnAngle);
   }
   

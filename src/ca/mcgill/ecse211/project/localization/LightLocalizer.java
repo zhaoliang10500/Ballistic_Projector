@@ -15,8 +15,6 @@ import ca.mcgill.ecse211.project.game.WiFi;
 public class LightLocalizer implements LightUser {
   private boolean localizing = false;
   private double[] initialLight = new double[2];
-//  private volatile int[][] initialLights = new int[2][5];
-//  private volatile int initialLightCounter = 3;
   private int firstAxis = -1;
   private int secondAxis = -1;
   private volatile boolean gotInitialSample = false;
@@ -51,34 +49,16 @@ public class LightLocalizer implements LightUser {
     setLRMotorSpeed(LS_SPEED_SLOW);
     moveForward();
     while(localizing);
-    
+  }
+  
+  public double turnThetaDeg() {
     double turnTheta = Math.atan(Math.abs((offset[1] - offset[0]))/WHEEL_BASE);
     double turnThetaDeg = 180*turnTheta/Math.PI;
-    setLRMotorSpeed(LS_SPEED_SLOW);
-    if (turnRight) {
-      turnRight(turnThetaDeg);
-    }
-    else {
-      turnLeft(turnThetaDeg);
-    }
-    sleepFor(500);
-    
-    setLRMotorSpeed(LS_SPEED_FAST);
-    moveBackward(LS_DISTANCE);
-    
-    //set odometer after localization
-    if (WiFi.CORNER == 0) {
-      odometer.setXYT(TILE_SIZE, TILE_SIZE, 0);
-    }
-    else if (WiFi.CORNER == 1) {
-      odometer.setXYT(14*TILE_SIZE, TILE_SIZE, 270);//270
-    }
-    else if (WiFi.CORNER == 2) {
-      odometer.setXYT(14*TILE_SIZE, 8*TILE_SIZE, 180); //180
-    }
-    else if (WiFi.CORNER == 3) {
-      odometer.setXYT(TILE_SIZE, 8*TILE_SIZE, 90); //90
-    }
+    return turnThetaDeg;
+  }
+  
+  public boolean turnRight() {
+    return turnRight;
   }
   
   /**

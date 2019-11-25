@@ -59,7 +59,7 @@ public class GameController implements Runnable {
    */
   public enum GameState {
     US_LOC,
-    COLOR_LOC,
+    LIGHT_LOC,
     NAVIGATION,
     TUNNEL_LOC1,
     TUNNEL_LOC2,
@@ -85,41 +85,82 @@ public class GameController implements Runnable {
    * the GameState and calling the corresponding methods for each state
    */
   public void startGame() {
-//    //US localization
-//    changeState(GameState.US_LOC);
-//    setLRMotorSpeed(US_SPEED);
-//    USLoc.localize();
-//    
-//    // light localization
-//    changeState(GameState.COLOR_LOC);
-//    //setLRMotorSpeed(LS_SPEED);
-//    lightLoc.localize();
-//    beep(3);
-//    
-//    //Travel to tunnel and face it
-//    changeState(GameState.NAVIGATION);
-//    travelToTunnel(calcTunnelCoords(), WiFi.CORNER);
-//    straighten(WiFi.CORNER);
-//    
-//    // light localization before tunnel
-//    //TODO: tunnel localizer doesn't turn properly...maybe thresholds are wrong?//////////////////////////////////////
-//    changeState(GameState.TUNNEL_LOC1);
-//    setLRMotorSpeed(LS_TUNNEL_SPEED);
-//    lightTunnelLoc1.localize(true); //boolean before = true
-//
-//    changeState(GameState.TUNNEL);
-//    setLRMotorSpeed(TUNNEL_SPEED);
-//    Navigation.travelThroughTunnel();
-//    
-//    // light localization after tunnel
-//    changeState(GameState.TUNNEL_LOC2);
-//    setLRMotorSpeed(LS_TUNNEL_SPEED);
-//    lightTunnelLoc2.localize(false); //boolean before = false -> after
+    //US localization
+    changeState(GameState.US_LOC);
+    setLRMotorSpeed(US_SPEED);
+    USLoc.localize();
+    
+    
+    // light localization
+    changeState(GameState.LIGHT_LOC);
+    lightLoc.localize();
+    double turnThetaDeg = lightLoc.turnThetaDeg();
+    boolean turnRight = lightLoc.turnRight();
+    setLRMotorSpeed(LS_SPEED_SLOW);
+    if (turnRight) {
+      turnRight(turnThetaDeg);
+    }
+    else {
+      turnLeft(turnThetaDeg);
+    }
+    sleepFor(500);
+    //set odometer after localization
+    if (WiFi.CORNER == 0) {
+      odometer.setXYT(TILE_SIZE, TILE_SIZE, 0);
+    }
+    else if (WiFi.CORNER == 1) {
+      odometer.setXYT(14*TILE_SIZE, TILE_SIZE, 270);//270
+    }
+    else if (WiFi.CORNER == 2) {
+      odometer.setXYT(14*TILE_SIZE, 8*TILE_SIZE, 180); //180
+    }
+    else if (WiFi.CORNER == 3) {
+      odometer.setXYT(TILE_SIZE, 8*TILE_SIZE, 90); //90
+    } 
+    setLRMotorSpeed(LS_SPEED_FAST);
+    moveBackward(LS_DISTANCE);
+    beep(3);
+    
+    
+    //Travel to tunnel and face it
+    changeState(GameState.NAVIGATION);
+    travelToTunnel(calcTunnelCoords(), WiFi.CORNER, false);
+    straighten(WiFi.CORNER);
+    
+    
+    // light localization before tunnel
+    changeState(GameState.TUNNEL_LOC1);
+    setLRMotorSpeed(LS_TUNNEL_SPEED);
+    lightTunnelLoc1.localize(); 
+    double tunnelTurn1 = lightTunnelLoc1.calcTurnThetaDeg();
+    if (lightTunnelLoc1.turnRight()) {
+      leftMotor.rotate(convertAngle(tunnelTurn1, WHEEL_RADIUS), true);
+      rightMotor.rotate(-convertAngle(tunnelTurn1, WHEEL_RADIUS), false);
+      turnRight(tunnelTurn1);
+    } else {
+      turnLeft(tunnelTurn1);
+    }
+    
+    sleepFor(1000);
+    changeState(GameState.TUNNEL);
+    setLRMotorSpeed(TUNNEL_SPEED);
+    Navigation.travelThroughTunnel();
+    
+    // light localization after tunnel
+    changeState(GameState.TUNNEL_LOC2);
+    setLRMotorSpeed(LS_TUNNEL_SPEED);
+    lightTunnelLoc2.localize(); 
+    double tunnelTurn2 = lightTunnelLoc2.calcTurnThetaDeg();
+    if (lightTunnelLoc2.turnRight()) {
+      turnRight(tunnelTurn2);
+    } else {
+      turnLeft(tunnelTurn2);
+    }
     
     // navigation: travel to launch point
-    odometer.setXYT(5*TILE_SIZE,2*TILE_SIZE, 270); //for testing nav alone
+    //odometer.setXYT(5*TILE_SIZE,2*TILE_SIZE, 270); //for testing nav alone
+    sleepFor(1000);
     changeState(GameState.NAVIGATION);
-    //TODO: this travels for a longer distance than it's suppose to///////////////////
     Navigation.travelTo(WiFi.BIN.x, WiFi.BIN.y, 0, true);
     beep(3);
     
@@ -132,32 +173,45 @@ public class GameController implements Runnable {
 //    sleepFor(25000);
     /////////////////////////////////////////////////////////////////////////
     
-//    // travel back to tunnel and face it
-//    changeState(GameState.NAVIGATION);
-//    int currCorner = calcCurrCorner();
-//    travelToTunnel(calcTunnelCoords(), currCorner);
-//    straighten(currCorner);
+    // travel back to tunnel and face it
+    changeState(GameState.NAVIGATION);
+    int currCorner = calcCurrCorner();
+    travelToTunnel(calcTunnelCoords(), currCorner, false);
+    straighten(currCorner);
     
-//    // light localization before tunnel
-//    changeState(GameState.TUNNEL_LOC3);
-//    setLRMotorSpeed(LS_TUNNEL_SPEED);
-//    lightTunnelLoc3.localize(true); //boolean before = true
-//
-//    changeState(GameState.TUNNEL);
-//    setLRMotorSpeed(TUNNEL_SPEED);
-//    Navigation.travelThroughTunnel();
-//    
-//    // light localization after tunnel
-//    changeState(GameState.TUNNEL_LOC4);
-//    setLRMotorSpeed(LS_TUNNEL_SPEED);
-//    lightTunnelLoc4.localize(false); //boolean before = false -> after
-//    
-//    // travel back to starting position
-//    changeState(GameState.NAVIGATION);
-//    double[] initialXY = calcInitialPos();
-//    //TODO: this keeps moving, not right ////////////////////////////////////////////
-//    Navigation.travelTo(initialXY[0], initialXY[1], 0, false);
-//    beep(5);
+    // light localization before tunnel
+    changeState(GameState.TUNNEL_LOC3);
+    setLRMotorSpeed(LS_TUNNEL_SPEED);
+    lightTunnelLoc3.localize(); //boolean before = true
+    double tunnelTurn3 = lightTunnelLoc3.calcTurnThetaDeg();
+    if (lightTunnelLoc3.turnRight()) {
+      turnRight(tunnelTurn3);
+    } else {
+      turnLeft(tunnelTurn3);
+    }
+    
+    sleepFor(1000);
+    changeState(GameState.TUNNEL);
+    setLRMotorSpeed(TUNNEL_SPEED);
+    Navigation.travelThroughTunnel();
+    
+    // light localization after tunnel
+    changeState(GameState.TUNNEL_LOC4);
+    setLRMotorSpeed(LS_TUNNEL_SPEED);
+    lightTunnelLoc4.localize(); //boolean before = false -> after
+    double tunnelTurn4 = lightTunnelLoc4.calcTurnThetaDeg();
+    if (lightTunnelLoc4.turnRight()) {
+      turnRight(tunnelTurn4);
+    } else {
+      turnLeft(tunnelTurn4);
+    }
+    
+    // travel back to starting position
+    sleepFor(1000);
+    changeState(GameState.NAVIGATION);
+    double[] initialXY = calcInitialPos();
+    Navigation.travelTo(initialXY[0], initialXY[1], 0, false);
+    beep(5);
     
   }
   
@@ -178,6 +232,7 @@ public class GameController implements Runnable {
     else if (tunnelOrientation() == 2) { //horizontal tunnel
       if (currCorner == 0 || currCorner == 3) {
         Navigation.turnToFace(90);
+        //System.out.println("Facing 90 degrees");
       }
       else if (currCorner == 1 || currCorner == 2) {
         Navigation.turnToFace(270);
@@ -240,74 +295,62 @@ public class GameController implements Runnable {
   }
   
   /**
-   * Calculated the robot's current corner relative to the tunnel
+   * Calculate the robot's current corner relative to the tunnel
    * @return
    */
   public int calcCurrCorner() {
+    double xBound = TILE_SIZE*(WiFi.TUNNEL_LL.x + WiFi.TUNNEL_UR.x)/2;
+    double yBound = TILE_SIZE*(WiFi.TUNNEL_LL.y + WiFi.TUNNEL_UR.y)/2;
     double currX = odometer.getXYT()[0];
     double currY = odometer.getXYT()[1];
+    int corner;
     
-    double deltaX_LL = TILE_SIZE* WiFi.TUNNEL_LL.x - currX;  
-    double deltaY_L = TILE_SIZE* WiFi.TUNNEL_LL.y - currY;
-    
-    double deltaX_LR = TILE_SIZE* (WiFi.TUNNEL_LL.x + 1) - currX;  
-    
-    double deltaX_UR = TILE_SIZE* WiFi.TUNNEL_UR.x - currX;  
-    double deltaY_U = TILE_SIZE* WiFi.TUNNEL_UR.y - currY;
-    
-    double deltaX_UL = TILE_SIZE* (WiFi.TUNNEL_LL.x -1 )- currX;  
-    
-    double minDistLL = Math.sqrt(Math.pow(deltaX_LL, 2) + Math.pow(deltaY_L, 2));
-    double minDistLR = Math.sqrt(Math.pow(deltaX_LR, 2) + Math.pow(deltaY_L, 2));
-    double minDistUR = Math.sqrt(Math.pow(deltaX_UR, 2) + Math.pow(deltaY_U, 2));
-    double minDistUL = Math.sqrt(Math.pow(deltaX_UL, 2) + Math.pow(deltaY_U, 2));
-    
-    int currCorner = 0; //just initializing
-    // lower tunnel coordinates is closer to robot
-    if (minDistLL < minDistLR && minDistLL < minDistUR && minDistLL < minDistUL) {
-      currCorner = 0;
+    if (currX < xBound && currY < yBound) {
+      corner = 0;
     }
-    else if (minDistLR < minDistLL && minDistLR < minDistUR && minDistLR < minDistUL) { 
-      currCorner = 1;
+    else if (currX >= xBound && currY < yBound) {
+      corner = 1;
     }
-    
-    // upper tunnel coordinates is closer to robot
-    else if (minDistUR < minDistLL && minDistUR < minDistLR && minDistUR < minDistUL ) {
-      currCorner = 2;
+    else if (currX >= xBound && currY >= yBound) {
+      corner = 2;
     }
-    else if (minDistUL < minDistLL && minDistUL < minDistLR && minDistLL < minDistUL) {
-      currCorner = 3;
+    else if (currX < xBound && currY >= yBound) {
+      corner = 3;
     }
-    return currCorner;
-    
+    else {
+      corner = -1;
+    }
+    return corner;
   }
   
   /**
-   * Method to travel to a tunnel, vertical or horizontal
+   *  Method to travel to a tunnel, vertical or horizontal
    * @param correctCoords
+   * @param corner
+   * @param bin
    */
-  public void travelToTunnel(Point correctCoords, int corner){
+  public void travelToTunnel(Point correctCoords, int corner, boolean bin){
     if (tunnelOrientation() == 1) { //vertical tunnel
       if (corner == 2 || corner == 3) {
-        Navigation.travelTo(correctCoords.x - 0.5, correctCoords.y + 0.5, 0, false);
+        Navigation.travelTo(correctCoords.x - 0.5, correctCoords.y + 0.5, 0, bin);
       }
       else if (corner == 0 || corner == 1) {
-        Navigation.travelTo(correctCoords.x + 0.5, correctCoords.y - 0.5, 0, false);
+        Navigation.travelTo(correctCoords.x + 0.5, correctCoords.y - 0.5, 0, bin);
       }
     }
     else if (tunnelOrientation() == 2) { //horizontal tunnel
       if (corner == 0 || corner == 3) {
-        Navigation.travelTo(correctCoords.x - 0.5, correctCoords.y + 0.5, 0, false);
+        Navigation.travelTo(correctCoords.x - 0.5, correctCoords.y + 0.5, 0, bin);
       }
       else if (corner == 1 || corner == 2) {
-        Navigation.travelTo(correctCoords.x + 0.5, correctCoords.y - 0.5, 0, false);
+        Navigation.travelTo(correctCoords.x + 0.5, correctCoords.y - 0.5, 0, bin);
       }
     }
   }
 
   /**
    * calculates the robot's initial position based on the starting corner
-   * @return
+   * @return initial x.y coordinates in integers
    */
   public double[] calcInitialPos() {
     double initialX = 0;
@@ -315,20 +358,20 @@ public class GameController implements Runnable {
     double[] initialPos;;
     
     if (WiFi.CORNER == 0) {
-      initialX = TILE_SIZE;
-      initialY = TILE_SIZE;
+      initialX = 1;
+      initialY = 1;
     }
     else if (WiFi.CORNER == 1) {
-      initialX = 14*TILE_SIZE;
-      initialY = TILE_SIZE;
+      initialX = 14;
+      initialY = 1;
     }
     else if (WiFi.CORNER == 2) {
-      initialX = 14*TILE_SIZE;
-      initialY = 8*TILE_SIZE;
+      initialX = 14;
+      initialY = 8;
     }
     else if (WiFi.CORNER == 3) {
-      initialX = TILE_SIZE;
-      initialY = 8*TILE_SIZE;
+      initialX = 1;
+      initialY = 8;
     }
     
     initialPos = new double[]{initialX, initialY};
@@ -359,7 +402,7 @@ public class GameController implements Runnable {
         sensorCont.pauseLightPoller();
         break;
         
-      case COLOR_LOC:
+      case LIGHT_LOC:
         currLightUsers.add(lightLoc);
         sensorCont.pauseUSPoller();
         sensorCont.resumeLightPoller();

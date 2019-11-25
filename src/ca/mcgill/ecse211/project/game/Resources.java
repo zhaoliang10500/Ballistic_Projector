@@ -51,7 +51,7 @@ public class Resources {
   public static final double LIGHT_THRESHOLD_L = 0.75; //0.73, 0.60
   
   public static final double LS_DISTANCE = 12.3; // sensor distance from center of rotation
-  public static final int LS_SPEED_FAST = 180; //70
+  public static final int LS_SPEED_FAST = 170; //70
   public static final int LS_SPEED_SLOW = 90;
   public static final int LS_TUNNEL_SPEED = 120;//120
   
@@ -60,7 +60,7 @@ public class Resources {
   //Navigation
   public static final int NAV_FORWARD = 200;
   public static final double NAV_OFFSET = LAUNCH_GRID_DIST*TILE_SIZE; //min offset = 4.5
-  public static final int NAV_TURN = 90;
+  public static final int NAV_TURN = 100;
   public static final int NAV_TURN2 = 120;
   public static final int TUNNEL_SPEED = 200;
   
