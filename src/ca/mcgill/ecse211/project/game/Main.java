@@ -39,7 +39,7 @@ public class Main {
     LightLocalizer lightLoc = new LightLocalizer();
     LightTunnelLocalizer lightTunnelLoc = new LightTunnelLocalizer();
     OdometryCorrection odoCorrect = new OdometryCorrection();
-    ObstacleAvoidance obAvoid = new ObstacleAvoidance();
+    ObstacleAvoidance obAvoid = new ObstacleAvoidance(odometer, leftMotor, rightMotor, USMotor, usSamp, usData);
     
     GameController gameControl = new GameController(sensorControl, USLoc, lightLoc, lightTunnelLoc, odoCorrect, obAvoid);
     //TODO: obstacle avoidance might not work this way

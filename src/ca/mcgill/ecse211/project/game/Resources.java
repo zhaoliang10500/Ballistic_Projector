@@ -63,4 +63,10 @@ public class Resources {
   
   //Obstacle Avoidance
   public static final int OBS_THRESHOLD = 30;
+  public static final int ROTATE_SPEED = 100;
+  public static final int SCAN_SPEED = 250;
+  public static final int CRITICAL_ANGLE = 10;
+  public static final int RIGHT_ANGLE = 55;
+  public static final int LEFT_ANGLE = -55;
+  public static final int OBSTACLE_SENSOR_ANGLE = 45;
 }

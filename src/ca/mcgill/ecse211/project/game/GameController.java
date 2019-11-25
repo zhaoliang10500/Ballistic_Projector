@@ -113,19 +113,27 @@ public class GameController implements Runnable {
     setLRMotorSpeed(CS_TUNNEL_SPEED);
     //lightTunnelLoc.localize(false); //boolean before = false -> after
     
-    // navigation: travel to launch point
-    changeState(GameState.NAVIGATION);
-    Navigation.travelTo(bin.x - 1.0, bin.y - 1.5, 0);
+//    // navigation: travel to launch point
+//    changeState(GameState.NAVIGATION);
+//    Navigation.travelTo(bin.x - 1.0, bin.y - 1.5, 0);
+//    setLRMotorSpeed(NAV_TURN2);
+//    Navigation.turnTo(targetAngle); //turn to specified orientation
+//    beep(3);
+    
+    //travel to ideal launch point while avoiding obstacles
+    changeState(GameState.NAV_WITH_OBSTACLE);
+    obAvoid.travelTo(bin.x - 1.0, bin.y - 1.5);
     setLRMotorSpeed(NAV_TURN2);
-    Navigation.turnTo(targetAngle); //turn to specified orientation
+    obAvoid.turnTo(targetAngle);
     beep(3);
+
     
     // throw balls
     changeState(GameState.LAUNCH);
     for (int i = 0; i<5; i++) {
       Launcher.launch();
     }
-    
+    /*
     //travel back to tunnel
     //TODO
     
@@ -143,10 +151,7 @@ public class GameController implements Runnable {
     //beep(5);
     
     
-    //travel to ideal launch point while avoiding obstacles
-    /*changeState(GameState.NAV_WITH_OBSTACLE);
-    //TODO: navigate to ideal launch point
-    beep(3);
+   
     
     //throw balls
     changeState(GameState.LAUNCH);
