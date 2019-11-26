@@ -41,9 +41,13 @@ public class Main {
     //synchronized method to control sensor threads
     SensorController sensorControl = SensorController.getSensorController(USPoll, lightPoll);
     
-    USLocalizer USLoc = new USLocalizer(leftMotor, rightMotor, odometer, usSamp, usData);
-    LightLocalizer lightLoc = new LightLocalizer();
+
+    USLocalizer USLoc = new USLocalizer();
+    LightLocalizer lightLoc = new LightLocalizer(lightSampL, lightDataL, lightSampR, lightDataR);
+
+   
     ObstacleAvoidance obAvoid = new ObstacleAvoidance(odometer, leftMotor, rightMotor, USMotor, usSamp, usData);
+
     LightTunnelLocalizer lightTunnelLoc1 = new LightTunnelLocalizer();
     LightTunnelLocalizer lightTunnelLoc2 = new LightTunnelLocalizer();
     LightTunnelLocalizer lightTunnelLoc3 = new LightTunnelLocalizer();
