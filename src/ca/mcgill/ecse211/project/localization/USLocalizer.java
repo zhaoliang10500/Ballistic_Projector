@@ -34,7 +34,7 @@ public class USLocalizer implements USUser {
    * Method to begin US localization
    */
   public void localize() { 
-    //sleepFor(1000); //wait for odometer
+    sleepFor(1000); //wait for odometer
     localizing = true;
     step = 0;
     USMotor.setSpeed(150);
@@ -70,6 +70,7 @@ public class USLocalizer implements USUser {
     }
     else if (!gotInitialSample) {
       USMotor.rotate(-20);
+      USMotor.stop();
       initialDistance = distance;
       USMotor.rotate(20);
       if (initialDistance < edgeThreshold) {

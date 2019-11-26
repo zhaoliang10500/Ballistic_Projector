@@ -15,35 +15,31 @@ public class LightTunnelLocalizer implements LightUser {
   private volatile boolean gotInitialSample = false;
   private volatile int step;
   private volatile double[] offset = new double[2];
-  private volatile boolean turnRight;
+  public volatile boolean turnRight;
   private volatile boolean before;
   public double backedupDist;
 
   /**
    * Method to begin tunnel before/after localization
    * 
-   * @param before boolean to specify whether the localization is happening before or after traversing a tunnel
+   * @param 
    */
-  public void localize(boolean before) {
-    // sleepFor(500);
-    this.before = before;
-
+  public void localize() {
     // get yDistFromLine and adjust heading after localization
     localizing = true;
     step = 0;
     while (localizing);
-
+  }
+  
+  public double calcTurnThetaDeg() {
     double turnTheta = Math.atan(Math.abs((offset[1] - offset[0])) / WHEEL_BASE);
     double turnThetaDeg = 180 * turnTheta / Math.PI;
-
-    if (turnRight) {
-      turnRight(turnThetaDeg);
-    } else {
-      turnLeft(turnThetaDeg);
-    }
-    sleepFor(1000);
+    return turnThetaDeg;
   }
-
+  
+  public boolean turnRight() {
+    return turnRight;
+  }
   /**
    * Method to process light Poller data
    * Implemented from LightUser
@@ -58,16 +54,9 @@ public class LightTunnelLocalizer implements LightUser {
       moveBackward(TILE_SIZE/2);
       setLRMotorSpeed(LS_TUNNEL_SPEED);
       moveForward(5);
-      //moveBackward(2);
       initialLight[0] = light[0];
       initialLight[1] = light[1];
-      
-//      if (before) {
-//        moveBackward();
-//      }
-//      else {
-//        moveForward();
-//      }
+ 
       moveForward();
       sleepFor(50);
       
@@ -80,15 +69,8 @@ public class LightTunnelLocalizer implements LightUser {
           stopMotors();
           turnRight = false;
           offset[0] = odometer.getXYT()[1];
-//          if (this.before) {
-//            moveBackward();
-//          }
-//          else {
-//            moveForward();
-//          }
           moveForward();
           sleepFor(150);
-          //sleepFor(50);
           step ++;
           break;
           
@@ -107,15 +89,8 @@ public class LightTunnelLocalizer implements LightUser {
           stopMotors();
           turnRight = true;
           offset[0] = odometer.getXYT()[1];
-//          if (this.before) {
-//            moveBackward();
-//          }
-//          else {
-//            moveForward();
-//          }
           moveForward();
           sleepFor(150);
-          //sleepFor(50);
           step++;
           break;
           
