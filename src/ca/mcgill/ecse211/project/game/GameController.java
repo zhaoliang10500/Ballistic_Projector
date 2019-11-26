@@ -6,11 +6,11 @@ import lejos.hardware.Sound;
 import ca.mcgill.ecse211.project.game.SensorController;
 import ca.mcgill.ecse211.project.sensor.*;
 import ca.mcgill.ecse211.project.localization.*;
-import ca.mcgill.ecse211.project.odometry.*;
+
 
 import static ca.mcgill.ecse211.project.game.Helper.*;
 import static ca.mcgill.ecse211.project.game.Resources.*;
-import static ca.mcgill.ecse211.project.localization.Navigation.*;
+
 import static ca.mcgill.ecse211.project.game.WifiResources.*;
 
 /**
@@ -22,7 +22,7 @@ public class GameController implements Runnable {
   private USLocalizer USLoc;
   private LightLocalizer lightLoc;
   private LightTunnelLocalizer lightTunnelLoc1, lightTunnelLoc2, lightTunnelLoc3, lightTunnelLoc4;
-  private ObstacleAvoidance obAvoid1, obAvoid2;
+  private ObstacleAvoidance obAvoid;
   private final int[] testCoords = {4,3};
   public static GameState state;
   public volatile ArrayList<USUser> currUSUsers = new ArrayList<USUser>();
@@ -40,7 +40,7 @@ public class GameController implements Runnable {
   public GameController (SensorController sensorCont, USLocalizer USLoc, LightLocalizer lightLoc, 
                          LightTunnelLocalizer lightTunnelLoc1, LightTunnelLocalizer lightTunnelLoc2, 
                          LightTunnelLocalizer lightTunnelLoc3, LightTunnelLocalizer lightTunnelLoc4,
-                         ObstacleAvoidance obAvoid1, ObstacleAvoidance obAvoid2) {
+                         ObstacleAvoidance obAvoid) {
     this.sensorCont = sensorCont;
     this.USLoc = USLoc;
     this.lightLoc = lightLoc;
@@ -48,8 +48,8 @@ public class GameController implements Runnable {
     this.lightTunnelLoc2 = lightTunnelLoc2;
     this.lightTunnelLoc3 = lightTunnelLoc3;
     this.lightTunnelLoc4 = lightTunnelLoc4;
-    this.obAvoid1 = obAvoid1;
-    this.obAvoid2 = obAvoid2;
+    this.obAvoid = obAvoid;
+  
   }
   
   /**
@@ -65,8 +65,7 @@ public class GameController implements Runnable {
     TUNNEL_LOC2,
     TUNNEL_LOC3,
     TUNNEL_LOC4,
-    NAV_WITH_OBSTACLE1,
-    NAV_WITH_OBSTACLE2,
+    NAV_WITH_OBSTACLE,
     TUNNEL,
     LAUNCH,
     TEST
@@ -85,12 +84,13 @@ public class GameController implements Runnable {
    * the GameState and calling the corresponding methods for each state
    */
   public void startGame() {
-//    //US localization
-//    changeState(GameState.US_LOC);
-//    setLRMotorSpeed(US_SPEED);
-//    USLoc.localize();
+    //US localization
+    changeState(GameState.US_LOC);
+    setLRMotorSpeed(US_SPEED);
+    USLoc.doLocalization();
+
     
-    
+ /*   
     // light localization
     changeState(GameState.LIGHT_LOC);
     lightLoc.localize();
@@ -158,64 +158,80 @@ public class GameController implements Runnable {
 //      turnLeft(tunnelTurn2);
 //    }
     
-    // navigation: travel to launch point
-    //odometer.setXYT(5*TILE_SIZE,2*TILE_SIZE, 270); //for testing nav alone
-//    sleepFor(1000);
+
+
+//    // navigation: travel to launch point
 //    changeState(GameState.NAVIGATION);
-//    Navigation.travelTo(WiFi.BIN.x, WiFi.BIN.y, 0, true);
+//    Navigation.travelTo(bin.x - 1.0, bin.y - 1.5, 0);
+//    setLRMotorSpeed(NAV_TURN2);
+//    Navigation.turnTo(targetAngle); //turn to specified orientation
 //    beep(3);
     
-//    // throw balls
-//    changeState(GameState.LAUNCH);
-//    for (int i = 0; i<5; i++) {
-//      Launcher.launch();
-//    }
-//    
-//    sleepFor(25000);
+    //travel to ideal launch point while avoiding obstacles
+    changeState(GameState.NAV_WITH_OBSTACLE);
+    obAvoid.travelTo(WiFi.BIN.x - 1.0, WiFi.BIN.y - 1.5);
+    setLRMotorSpeed(NAV_TURN2);
+
+    beep(3);
+
+
+    
+    // throw balls
+    changeState(GameState.LAUNCH);
+    for (int i = 0; i<5; i++) {
+      Launcher.launch();
+    }
+
+    
+
+
     /////////////////////////////////////////////////////////////////////////
     
-//    // travel back to tunnel and face it
-//    changeState(GameState.NAVIGATION);
-//    int currCorner = calcCurrCorner();
-//    travelToTunnel(calcTunnelCoords(), currCorner, false);
-//    straighten(currCorner);
-//    
-//    // light localization before tunnel
-//    changeState(GameState.TUNNEL_LOC3);
-//    setLRMotorSpeed(LS_TUNNEL_SPEED);
-//    lightTunnelLoc3.localize(); //boolean before = true
-//    double tunnelTurn3 = lightTunnelLoc3.calcTurnThetaDeg();
-//    if (lightTunnelLoc3.turnRight()) {
-//      turnRight(tunnelTurn3);
-//    } else {
-//      turnLeft(tunnelTurn3);
-//    }
-//    
-//    sleepFor(1000);
-//    changeState(GameState.TUNNEL);
-//    setLRMotorSpeed(TUNNEL_SPEED);
-//    Navigation.travelThroughTunnel();
-//    
-//    // light localization after tunnel
-//    changeState(GameState.TUNNEL_LOC4);
-//    setLRMotorSpeed(LS_TUNNEL_SPEED);
-//    lightTunnelLoc4.localize(); //boolean before = false -> after
-//    double tunnelTurn4 = lightTunnelLoc4.calcTurnThetaDeg();
-//    if (lightTunnelLoc4.turnRight()) {
-//      turnRight(tunnelTurn4);
-//    } else {
-//      turnLeft(tunnelTurn4);
-//    }
-//    
-//    // travel back to starting position
-//    sleepFor(1000);
-//    changeState(GameState.NAVIGATION);
-//    double[] initialXY = calcInitialPos();
-//    Navigation.travelTo(initialXY[0], initialXY[1], 0, false);
-//    beep(5);
+
+    // travel back to tunnel and face it
+    changeState(GameState.NAVIGATION);
+    int currCorner = calcCurrCorner();
+    travelToTunnel(calcTunnelCoords(), currCorner, false);
+    straighten(currCorner);
     
+    // light localization before tunnel
+    changeState(GameState.TUNNEL_LOC3);
+    setLRMotorSpeed(LS_TUNNEL_SPEED);
+    lightTunnelLoc3.localize(); //boolean before = true
+    double tunnelTurn3 = lightTunnelLoc3.calcTurnThetaDeg();
+    if (lightTunnelLoc3.turnRight()) {
+      turnRight(tunnelTurn3);
+    } else {
+      turnLeft(tunnelTurn3);
+    }
+    
+    sleepFor(1000);
+    changeState(GameState.TUNNEL);
+    setLRMotorSpeed(TUNNEL_SPEED);
+    Navigation.travelThroughTunnel();
+    
+    // light localization after tunnel
+    changeState(GameState.TUNNEL_LOC4);
+    setLRMotorSpeed(LS_TUNNEL_SPEED);
+    lightTunnelLoc4.localize(); //boolean before = false -> after
+    double tunnelTurn4 = lightTunnelLoc4.calcTurnThetaDeg();
+    if (lightTunnelLoc4.turnRight()) {
+      turnRight(tunnelTurn4);
+    } else {
+      turnLeft(tunnelTurn4);
+    }
+    
+    // travel back to starting position
+    sleepFor(1000);
+    changeState(GameState.NAVIGATION);
+    double[] initialXY = calcInitialPos();
+    Navigation.travelTo(initialXY[0], initialXY[1], 0, false);
+    beep(5);
+
+*/    
+
   }
-  
+ 
   /**
    * Straightens the robot to face the tunnel entrance 
    * based on the robot's current corner relative to the tunnel
@@ -278,6 +294,7 @@ public class GameController implements Runnable {
     double minDistLR = Math.sqrt(Math.pow(deltaX_LR, 2) + Math.pow(deltaY_L, 2));
     double minDistUR = Math.sqrt(Math.pow(deltaX_UR, 2) + Math.pow(deltaY_U, 2));
     double minDistUL = Math.sqrt(Math.pow(deltaX_UL, 2) + Math.pow(deltaY_U, 2));
+
     
 
     Point correctCoords = WiFi.TUNNEL_LL; //just initializing
@@ -398,7 +415,7 @@ public class GameController implements Runnable {
     
     switch (state) { 
       case US_LOC:
-        currUSUsers.add(USLoc);
+        //currUSUsers.add(USLoc);
         sensorCont.resumeUSPoller();
         sensorCont.pauseLightPoller();
         break;
@@ -443,15 +460,8 @@ public class GameController implements Runnable {
         sensorCont.resumeLightPoller();
         break;
         
-      case NAV_WITH_OBSTACLE1:
-        currUSUsers.add(obAvoid1);
-        sensorCont.resumeUSPoller();
-        sensorCont.pauseLightPoller();
-        break;
-      
-      case NAV_WITH_OBSTACLE2:
-        currUSUsers.remove(obAvoid1);
-        currUSUsers.add(obAvoid2);
+      case NAV_WITH_OBSTACLE:
+        currUSUsers.add(obAvoid);
         sensorCont.resumeUSPoller();
         sensorCont.pauseLightPoller();
         break;

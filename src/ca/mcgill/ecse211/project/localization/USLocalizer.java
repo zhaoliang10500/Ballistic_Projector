@@ -1,150 +1,127 @@
 package ca.mcgill.ecse211.project.localization;
-import static ca.mcgill.ecse211.project.game.Helper.*;
-import static ca.mcgill.ecse211.project.game.Resources.*;
-import ca.mcgill.ecse211.project.sensor.*;
-import java.util.Arrays;
 import lejos.hardware.Sound;
+import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.robotics.SampleProvider;
-
+import static ca.mcgill.ecse211.project.game.Resources.*;
+import java.util.Arrays;
+import ca.mcgill.ecse211.project.odometry.Odometer;
 /**
- * This class contains methods for ultrasonic localization
- *
+ * @author zhaoliang & Jessie Tang
+ * This Class implemented the ultrasonic sensor localization
  */
-public class USLocalizer implements USUser { 
-  private boolean localizing = false;
-  private int step;
-  private double theta1, theta2;
-  private double dTheta;
-  private int edgeThreshold = 50; // distance threshold for deciding edge type
-  private volatile int initialDistance;
-  private volatile int initialSamp1, initialSamp2;
-  //private volatile int[] initialDists = new int[3];
-  private volatile EdgeType USLocType;
-  private volatile boolean gotInitialSample = false;
-  private volatile boolean gotInitialSample1 = false;
-  private volatile boolean gotInitialSample2 = false;
-  //private volatile int initialSampleCounter = 3;
-
-  private enum EdgeType {
-    RISING_EDGE,
-    FALLING_EDGE
+public class USLocalizer {
+  private static final int THETA_CORRECTION_FALLING_EDGE = 12; 
+  private int filterSize = 3;
+  private int[] tempDists = new int[filterSize];
+  
+  //Set up here
+  private Odometer odometer;
+  private SampleProvider usSensor;
+  private float[] usData;
+  private EV3LargeRegulatedMotor leftMotor, rightMotor;
+  
+  public USLocalizer (EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, 
+      Odometer odometer, SampleProvider usSensor, float[] usData) {
+    this.odometer = odometer;
+    this.usSensor = usSensor;
+    this.usData = usData;
+    this.leftMotor = leftMotor;
+    this.rightMotor = rightMotor;
+    leftMotor.setAcceleration(ACCELERATION);
+    rightMotor.setAcceleration(ACCELERATION);
   }
-
-  /**
-   * Method to begin US localization
+  
+  
+  /*
+   * implement the method to use ultrasonic sensor to detect the 0 degree direction
+   * and make the car face to this degree
    */
-  public void localize() { 
-    sleepFor(1000); //wait for odometer
-    localizing = true;
-    step = 0;
-    USMotor.setSpeed(150);
-
-    while(localizing); //don't continue program until localizing = false
+  public void doLocalization() {
     
-    sleepFor(300);
-    if (USLocType == EdgeType.FALLING_EDGE) {
-      dTheta = FALL_ANGLE + (theta1 + theta2)/2;
-      turnLeft(dTheta); //turn to 0 
-      moveForward(2);
-      turnRight(90); //turn to 90
+    double angle;
+    leftMotor.setSpeed(ROTATION_SPEED);
+    rightMotor.setSpeed(ROTATION_SPEED);
+    
+    /*
+     * if "FALLING_EDGE" is chose, first rotate the car to the right to detect the falling edge
+     * the FALL_EDGE is based on the right edge, theta is 0 when detected the right edge
+     * then rotate back to detect the falling edge on the other side.
+     * Recommend to use when the car is facing away from the wall
+     */
+    //Detect if the vehicle is facing away or forwards the wall
+    //if it is facing away from the wall, turn right unless it detects the wall
+    if (meanFilter() > DISTANCE_TO_WALL) {
+      while (meanFilter() > DISTANCE_TO_WALL) {
+        leftMotor.forward();
+        rightMotor.backward();
+      }
+      leftMotor.stop(true);
+      rightMotor.stop(false);
     }
-    else {
-      dTheta = RISE_ANGLE - (theta1 + theta2)/2;
-      turnRight(dTheta - 90); //turn to 0 
-      moveForward(4);
-      turnRight(90); //turn to 90
+    //if it is facing forwards the wall, turn right until it no more sees the wall
+    else if (meanFilter() < DISTANCE_TO_WALL) {
+      while (meanFilter() < DISTANCE_TO_WALL) {
+        leftMotor.forward();
+        rightMotor.backward();
+      }
+      //rotate right a bit to make the car keep rotating
+      leftMotor.rotate(180, true);
+      rightMotor.rotate(-180, false);
+      //Rotate the car until it sees the edge on the right, and set this angle to 0
+      while (meanFilter() > DISTANCE_TO_WALL) {
+        leftMotor.forward();
+        rightMotor.backward();
+      }
+      leftMotor.stop(true);
+      rightMotor.stop(false);
     }
-    //odometer.setTheta(90);
+    odometer.setTheta(0.0);
+    
+    //turning left a bit to avoid double detection
+    leftMotor.rotate(-220, true);
+    rightMotor.rotate(220, false);
+    //Rotate the car until it sees a wall, and then Store this angle
+    while (meanFilter() > DISTANCE_TO_WALL) {
+      leftMotor.backward();
+      rightMotor.forward();
+    }
+    //stop the motors on the falling edge on the left.
+    rightMotor.stop(true);
+    leftMotor.stop(false);
+    Sound.beep();
+    
+    angle = odometer.getXYT()[2];
+    
+    angle = 360 - angle;
+    
+    //half of the angle + 45 degrees to get to the 0 degree direction
+    double headingToZero = angle / 2 - 135 + THETA_CORRECTION_FALLING_EDGE;
+    
+    leftMotor.rotate(convertAngle(WHEEL_RADIUS, WHEEL_BASE, headingToZero), true);
+    rightMotor.rotate(-convertAngle(WHEEL_RADIUS, WHEEL_BASE, headingToZero), false);
+    
+    odometer.setTheta(0.0);
   }
-
-
-  /**
-   * Method to process US poller data
-   * Uses falling edge localization (facing away from wall)
-   * Implemented from interface USUser
-   */
-  @Override
-  public void processUSData(int distance) {
-    if (!localizing) {
-      return;
-    }
-    else if (!gotInitialSample) {
-      USMotor.rotate(-20);
-      USMotor.stop();
-      initialDistance = distance;
-      USMotor.rotate(20);
-      if (initialDistance < edgeThreshold) {
-        USLocType = EdgeType.RISING_EDGE;
-      }
-      else {
-        USLocType = EdgeType.FALLING_EDGE;
-      }
-      sleepFor(1500); //wait for other threads;
-      turnLeft();
-      gotInitialSample = true;
-    }
-    else if (gotInitialSample && USLocType == EdgeType.FALLING_EDGE) { //facing away from wall
-      if (distance > FALL_THRESHOLD){
-        switch(step) {
-          case 0:
-            step++;
-            break;
-          case 2:
-            step++;
-            break;
-        }
-      }
-      else if (distance < FALL_THRESHOLD) {
-        switch(step) {
-          case 1:
-            stopMotors();
-            theta1 = 360 - odometer.getXYT()[2]; 
-            turnRight();
-            sleepFor(300);
-            step++;
-            break;
-          case 3:
-            theta2 = odometer.getXYT()[2];    
-            stopMotors();
-            step++;
-            localizing = false;
-            break;
-        }
-      }
-    }
-    else if (gotInitialSample && USLocType == EdgeType.RISING_EDGE) { //facing towards wall
-      if (distance < RISE_THRESHOLD){
-        switch(step) {
-          case 0:
-            step++;
-            break;
-          case 2:
-            step++;
-            break;
-        }
-      }
-      else if (distance > RISE_THRESHOLD) {
-        switch(step) {
-          case 1:
-            stopMotors();
-            theta1 = 360 - odometer.getXYT()[2]; 
-            turnRight();
-            sleepFor(300);
-            step++;
-            break;
-          case 3:
-            theta2 = odometer.getXYT()[2];    
-            stopMotors();
-            step++;
-            localizing = false;
-            break;
-        }
-      }
-      
-    }
-
+  
+  //Conversion methods.
+  private static int convertDistance(double radius, double distance) {
+      return (int) ((180.0 * distance) / (Math.PI * radius));
   }
-
-
-
+  
+  private static int convertAngle(double radius, double width, double angle) {
+    return convertDistance(radius, Math.PI * width * angle / 360.0);
+}
+  
+  
+  private int meanFilter() {
+    int distance;
+    for (int i = 0; i < filterSize; i++) { 
+      usSensor.fetchSample(usData, 0); 
+      tempDists[i] = (int) (usData[0] * 100.0); 
+    }
+    
+    Arrays.sort(tempDists);
+    distance = tempDists[filterSize/2]; //java rounds down for int division
+    return distance;
+  }
 }
