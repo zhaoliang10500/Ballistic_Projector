@@ -6,6 +6,13 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.robotics.SampleProvider;
 import static ca.mcgill.ecse211.project.game.Resources.*;
 
+
+/**
+ * 
+ * This class contains the functions to implement the obstacle avoidance.
+ * Liang Zhao & Jessie Tang
+ *
+ */
 public class ObstacleAvoidance extends Thread implements USUser{
     
     private Odometer odometer;
@@ -34,7 +41,12 @@ public class ObstacleAvoidance extends Thread implements USUser{
  
 
     private static boolean navigating = true;
-    
+    /**
+     * 
+     * @param x  destination x-coordinate
+     * @param y  destination y-coordinate
+     * This function allows the robot to travel to designated (x,y) point
+     */
     public void travelTo(double x, double y) {
       Obstacle_Direction = null;
         //reset motors
@@ -107,7 +119,11 @@ public class ObstacleAvoidance extends Thread implements USUser{
         sensorMotor.rotateTo(0);
         
     }
-    
+    /**
+     * 
+     * @param theta the param of the direction of the robot
+     * this function allows the robot to turn to desired dirction
+     */
     public void turnTo(double theta) { //method from navigation program
    
       double angle = getMinAngle(theta/360*2*PI- odometer.getXYT()[2]/360*2*PI);
@@ -116,6 +132,11 @@ public class ObstacleAvoidance extends Thread implements USUser{
       rightMotor.rotate(-convertAngleForMotor(angle),false);
     }
     
+    /**
+     * 
+     * @param angle degree the robot should turn to.
+     * @return the minimum angel the robot needs to turn to get to the desired degree
+     * This function allow the robot to turn to desired degree by turning the minimum angel  * */
     public double getMinAngle(double angle){
         if (angle > PI) {
             angle = 2*PI - angle;
@@ -125,24 +146,33 @@ public class ObstacleAvoidance extends Thread implements USUser{
         return angle;
     }
     
-    /* returns: whether or not the vehicle is currently navigating
+    /**
+     *  returns: whether or not the vehicle is currently navigating
      */
     public boolean isNavigating() {
         return navigating;
     }
-    /* parameter: double distance representing the length of the line the vehicle has to run
+    
+    /** parameter: double distance representing the length of the line the vehicle has to run
      * returns: amount of degrees the motors have to turn to traverse this distance
      */
     private int convertDistanceForMotor(double distance){
         return (int) (360*distance/(2*PI*WHEEL_RADIUS));
     }
-    /* parameter: double angle representing the angle heading change in radians
+    
+    /** parameter: double angle representing the angle heading change in radians
      * returns: amount of degrees the motors have to turn to change this heading
      */
     private int convertAngleForMotor(double angle){
         return convertDistanceForMotor(WHEEL_BASE*angle/2);
     }
     
+    
+    
+    /**
+     * 
+     * @param OBSTACLE_POSITION string that specifies if the obstacle is on the right or left side of the robot
+     * This function allows the robot to determin the way to avoid the obstacle by turning right or left    */
     public void avoidObstacle(String OBSTACLE_POSITION){
       if (OBSTACLE_POSITION == "ON_THE_LEFT") {
         // adjust the robot heading to ensure the avoidance of obstacles
@@ -153,14 +183,12 @@ public class ObstacleAvoidance extends Thread implements USUser{
         
         // define the exit condition of avoidance mode
         double endAngle = odometer.getXYT()[2]/360*2*PI+PI*0.5;
-        System.out.println(endAngle + "   EndAngle    "   + odometer.getXYT()[2]/360*2*PI + "   odometersssssssssss");
+        
         // engage bangbang controller to avoid the obstacle
         while (odometer.getXYT()[2]/360*2*PI<endAngle){
-          System.out.println(endAngle + "   EndAngle    "   + odometer.getXYT()[2]/360*2*PI + "   odometer");
             us.fetchSample(usData,0);                           // acquire data
             distance=(int)(usData[0]*100.0);                    // extract from buffer, cast to int
             int errorDistance = bandCenter - distance;
-            System.out.println(distance + "disttttttttce");
             if (Math.abs(errorDistance)<= bandWidth){ //moving in straight line
                 leftMotor.setSpeed(100 * 2);
                 rightMotor.setSpeed(100 * 2);
@@ -194,12 +222,10 @@ public class ObstacleAvoidance extends Thread implements USUser{
         rightMotor.rotate(220, false);
         
         // define the exit condition of avoidance mode
-        //double endAngle = odometer.getXYT()[2]/360*2*PI+PI*0.8;
         double endAngle = odometer.getXYT()[2]/360*2*PI-PI*0.5;
-        System.out.println(endAngle + "   EndAngle    "   + odometer.getXYT()[2]/360*2*PI + "   odometersssssssssss");
+      
         // engage bangbang controller to avoid the obstacle
         while (odometer.getXYT()[2]/360*2*PI>endAngle){
-          System.out.println(endAngle + "   EndAngle    "   + odometer.getXYT()[2]/360*2*PI + "   odometer");
             us.fetchSample(usData,0);                           // acquire data
             distance=(int)(usData[0]*100.0);                    // extract from buffer, cast to int
             int errorDistance = bandCenter - distance;
@@ -228,8 +254,7 @@ public class ObstacleAvoidance extends Thread implements USUser{
                 rightMotor.forward();
             }
         }
-      }
-       
+      } 
         Sound.beep();
         leftMotor.stop();
         rightMotor.stop();

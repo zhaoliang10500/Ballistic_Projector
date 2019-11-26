@@ -9,7 +9,8 @@ import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 
 /**
- *Class of constants
+ * Class of constants
+ * Liang Zhao & Jessie Tang
  */
 public class Resources {
   
@@ -59,6 +60,7 @@ public class Resources {
   
   //launcher
   public static final double LAUNCH_GRID_DIST = 5.5;
+  
   //Navigation
   public static final int NAV_FORWARD = 200;
   public static final double NAV_OFFSET = LAUNCH_GRID_DIST*TILE_SIZE; //min offset = 4.5

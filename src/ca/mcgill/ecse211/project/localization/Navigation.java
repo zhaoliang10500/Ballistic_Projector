@@ -7,7 +7,7 @@ import ca.mcgill.ecse211.project.game.WiFi;
 
 /**
  * This class contains methods for navigations
- * Everything here should be static
+ * @author Liang Zhao & Jessie Tang
  */
 public class Navigation {
   private static double x, y; 
@@ -23,33 +23,21 @@ public class Navigation {
 
   public static void travelTo (double xCoord, double yCoord, double angleOffset, boolean bin) { //travelTo 
     double[] xyCoord = {xCoord, yCoord};
-   // System.out.println("coords: " + xCoord + ", " + yCoord);
-    // Gets current x, y positions (already in cm) 
-    //x = odometer.getXYT()[0];
-    //y = odometer.getXYT()[1];
     
     sleepFor(3000);
- //   System.out.println("odometer: " + odometer.getXYT()[0] + ", " + odometer.getXYT()[1]);
     deltaX = TILE_SIZE*xyCoord[0] - odometer.getXYT()[0];  
     deltaY = TILE_SIZE*xyCoord[1] - odometer.getXYT()[1];
-//    deltaX = TILE_SIZE*xyCoord[0] - x;  
-//    deltaY = TILE_SIZE*xyCoord[1] - y;
-   // System.out.println("deltaX: " + deltaX);
-    //System.out.println("deltaY: " + deltaY);
 
     //Calculate angles, atan = first/second
     theta2 = Math.toDegrees(Math.atan2(deltaX, deltaY)); //theta2 now in degrees
-    //System.out.println("theta2: " + theta2);
     theta1 = odometer.getXYT()[2]; // theta1 in degrees
-    //System.out.println("theta1: " + theta1);
 
     //Turn
     turnAngle = calcTurnAngle(theta2 - theta1, angleOffset);
     sleepFor(1000);
-    //System.out.println("nav_turn: " + turnAngle);
     turn(turnAngle);
+    
     // Move 
-   // System.out.println("minDist: " + minDist);
     minDist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
     setLRMotorSpeed(NAV_FORWARD);
     
@@ -60,8 +48,6 @@ public class Navigation {
     } 
     else if (bin) {
       sleepFor(1000);
-      //System.out.println("minDist: " + minDist);
-      //System.out.println("bin travel: " + Math.abs(minDist - (LAUNCH_GRID_DIST*TILE_SIZE)));
       leftMotor.rotate(Helper.convertDistance(Math.abs(minDist - (LAUNCH_GRID_DIST*TILE_SIZE)), WHEEL_RADIUS), true);
       rightMotor.rotate(Helper.convertDistance(Math.abs(minDist- (LAUNCH_GRID_DIST*TILE_SIZE)), WHEEL_RADIUS), false);
     }
@@ -80,7 +66,6 @@ public class Navigation {
     else if (theta < -180) {
       theta = 360 + theta;
     }
-    //else theta = theta/
     return theta + angleOffset; //to compensate for overturning in navigation
   }
   
@@ -111,8 +96,7 @@ public class Navigation {
     else if (turnAngle > 180) {
       turnAngle = 360 - turnAngle;
     }
-    
-    //System.out.println("turntoface angle:" + turnAngle);
+
     turn(turnAngle);
   }
   

@@ -9,7 +9,8 @@ import ca.mcgill.ecse211.project.odometry.Odometer;
 /**
  * This class contains methods for light sensor localization
  * The robot uses two light sensors placed at each side at the back of its body 
- * to read grid lines and correct its heading (angle) as necesary
+ * to read grid lines and correct its heading (angle) as necessary
+ * @author Liang Zhao & Jessie Tang
  */
 public class LightLocalizer {
   private float[][] lightData;
@@ -30,6 +31,11 @@ public class LightLocalizer {
     this.odometer = odometer;
   }
   
+  /**
+   * Method to filter light sensor samples
+   * Uses a mean filter
+   * @return
+   */
   private double[] meanFilter() {
     double[] lights = new double[2];
     for (int i = 0; i<filterSize; i++) {
@@ -50,6 +56,10 @@ public class LightLocalizer {
     return lights;
   }
   
+  /**
+   * Method to get the first and second axis of localization relative to the corner
+   * @return
+   */
   private int[] getAxis() {
     int[] axis = new int[2];
     
@@ -65,6 +75,9 @@ public class LightLocalizer {
     return axis;
   }
   
+  /**
+   * Method for light localization 
+   */
   public void localize() {
     if (!gotInitialSample) {
       setLRMotorSpeed(120);
@@ -76,7 +89,6 @@ public class LightLocalizer {
     
     int firstAxis = getAxis()[0];
     int secondAxis = getAxis()[1];
-    //System.out.println("axis; " + firstAxis + ", " + secondAxis);
     if (firstAxis == 0) {
       odometer.setX(0);
     }
@@ -107,15 +119,14 @@ public class LightLocalizer {
     }
     stopMotors();
     if (meanFilter()[0]/initialLight[0] < LIGHT_THRESHOLD_L && meanFilter()[1]/initialLight[1] < LIGHT_THRESHOLD_R ) {
-//      offset[0] = 0;
-//      offset[1] = 0;
+      offset[0] = 0;
+      offset[1] = 0;
       isLeftSensor = false; // for completeness only
       aligned = true;
     }
     //left sensor sees line first
     else if (meanFilter()[0]/initialLight[0] < LIGHT_THRESHOLD_L && meanFilter()[1]/initialLight[1] > LIGHT_THRESHOLD_R) {
       shouldRight = false;
-      //System.out.println("first left: " + meanFilter()[0]/initialLight[0]);
       offset[0] = odometer.getXYT()[secondAxis];
       System.out.println(odometer.getXYT()[secondAxis] + "odometer.getXYT()[secondAxis];");
       isLeftSensor = true;
@@ -123,7 +134,6 @@ public class LightLocalizer {
     //right sensor sees line first
     else if (meanFilter()[0]/initialLight[0] > LIGHT_THRESHOLD_L && meanFilter()[1]/initialLight[1] < LIGHT_THRESHOLD_R ){
       shouldRight = true;
-      //System.out.println("first right: " + meanFilter()[1]/initialLight[1]);
       offset[0] = odometer.getXYT()[secondAxis];
       System.out.println(odometer.getXYT()[secondAxis] +"odometer.getXYT()[secondAxis]");
       isLeftSensor = false;
@@ -145,19 +155,12 @@ public class LightLocalizer {
       System.out.println( odometer.getXYT()[secondAxis] + "odometer.getXYT()[secondAxis]");
     }
     
-    //System.out.println("delta offset" + offset[0] + ", " + offset[1]);
-    
-    System.out.println("offffffet[1111]" + offset[1]);
-    System.out.println("offffffet[0000]" + offset[0]);
+    //straighten robot by turning offset angle
     double turnTheta = Math.atan(Math.abs((offset[1] - offset[0]))/WHEEL_BASE);
     double turnThetaDeg = 180*turnTheta/Math.PI;
-   
-    //System.out.println("turnthetaDeg: " + turnThetaDeg);
     if (shouldRight) {
-      System.out.println("RIGHTTTTT: " + turnThetaDeg);
       turnRight(turnThetaDeg * 100);
     } else {
-      System.out.println("LEFTTTTTTT: " + turnThetaDeg);
       turnLeft(turnThetaDeg * 100);
     }
  
@@ -174,10 +177,9 @@ public class LightLocalizer {
     else if (WiFi.CORNER == 3) {
       odometer.setXYT(TILE_SIZE, 8*TILE_SIZE, 90); //90
     } 
-    //System.out.println("are you hereeeeeeee");
+
     setLRMotorSpeed(LS_SPEED_FAST);
     moveBackward(LS_DISTANCE);
-    //System.out.println("Yessssss donesss");
   }
  
  

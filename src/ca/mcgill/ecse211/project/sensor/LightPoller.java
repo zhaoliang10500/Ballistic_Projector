@@ -6,6 +6,7 @@ import ca.mcgill.ecse211.project.game.SensorController;
 
 /**
  * This class contains the color poller thread
+ * @author Liang Zhao & Jessie Tang
  *
  */
 public class LightPoller extends Thread {

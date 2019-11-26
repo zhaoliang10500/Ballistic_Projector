@@ -6,8 +6,8 @@ import java.util.Arrays;
 import ca.mcgill.ecse211.project.odometry.Odometer;
 import static ca.mcgill.ecse211.project.game.Helper.*;
 /**
- * @author zhaoliang & Jessie Tang
  * This Class implemented the ultrasonic sensor localization
+ *  @author Liang Zhao & Jessie Tang
  */
 public class USLocalizer {
   private int filterSize = 3;

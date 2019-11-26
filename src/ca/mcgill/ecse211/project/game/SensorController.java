@@ -5,6 +5,7 @@ import ca.mcgill.ecse211.project.sensor.*;
 
 /**
  * This class contains methods that controls the ultrasonic and light sensors
+ * Liang Zhao & Jessie Tang
  *
  */
 public class SensorController {

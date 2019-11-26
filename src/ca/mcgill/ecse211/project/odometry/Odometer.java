@@ -12,6 +12,7 @@ import ca.mcgill.ecse211.project.game.WiFi;
 
 /**
  * This class contains the odometer
+ * @author Liang Zhao & Jessie Tang
  */
 
 public class Odometer extends Thread {

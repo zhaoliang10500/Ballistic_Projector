@@ -4,6 +4,7 @@ import static ca.mcgill.ecse211.project.game.Resources.*;
 
 /**
  * This class defines helper methods to be used anywhere
+ * Liang Zhao & Jessie Tang
  */
 public class Helper{
   

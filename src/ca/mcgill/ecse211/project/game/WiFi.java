@@ -5,6 +5,7 @@ import static ca.mcgill.ecse211.project.game.Helper.sleepFor;
 
 /**
  * This class takes input from the server at the beginning of the program
+ * @author Liang Zhao & Jessie Tang
  *
  */
 public class WiFi {

@@ -7,6 +7,7 @@ import java.util.Arrays;
 
 /**
  * This class contains the ultrasonic poller thread
+ * @author Liang Zhao & Jessie Tang
  *
  */
 public class USPoller extends Thread {

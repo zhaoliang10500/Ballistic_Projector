@@ -4,7 +4,7 @@ import static ca.mcgill.ecse211.project.game.Resources.*;
 
 /**
  * This class contains the ball launcher method
- *
+ * Liang Zhao & Jessie Tang
  */
 public class Launcher {
   
