@@ -47,7 +47,7 @@ public class Resources {
   public static final int FALL_ANGLE = 45; //45
   
   //LightLocalizer
-  public static final double LIGHT_THRESHOLD_R = 0.75; //0.62, 0.55
+  public static final double LIGHT_THRESHOLD_R = 0.55; //0.62, 0.55
   public static final double LIGHT_THRESHOLD_L = 0.75; //0.73, 0.60
   
   public static final double LS_DISTANCE = 12.3; // sensor distance from center of rotation

@@ -85,84 +85,85 @@ public class GameController implements Runnable {
    * the GameState and calling the corresponding methods for each state
    */
   public void startGame() {
-    //US localization
-    changeState(GameState.US_LOC);
-    setLRMotorSpeed(US_SPEED);
-    USLoc.localize();
+//    //US localization
+//    changeState(GameState.US_LOC);
+//    setLRMotorSpeed(US_SPEED);
+//    USLoc.localize();
     
     
     // light localization
     changeState(GameState.LIGHT_LOC);
     lightLoc.localize();
-    double turnThetaDeg = lightLoc.turnThetaDeg();
-    boolean turnRight = lightLoc.turnRight();
-    setLRMotorSpeed(LS_SPEED_SLOW);
-    if (turnRight) {
-      turnRight(turnThetaDeg);
-    }
-    else {
-      turnLeft(turnThetaDeg);
-    }
-    sleepFor(500);
-    //set odometer after localization
-    if (WiFi.CORNER == 0) {
-      odometer.setXYT(TILE_SIZE, TILE_SIZE, 0);
-    }
-    else if (WiFi.CORNER == 1) {
-      odometer.setXYT(14*TILE_SIZE, TILE_SIZE, 270);//270
-    }
-    else if (WiFi.CORNER == 2) {
-      odometer.setXYT(14*TILE_SIZE, 8*TILE_SIZE, 180); //180
-    }
-    else if (WiFi.CORNER == 3) {
-      odometer.setXYT(TILE_SIZE, 8*TILE_SIZE, 90); //90
-    } 
-    setLRMotorSpeed(LS_SPEED_FAST);
-    moveBackward(LS_DISTANCE);
     beep(3);
+//    double turnThetaDeg = lightLoc.turnThetaDeg();
+//    boolean turnRight = lightLoc.turnRight();
+//    setLRMotorSpeed(LS_SPEED_SLOW);
+//    if (turnRight) {
+//      turnRight(turnThetaDeg);
+//    }
+//    else {
+//      turnLeft(turnThetaDeg);
+//    }
+//    sleepFor(500);
+//    //set odometer after localization
+//    if (WiFi.CORNER == 0) {
+//      odometer.setXYT(TILE_SIZE, TILE_SIZE, 0);
+//    }
+//    else if (WiFi.CORNER == 1) {
+//      odometer.setXYT(14*TILE_SIZE, TILE_SIZE, 270);//270
+//    }
+//    else if (WiFi.CORNER == 2) {
+//      odometer.setXYT(14*TILE_SIZE, 8*TILE_SIZE, 180); //180
+//    }
+//    else if (WiFi.CORNER == 3) {
+//      odometer.setXYT(TILE_SIZE, 8*TILE_SIZE, 90); //90
+//    } 
+//    setLRMotorSpeed(LS_SPEED_FAST);
+//    moveBackward(LS_DISTANCE);
+//    beep(3);
     
     
-    //Travel to tunnel and face it
-    changeState(GameState.NAVIGATION);
-    travelToTunnel(calcTunnelCoords(), WiFi.CORNER, false);
-    straighten(WiFi.CORNER);
-    
-    
-    // light localization before tunnel
-    changeState(GameState.TUNNEL_LOC1);
-    setLRMotorSpeed(LS_TUNNEL_SPEED);
-    lightTunnelLoc1.localize(); 
-    double tunnelTurn1 = lightTunnelLoc1.calcTurnThetaDeg();
-    if (lightTunnelLoc1.turnRight()) {
-      leftMotor.rotate(convertAngle(tunnelTurn1, WHEEL_RADIUS), true);
-      rightMotor.rotate(-convertAngle(tunnelTurn1, WHEEL_RADIUS), false);
-      turnRight(tunnelTurn1);
-    } else {
-      turnLeft(tunnelTurn1);
-    }
-    
-    sleepFor(1000);
-    changeState(GameState.TUNNEL);
-    setLRMotorSpeed(TUNNEL_SPEED);
-    Navigation.travelThroughTunnel();
-    
-    // light localization after tunnel
-    changeState(GameState.TUNNEL_LOC2);
-    setLRMotorSpeed(LS_TUNNEL_SPEED);
-    lightTunnelLoc2.localize(); 
-    double tunnelTurn2 = lightTunnelLoc2.calcTurnThetaDeg();
-    if (lightTunnelLoc2.turnRight()) {
-      turnRight(tunnelTurn2);
-    } else {
-      turnLeft(tunnelTurn2);
-    }
+//    //Travel to tunnel and face it
+//    changeState(GameState.NAVIGATION);
+//    travelToTunnel(calcTunnelCoords(), WiFi.CORNER, false);
+//    straighten(WiFi.CORNER);
+//    
+//    
+//    // light localization before tunnel
+//    changeState(GameState.TUNNEL_LOC1);
+//    setLRMotorSpeed(LS_TUNNEL_SPEED);
+//    lightTunnelLoc1.localize(); 
+//    double tunnelTurn1 = lightTunnelLoc1.calcTurnThetaDeg();
+//    if (lightTunnelLoc1.turnRight()) {
+//      leftMotor.rotate(convertAngle(tunnelTurn1, WHEEL_RADIUS), true);
+//      rightMotor.rotate(-convertAngle(tunnelTurn1, WHEEL_RADIUS), false);
+//      turnRight(tunnelTurn1);
+//    } else {
+//      turnLeft(tunnelTurn1);
+//    }
+//    
+//    sleepFor(1000);
+//    changeState(GameState.TUNNEL);
+//    setLRMotorSpeed(TUNNEL_SPEED);
+//    Navigation.travelThroughTunnel();
+//    
+//    // light localization after tunnel
+//    changeState(GameState.TUNNEL_LOC2);
+//    setLRMotorSpeed(LS_TUNNEL_SPEED);
+//    lightTunnelLoc2.localize(); 
+//    double tunnelTurn2 = lightTunnelLoc2.calcTurnThetaDeg();
+//    if (lightTunnelLoc2.turnRight()) {
+//      turnRight(tunnelTurn2);
+//    } else {
+//      turnLeft(tunnelTurn2);
+//    }
     
     // navigation: travel to launch point
     //odometer.setXYT(5*TILE_SIZE,2*TILE_SIZE, 270); //for testing nav alone
-    sleepFor(1000);
-    changeState(GameState.NAVIGATION);
-    Navigation.travelTo(WiFi.BIN.x, WiFi.BIN.y, 0, true);
-    beep(3);
+//    sleepFor(1000);
+//    changeState(GameState.NAVIGATION);
+//    Navigation.travelTo(WiFi.BIN.x, WiFi.BIN.y, 0, true);
+//    beep(3);
     
 //    // throw balls
 //    changeState(GameState.LAUNCH);
@@ -173,45 +174,45 @@ public class GameController implements Runnable {
 //    sleepFor(25000);
     /////////////////////////////////////////////////////////////////////////
     
-    // travel back to tunnel and face it
-    changeState(GameState.NAVIGATION);
-    int currCorner = calcCurrCorner();
-    travelToTunnel(calcTunnelCoords(), currCorner, false);
-    straighten(currCorner);
-    
-    // light localization before tunnel
-    changeState(GameState.TUNNEL_LOC3);
-    setLRMotorSpeed(LS_TUNNEL_SPEED);
-    lightTunnelLoc3.localize(); //boolean before = true
-    double tunnelTurn3 = lightTunnelLoc3.calcTurnThetaDeg();
-    if (lightTunnelLoc3.turnRight()) {
-      turnRight(tunnelTurn3);
-    } else {
-      turnLeft(tunnelTurn3);
-    }
-    
-    sleepFor(1000);
-    changeState(GameState.TUNNEL);
-    setLRMotorSpeed(TUNNEL_SPEED);
-    Navigation.travelThroughTunnel();
-    
-    // light localization after tunnel
-    changeState(GameState.TUNNEL_LOC4);
-    setLRMotorSpeed(LS_TUNNEL_SPEED);
-    lightTunnelLoc4.localize(); //boolean before = false -> after
-    double tunnelTurn4 = lightTunnelLoc4.calcTurnThetaDeg();
-    if (lightTunnelLoc4.turnRight()) {
-      turnRight(tunnelTurn4);
-    } else {
-      turnLeft(tunnelTurn4);
-    }
-    
-    // travel back to starting position
-    sleepFor(1000);
-    changeState(GameState.NAVIGATION);
-    double[] initialXY = calcInitialPos();
-    Navigation.travelTo(initialXY[0], initialXY[1], 0, false);
-    beep(5);
+//    // travel back to tunnel and face it
+//    changeState(GameState.NAVIGATION);
+//    int currCorner = calcCurrCorner();
+//    travelToTunnel(calcTunnelCoords(), currCorner, false);
+//    straighten(currCorner);
+//    
+//    // light localization before tunnel
+//    changeState(GameState.TUNNEL_LOC3);
+//    setLRMotorSpeed(LS_TUNNEL_SPEED);
+//    lightTunnelLoc3.localize(); //boolean before = true
+//    double tunnelTurn3 = lightTunnelLoc3.calcTurnThetaDeg();
+//    if (lightTunnelLoc3.turnRight()) {
+//      turnRight(tunnelTurn3);
+//    } else {
+//      turnLeft(tunnelTurn3);
+//    }
+//    
+//    sleepFor(1000);
+//    changeState(GameState.TUNNEL);
+//    setLRMotorSpeed(TUNNEL_SPEED);
+//    Navigation.travelThroughTunnel();
+//    
+//    // light localization after tunnel
+//    changeState(GameState.TUNNEL_LOC4);
+//    setLRMotorSpeed(LS_TUNNEL_SPEED);
+//    lightTunnelLoc4.localize(); //boolean before = false -> after
+//    double tunnelTurn4 = lightTunnelLoc4.calcTurnThetaDeg();
+//    if (lightTunnelLoc4.turnRight()) {
+//      turnRight(tunnelTurn4);
+//    } else {
+//      turnLeft(tunnelTurn4);
+//    }
+//    
+//    // travel back to starting position
+//    sleepFor(1000);
+//    changeState(GameState.NAVIGATION);
+//    double[] initialXY = calcInitialPos();
+//    Navigation.travelTo(initialXY[0], initialXY[1], 0, false);
+//    beep(5);
     
   }
   
@@ -403,7 +404,7 @@ public class GameController implements Runnable {
         break;
         
       case LIGHT_LOC:
-        currLightUsers.add(lightLoc);
+        //currLightUsers.add(lightLoc);
         sensorCont.pauseUSPoller();
         sensorCont.resumeLightPoller();
         break;

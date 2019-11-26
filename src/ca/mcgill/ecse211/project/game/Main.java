@@ -42,7 +42,7 @@ public class Main {
     SensorController sensorControl = SensorController.getSensorController(USPoll, lightPoll);
     
     USLocalizer USLoc = new USLocalizer();
-    LightLocalizer lightLoc = new LightLocalizer();
+    LightLocalizer lightLoc = new LightLocalizer(lightSampL, lightDataL, lightSampR, lightDataR);
     LightTunnelLocalizer lightTunnelLoc1 = new LightTunnelLocalizer();
     LightTunnelLocalizer lightTunnelLoc2 = new LightTunnelLocalizer();
     LightTunnelLocalizer lightTunnelLoc3 = new LightTunnelLocalizer();
