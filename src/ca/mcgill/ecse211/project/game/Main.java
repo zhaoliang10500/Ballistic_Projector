@@ -49,7 +49,7 @@ public class Main {
     LightTunnelLocalizer lightTunnelLoc3 = new LightTunnelLocalizer();
     LightTunnelLocalizer lightTunnelLoc4 = new LightTunnelLocalizer();
     
-    GameController gameControl = new GameController(sensorControl, USLoc, lightLoc, lightTunnelLoc1, lightTunnelLoc2, lightTunnelLoc3, lightTunnelLoc4, obAvoid1, obAvoid2);
+    GameController gameControl = new GameController(sensorControl, USLoc, lightLoc, lightTunnelLoc1, lightTunnelLoc2, lightTunnelLoc3, lightTunnelLoc4, obAvoid);
     //TODO: obstacle avoidance might not work this way
     
     Thread odoThread = new Thread(odometer); //odometer created in Resources

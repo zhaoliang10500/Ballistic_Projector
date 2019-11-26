@@ -40,7 +40,7 @@ public class GameController implements Runnable {
   public GameController (SensorController sensorCont, USLocalizer USLoc, LightLocalizer lightLoc, 
                          LightTunnelLocalizer lightTunnelLoc1, LightTunnelLocalizer lightTunnelLoc2, 
                          LightTunnelLocalizer lightTunnelLoc3, LightTunnelLocalizer lightTunnelLoc4,
-                         ObstacleAvoidance obAvoid1, ObstacleAvoidance obAvoid2) {
+                         ObstacleAvoidance obAvoid) {
     this.sensorCont = sensorCont;
     this.USLoc = USLoc;
     this.lightLoc = lightLoc;
@@ -48,8 +48,7 @@ public class GameController implements Runnable {
     this.lightTunnelLoc2 = lightTunnelLoc2;
     this.lightTunnelLoc3 = lightTunnelLoc3;
     this.lightTunnelLoc4 = lightTunnelLoc4;
-    this.obAvoid1 = obAvoid1;
-    this.obAvoid2 = obAvoid2;
+    this.obAvoid = obAvoid;
   }
   
   /**
@@ -65,8 +64,7 @@ public class GameController implements Runnable {
     TUNNEL_LOC2,
     TUNNEL_LOC3,
     TUNNEL_LOC4,
-    NAV_WITH_OBSTACLE1,
-    NAV_WITH_OBSTACLE2,
+    NAV_WITH_OBSTACLE,
     TUNNEL,
     LAUNCH,
     TEST
@@ -126,9 +124,9 @@ public class GameController implements Runnable {
     
     //travel to ideal launch point while avoiding obstacles
     changeState(GameState.NAV_WITH_OBSTACLE);
-    obAvoid.travelTo(bin.x - 1.0, bin.y - 1.5);
+    obAvoid.travelTo(WiFi.BIN.x, WiFi.BIN.y);
     setLRMotorSpeed(NAV_TURN2);
-    obAvoid.turnTo(targetAngle);
+
 
     beep(3);
 
@@ -412,15 +410,8 @@ public class GameController implements Runnable {
         sensorCont.resumeLightPoller();
         break;
         
-      case NAV_WITH_OBSTACLE1:
-        currUSUsers.add(obAvoid1);
-        sensorCont.resumeUSPoller();
-        sensorCont.pauseLightPoller();
-        break;
-      
-      case NAV_WITH_OBSTACLE2:
-        currUSUsers.remove(obAvoid1);
-        currUSUsers.add(obAvoid2);
+      case NAV_WITH_OBSTACLE:
+        currUSUsers.add(obAvoid);
         sensorCont.resumeUSPoller();
         sensorCont.pauseLightPoller();
         break;

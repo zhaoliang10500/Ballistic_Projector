@@ -35,7 +35,7 @@ public class Resources {
   public static final double WHEEL_BASE = 11.7; //11.7
   public static final int ROTATION_SPEED = 60;
   public static final int ACCELERATION = 600;
-  public static final int FORWARD_SPEED = 60;
+  public static final int FORWARD_SPEED = 100;
   public static final double TILE_SIZE = 30.48;
   
   //USLocalizer
@@ -71,5 +71,5 @@ public class Resources {
   public static final int CRITICAL_ANGLE = 10;
   public static final int RIGHT_ANGLE = 55;
   public static final int LEFT_ANGLE = -55;
-  public static final int OBSTACLE_SENSOR_ANGLE = 45;
+  public static final int OBSTACLE_SENSOR_ANGLE = -45;
 }

@@ -69,9 +69,10 @@ public class USLocalizer implements USUser {
       return;
     }
     else if (!gotInitialSample) {
-      USMotor.rotate(-20);
+      USMotor.rotateTo(-20, false);
+      USMotor.stop();
       initialDistance = distance;
-      USMotor.rotate(20);
+      USMotor.rotateTo(0, false);
       if (initialDistance < edgeThreshold) {
         USLocType = EdgeType.RISING_EDGE;
       }
