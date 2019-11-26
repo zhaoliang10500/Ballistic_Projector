@@ -2,8 +2,6 @@ package ca.mcgill.ecse211.project.localization;
 import static ca.mcgill.ecse211.project.game.Resources.*;
 import ca.mcgill.ecse211.project.sensor.LightUser;
 import static ca.mcgill.ecse211.project.game.Helper.*;
-import static ca.mcgill.ecse211.project.game.WiFi.*;
-import java.util.Arrays;
 import ca.mcgill.ecse211.project.game.WiFi;
 
 

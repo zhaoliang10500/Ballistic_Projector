@@ -6,11 +6,11 @@ import lejos.hardware.Sound;
 import ca.mcgill.ecse211.project.game.SensorController;
 import ca.mcgill.ecse211.project.sensor.*;
 import ca.mcgill.ecse211.project.localization.*;
-import ca.mcgill.ecse211.project.odometry.*;
+
 
 import static ca.mcgill.ecse211.project.game.Helper.*;
 import static ca.mcgill.ecse211.project.game.Resources.*;
-import static ca.mcgill.ecse211.project.localization.Navigation.*;
+
 import static ca.mcgill.ecse211.project.game.WifiResources.*;
 
 /**
@@ -40,7 +40,7 @@ public class GameController implements Runnable {
   public GameController (SensorController sensorCont, USLocalizer USLoc, LightLocalizer lightLoc, 
                          LightTunnelLocalizer lightTunnelLoc1, LightTunnelLocalizer lightTunnelLoc2, 
                          LightTunnelLocalizer lightTunnelLoc3, LightTunnelLocalizer lightTunnelLoc4,
-                         ObstacleAvoidance obAvoid1, ObstacleAvoidance obAvoid2) {
+                         ObstacleAvoidance obAvoid) {
     this.sensorCont = sensorCont;
     this.USLoc = USLoc;
     this.lightLoc = lightLoc;
@@ -48,8 +48,8 @@ public class GameController implements Runnable {
     this.lightTunnelLoc2 = lightTunnelLoc2;
     this.lightTunnelLoc3 = lightTunnelLoc3;
     this.lightTunnelLoc4 = lightTunnelLoc4;
-    this.obAvoid1 = obAvoid1;
-    this.obAvoid2 = obAvoid2;
+    this.obAvoid = obAvoid;
+  
   }
   
   /**
@@ -65,8 +65,7 @@ public class GameController implements Runnable {
     TUNNEL_LOC2,
     TUNNEL_LOC3,
     TUNNEL_LOC4,
-    NAV_WITH_OBSTACLE1,
-    NAV_WITH_OBSTACLE2,
+    NAV_WITH_OBSTACLE,
     TUNNEL,
     LAUNCH,
     TEST
@@ -88,9 +87,9 @@ public class GameController implements Runnable {
     //US localization
     changeState(GameState.US_LOC);
     setLRMotorSpeed(US_SPEED);
-    USLoc.localize();
+    USLoc.doLocalization();
     
-    
+ /*   
     // light localization
     changeState(GameState.LIGHT_LOC);
     lightLoc.localize();
@@ -167,10 +166,8 @@ public class GameController implements Runnable {
     
     //travel to ideal launch point while avoiding obstacles
     changeState(GameState.NAV_WITH_OBSTACLE);
-    obAvoid.travelTo(bin.x - 1.0, bin.y - 1.5);
+    obAvoid.travelTo(WiFi.BIN.x - 1.0, WiFi.BIN.y - 1.5);
     setLRMotorSpeed(NAV_TURN2);
-    obAvoid.turnTo(targetAngle);
-
 
     beep(3);
 
@@ -226,9 +223,9 @@ public class GameController implements Runnable {
     Navigation.travelTo(initialXY[0], initialXY[1], 0, false);
     beep(5);
 
-    
+*/    
   }
-  
+ 
   /**
    * Straightens the robot to face the tunnel entrance 
    * based on the robot's current corner relative to the tunnel
@@ -412,7 +409,7 @@ public class GameController implements Runnable {
     
     switch (state) { 
       case US_LOC:
-        currUSUsers.add(USLoc);
+        //currUSUsers.add(USLoc);
         sensorCont.resumeUSPoller();
         sensorCont.pauseLightPoller();
         break;
@@ -424,7 +421,6 @@ public class GameController implements Runnable {
         break;
         
       case NAVIGATION:
-:waq
         currUSUsers.remove(USLoc);
         currLightUsers.remove(lightLoc);
         sensorCont.pauseUSPoller();
@@ -458,15 +454,8 @@ public class GameController implements Runnable {
         sensorCont.resumeLightPoller();
         break;
         
-      case NAV_WITH_OBSTACLE1:
-        currUSUsers.add(obAvoid1);
-        sensorCont.resumeUSPoller();
-        sensorCont.pauseLightPoller();
-        break;
-      
-      case NAV_WITH_OBSTACLE2:
-        currUSUsers.remove(obAvoid1);
-        currUSUsers.add(obAvoid2);
+      case NAV_WITH_OBSTACLE:
+        currUSUsers.add(obAvoid);
         sensorCont.resumeUSPoller();
         sensorCont.pauseLightPoller();
         break;

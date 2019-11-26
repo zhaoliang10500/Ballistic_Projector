@@ -41,7 +41,7 @@ public class Main {
     //synchronized method to control sensor threads
     SensorController sensorControl = SensorController.getSensorController(USPoll, lightPoll);
     
-    USLocalizer USLoc = new USLocalizer();
+    USLocalizer USLoc = new USLocalizer(leftMotor, rightMotor, odometer, usSamp, usData);
     LightLocalizer lightLoc = new LightLocalizer();
     ObstacleAvoidance obAvoid = new ObstacleAvoidance(odometer, leftMotor, rightMotor, USMotor, usSamp, usData);
     LightTunnelLocalizer lightTunnelLoc1 = new LightTunnelLocalizer();
@@ -49,19 +49,19 @@ public class Main {
     LightTunnelLocalizer lightTunnelLoc3 = new LightTunnelLocalizer();
     LightTunnelLocalizer lightTunnelLoc4 = new LightTunnelLocalizer();
     
-    GameController gameControl = new GameController(sensorControl, USLoc, lightLoc, lightTunnelLoc1, lightTunnelLoc2, lightTunnelLoc3, lightTunnelLoc4, obAvoid1, obAvoid2);
+    GameController gameControl = new GameController(sensorControl, USLoc, lightLoc, lightTunnelLoc1, lightTunnelLoc2, lightTunnelLoc3, lightTunnelLoc4, obAvoid);
     //TODO: obstacle avoidance might not work this way
     
-    Thread odoThread = new Thread(odometer); //odometer created in Resources
-    Thread USThread = new Thread(USPoll);
-    Thread lightThread = new Thread(lightPoll);
+//    Thread odoThread = new Thread(odometer); //odometer created in Resources
+//    Thread USThread = new Thread(USPoll);
+//    Thread lightThread = new Thread(lightPoll);
     //TODO: might have to implement odometry correction inside odometer, currently it is separate
     Thread gameThread = new Thread(gameControl);
     
     //start threads
-    odoThread.start();
-    USThread.start();
-    lightThread.start();
+//    odoThread.start();
+//    USThread.start();
+//    lightThread.start();
     
     //Get parameters from WiFi class
     //Server file included now in project, cd to the jar (java -jar EV3WifiServer.jar)
