@@ -4,6 +4,7 @@ import static ca.mcgill.ecse211.project.game.Resources.*;
 import static ca.mcgill.ecse211.project.game.Helper.*;
 import ca.mcgill.ecse211.project.game.Helper;
 import ca.mcgill.ecse211.project.game.WiFi;
+import lejos.hardware.Button;
 
 /**
  * This class contains methods for navigations
@@ -19,37 +20,26 @@ public class Navigation {
   public static double[] launch;
   
   public static double turnAngle;
-
+  public static boolean doneNavTravel = false;
+  public static boolean doneNavTurnFace = false;
 
   public static void travelTo (double xCoord, double yCoord, double angleOffset, boolean bin) { //travelTo 
+    //do {
     double[] xyCoord = {xCoord, yCoord};
-   // System.out.println("coords: " + xCoord + ", " + yCoord);
-    // Gets current x, y positions (already in cm) 
-    //x = odometer.getXYT()[0];
-    //y = odometer.getXYT()[1];
-    
-    sleepFor(3000);
- //   System.out.println("odometer: " + odometer.getXYT()[0] + ", " + odometer.getXYT()[1]);
+    sleepFor(1000);
     deltaX = TILE_SIZE*xyCoord[0] - odometer.getXYT()[0];  
     deltaY = TILE_SIZE*xyCoord[1] - odometer.getXYT()[1];
-//    deltaX = TILE_SIZE*xyCoord[0] - x;  
-//    deltaY = TILE_SIZE*xyCoord[1] - y;
-   // System.out.println("deltaX: " + deltaX);
-    //System.out.println("deltaY: " + deltaY);
 
     //Calculate angles, atan = first/second
     theta2 = Math.toDegrees(Math.atan2(deltaX, deltaY)); //theta2 now in degrees
-    //System.out.println("theta2: " + theta2);
     theta1 = odometer.getXYT()[2]; // theta1 in degrees
-    //System.out.println("theta1: " + theta1);
 
     //Turn
     turnAngle = calcTurnAngle(theta2 - theta1, angleOffset);
     sleepFor(1000);
-    //System.out.println("nav_turn: " + turnAngle);
     turn(turnAngle);
+    
     // Move 
-   // System.out.println("minDist: " + minDist);
     minDist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
     setLRMotorSpeed(NAV_FORWARD);
     
@@ -60,11 +50,16 @@ public class Navigation {
     } 
     else if (bin) {
       sleepFor(1000);
-      //System.out.println("minDist: " + minDist);
-      //System.out.println("bin travel: " + Math.abs(minDist - (LAUNCH_GRID_DIST*TILE_SIZE)));
       leftMotor.rotate(Helper.convertDistance(Math.abs(minDist - (LAUNCH_GRID_DIST*TILE_SIZE)), WHEEL_RADIUS), true);
       rightMotor.rotate(Helper.convertDistance(Math.abs(minDist- (LAUNCH_GRID_DIST*TILE_SIZE)), WHEEL_RADIUS), false);
     }
+//    doneNavTravel = true;
+//    
+//    } while (Button.waitForAnyPress() != Button.ID_ESCAPE && doneNavTravel == false);
+//    
+//    if (Button.waitForAnyPress() == Button.ID_ESCAPE) {
+//      System.exit(0);
+//    }
     
   }
   
@@ -102,6 +97,7 @@ public class Navigation {
    * @param heading
    */
   public static void turnToFace(int heading) {
+    //do {
     double currTheta = odometer.getXYT()[2];
     double turnAngle = heading - currTheta;
    
@@ -114,6 +110,13 @@ public class Navigation {
     
     //System.out.println("turntoface angle:" + turnAngle);
     turn(turnAngle);
+//    doneNavTurnFace = true;
+//    
+//    } while (Button.waitForAnyPress() != Button.ID_ESCAPE && doneNavTurnFace == false);
+//    
+//    if (Button.waitForAnyPress() == Button.ID_ESCAPE) {
+//      System.exit(0);
+//    }
   }
   
   /**

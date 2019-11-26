@@ -49,7 +49,7 @@ public class Resources {
   public static final int FALL_ANGLE = 45; //45
   
   //LightLocalizer
-  public static final double LIGHT_THRESHOLD_R = 0.55; //0.62, 0.55
+  public static final double LIGHT_THRESHOLD_R = 0.70; //0.62, 0.55
   public static final double LIGHT_THRESHOLD_L = 0.75; //0.73, 0.60
   
   public static final double LS_DISTANCE = 12.3; // sensor distance from center of rotation
@@ -58,7 +58,7 @@ public class Resources {
   public static final int LS_TUNNEL_SPEED = 120;//120
   
   //launcher
-  public static final double LAUNCH_GRID_DIST = 5.5;
+  public static final double LAUNCH_GRID_DIST = 5.0;
   //Navigation
   public static final int NAV_FORWARD = 200;
   public static final double NAV_OFFSET = LAUNCH_GRID_DIST*TILE_SIZE; //min offset = 4.5
