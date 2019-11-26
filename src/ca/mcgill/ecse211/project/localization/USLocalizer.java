@@ -1,16 +1,15 @@
 package ca.mcgill.ecse211.project.localization;
-import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.robotics.SampleProvider;
 import static ca.mcgill.ecse211.project.game.Resources.*;
 import java.util.Arrays;
 import ca.mcgill.ecse211.project.odometry.Odometer;
+import static ca.mcgill.ecse211.project.game.Helper.*;
 /**
  * @author zhaoliang & Jessie Tang
  * This Class implemented the ultrasonic sensor localization
  */
 public class USLocalizer {
-  private static final int THETA_CORRECTION_FALLING_EDGE = 12; 
   private int filterSize = 3;
   private int[] tempDists = new int[filterSize];
   
@@ -88,19 +87,23 @@ public class USLocalizer {
     //stop the motors on the falling edge on the left.
     rightMotor.stop(true);
     leftMotor.stop(false);
-    Sound.beep();
     
     angle = odometer.getXYT()[2];
     
     angle = 360 - angle;
     
     //half of the angle + 45 degrees to get to the 0 degree direction
-    double headingToZero = angle / 2 - 135 + THETA_CORRECTION_FALLING_EDGE;
+    double headingToZero = angle / 2 + 47;
     
     leftMotor.rotate(convertAngle(WHEEL_RADIUS, WHEEL_BASE, headingToZero), true);
     rightMotor.rotate(-convertAngle(WHEEL_RADIUS, WHEEL_BASE, headingToZero), false);
     
     odometer.setTheta(0.0);
+    
+    turnLeft(90);
+    moveForward(4.1);
+    turnRight(90);
+  
   }
   
   //Conversion methods.

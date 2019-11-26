@@ -37,13 +37,14 @@ public class Main {
     
     USPoller USPoll = new USPoller(usSamp, usData);
     LightPoller lightPoll = new LightPoller(lightSampL, lightDataL, lightSampR, lightDataR);
-    
+    Odometer odometer = Odometer.getOdometer();
+    odometer.start();
     //synchronized method to control sensor threads
     SensorController sensorControl = SensorController.getSensorController(USPoll, lightPoll);
     
 
-    USLocalizer USLoc = new USLocalizer();
-    LightLocalizer lightLoc = new LightLocalizer(lightSampL, lightDataL, lightSampR, lightDataR);
+    USLocalizer USLoc = new USLocalizer(leftMotor, rightMotor, odometer, usSamp, usData);
+    LightLocalizer lightLoc = new LightLocalizer(odometer, lightSampL, lightDataL, lightSampR, lightDataR);
 
    
     ObstacleAvoidance obAvoid = new ObstacleAvoidance(odometer, leftMotor, rightMotor, USMotor, usSamp, usData);

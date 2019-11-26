@@ -1,9 +1,10 @@
 package ca.mcgill.ecse211.project.localization;
 import static ca.mcgill.ecse211.project.game.Resources.*;
-import ca.mcgill.ecse211.project.sensor.LightUser;
+import java.util.Arrays;
 import lejos.robotics.SampleProvider;
 import static ca.mcgill.ecse211.project.game.Helper.*;
 import ca.mcgill.ecse211.project.game.WiFi;
+import ca.mcgill.ecse211.project.odometry.Odometer;
 
 /**
  * This class contains methods for light sensor localization
@@ -13,18 +14,20 @@ import ca.mcgill.ecse211.project.game.WiFi;
 public class LightLocalizer {
   private float[][] lightData;
   private SampleProvider[] sampleProvider;
+  private Odometer odometer;
   private int filterSize = 5;
   private int[][] tempLights = new int[2][filterSize];
   private boolean gotInitialSample = false;
   private double[] initialLight = new double[2];
-  private double[]  offset = new double[2];
-  private boolean turnRight;
+  private double[] offset = new double[2];
+  private boolean shouldRight;
   private boolean aligned = false;
   private boolean isLeftSensor;
   
-  public LightLocalizer(SampleProvider leftSamp, float[] leftLightData, SampleProvider rightSamp, float[] rightLightData) {
+  public LightLocalizer(Odometer odometer, SampleProvider leftSamp, float[] leftLightData, SampleProvider rightSamp, float[] rightLightData) {
     this.sampleProvider = new SampleProvider[] {leftSamp, rightSamp};
     this.lightData = new float[][] {leftLightData, rightLightData};  
+    this.odometer = odometer;
   }
   
   private double[] meanFilter() {
@@ -104,23 +107,25 @@ public class LightLocalizer {
     }
     stopMotors();
     if (meanFilter()[0]/initialLight[0] < LIGHT_THRESHOLD_L && meanFilter()[1]/initialLight[1] < LIGHT_THRESHOLD_R ) {
-      offset[0] = 0;
-      offset[1] = 0;
+//      offset[0] = 0;
+//      offset[1] = 0;
       isLeftSensor = false; // for completeness only
       aligned = true;
     }
     //left sensor sees line first
     else if (meanFilter()[0]/initialLight[0] < LIGHT_THRESHOLD_L && meanFilter()[1]/initialLight[1] > LIGHT_THRESHOLD_R) {
-      turnRight = false;
+      shouldRight = false;
       //System.out.println("first left: " + meanFilter()[0]/initialLight[0]);
       offset[0] = odometer.getXYT()[secondAxis];
+      System.out.println(odometer.getXYT()[secondAxis] + "odometer.getXYT()[secondAxis];");
       isLeftSensor = true;
     }
     //right sensor sees line first
     else if (meanFilter()[0]/initialLight[0] > LIGHT_THRESHOLD_L && meanFilter()[1]/initialLight[1] < LIGHT_THRESHOLD_R ){
-      turnRight = true;
+      shouldRight = true;
       //System.out.println("first right: " + meanFilter()[1]/initialLight[1]);
       offset[0] = odometer.getXYT()[secondAxis];
+      System.out.println(odometer.getXYT()[secondAxis] +"odometer.getXYT()[secondAxis]");
       isLeftSensor = false;
     }
     
@@ -137,21 +142,25 @@ public class LightLocalizer {
         stopMotors();
       }
       offset[1] = odometer.getXYT()[secondAxis];
+      System.out.println( odometer.getXYT()[secondAxis] + "odometer.getXYT()[secondAxis]");
     }
     
     //System.out.println("delta offset" + offset[0] + ", " + offset[1]);
+    
+    System.out.println("offffffet[1111]" + offset[1]);
+    System.out.println("offffffet[0000]" + offset[0]);
     double turnTheta = Math.atan(Math.abs((offset[1] - offset[0]))/WHEEL_BASE);
     double turnThetaDeg = 180*turnTheta/Math.PI;
+   
     //System.out.println("turnthetaDeg: " + turnThetaDeg);
-    
-    if (turnRight) {
-      turnRight(turnThetaDeg);
+    if (shouldRight) {
+      System.out.println("RIGHTTTTT: " + turnThetaDeg);
+      turnRight(turnThetaDeg * 100);
+    } else {
+      System.out.println("LEFTTTTTTT: " + turnThetaDeg);
+      turnLeft(turnThetaDeg * 100);
     }
-    else {
-      turnLeft(turnThetaDeg);
-    }
-    sleepFor(3000);
-    
+ 
     //set odometer after localization
     if (WiFi.CORNER == 0) {
       odometer.setXYT(TILE_SIZE, TILE_SIZE, 0);
@@ -165,32 +174,11 @@ public class LightLocalizer {
     else if (WiFi.CORNER == 3) {
       odometer.setXYT(TILE_SIZE, 8*TILE_SIZE, 90); //90
     } 
+    //System.out.println("are you hereeeeeeee");
     setLRMotorSpeed(LS_SPEED_FAST);
     moveBackward(LS_DISTANCE);
-
+    //System.out.println("Yessssss donesss");
   }
  
  
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

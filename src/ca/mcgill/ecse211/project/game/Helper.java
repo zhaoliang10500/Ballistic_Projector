@@ -76,6 +76,7 @@ public class Helper{
    */
   public static void turnRight(double angle) {
     leftMotor.rotate(convertAngle(angle, WHEEL_RADIUS), true);
+    System.out.println(convertAngle(angle, WHEEL_RADIUS) + "convertAngle(angle, WHEEL_RADIUS)");
     rightMotor.rotate(-convertAngle(angle, WHEEL_RADIUS), false);
   }
   

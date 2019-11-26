@@ -35,7 +35,7 @@ public class Resources {
   public static final double WHEEL_BASE = 11.7; //11.7
   public static final int ROTATION_SPEED = 140;
   public static final int ACCELERATION = 1200;
-  public static final int FORWARD_SPEED = 100;
+  public static final int FORWARD_SPEED = 180;
   public static final double TILE_SIZE = 30.48;
   
   //USLocalizer
