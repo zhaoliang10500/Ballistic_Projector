@@ -17,16 +17,16 @@ import static ca.mcgill.ecse211.project.game.WifiResources.*;
  * This class runs the entire game
  * It contains the game state machine 
  */
-public class GameController implements Runnable {
+public class GameController {
   private SensorController sensorCont;
   private USLocalizer USLoc;
   private LightLocalizer lightLoc;
-  private LightTunnelLocalizer lightTunnelLoc1, lightTunnelLoc2, lightTunnelLoc3, lightTunnelLoc4;
+  private LightTunnelLocalizer lightTunnelLoc;
   private ObstacleAvoidance obAvoid;
   private final int[] testCoords = {4,3};
-  public static GameState state;
-  public volatile ArrayList<USUser> currUSUsers = new ArrayList<USUser>();
-  public volatile ArrayList<LightUser> currLightUsers = new ArrayList<LightUser>();
+  //public static GameState state;
+  //public volatile ArrayList<USUser> currUSUsers = new ArrayList<USUser>();
+  //public volatile ArrayList<LightUser> currLightUsers = new ArrayList<LightUser>();
   
   /**
    * Constructor for the GameController class
@@ -37,19 +37,23 @@ public class GameController implements Runnable {
    * @param odoCorrect The odometer correction 
    * @param obAvoid The obstacle avoidance
    */
-  public GameController (SensorController sensorCont, USLocalizer USLoc, LightLocalizer lightLoc, 
-                         LightTunnelLocalizer lightTunnelLoc1, LightTunnelLocalizer lightTunnelLoc2, 
-                         LightTunnelLocalizer lightTunnelLoc3, LightTunnelLocalizer lightTunnelLoc4,
-                         ObstacleAvoidance obAvoid) {
-    this.sensorCont = sensorCont;
-    this.USLoc = USLoc;
-    this.lightLoc = lightLoc;
-    this.lightTunnelLoc1 = lightTunnelLoc1;
-    this.lightTunnelLoc2 = lightTunnelLoc2;
-    this.lightTunnelLoc3 = lightTunnelLoc3;
-    this.lightTunnelLoc4 = lightTunnelLoc4;
-    this.obAvoid = obAvoid;
+//  public GameController (SensorController sensorCont, USLocalizer USLoc, LightLocalizer lightLoc, 
+//                         LightTunnelLocalizer lightTunnelLoc1, LightTunnelLocalizer lightTunnelLoc2, 
+//                         LightTunnelLocalizer lightTunnelLoc3, LightTunnelLocalizer lightTunnelLoc4,
+//                         ObstacleAvoidance obAvoid) {
+//    this.sensorCont = sensorCont;
+//    this.USLoc = USLoc;
+//    this.lightLoc = lightLoc;
+//    this.lightTunnelLoc1 = lightTunnelLoc1;
+//    this.lightTunnelLoc2 = lightTunnelLoc2;
+//    this.lightTunnelLoc3 = lightTunnelLoc3;
+//    this.lightTunnelLoc4 = lightTunnelLoc4;
+//    this.obAvoid = obAvoid;
+//  
+//  }
   
+  public GameController() {
+    
   }
   
   /**
@@ -57,44 +61,44 @@ public class GameController implements Runnable {
    * Each state turns on/off the ultrasonic poller and the light poller
    *
    */
-  public enum GameState {
-    US_LOC,
-    LIGHT_LOC,
-    NAVIGATION,
-    TUNNEL_LOC1,
-    TUNNEL_LOC2,
-    TUNNEL_LOC3,
-    TUNNEL_LOC4,
-    NAV_WITH_OBSTACLE,
-    TUNNEL,
-    LAUNCH,
-    TEST
-  }
+//  public enum GameState {
+//    US_LOC,
+//    LIGHT_LOC,
+//    NAVIGATION,
+//    TUNNEL_LOC1,
+//    TUNNEL_LOC2,
+//    TUNNEL_LOC3,
+//    TUNNEL_LOC4,
+//    NAV_WITH_OBSTACLE,
+//    TUNNEL,
+//    LAUNCH,
+//    TEST
+//  }
   
   /**
    * Run method for thread
    */
-  @Override
-  public void run() {
-    startGame();
-  }
+//  @Override
+//  public void run() {
+//    startGame();
+//  }
   
   /**
    * This method runs the logic of the game by changing 
    * the GameState and calling the corresponding methods for each state
    */
-  public void startGame() {
-    //US localization
-    changeState(GameState.US_LOC);
-    setLRMotorSpeed(US_SPEED);
-    USLoc.doLocalization();
-
-    
-    
-//    // light localization
-    changeState(GameState.LIGHT_LOC);
-    lightLoc.localize();
-    beep(3);
+//  public void startGame() {
+//    //US localization
+//    changeState(GameState.US_LOC);
+//    setLRMotorSpeed(US_SPEED);
+//    USLoc.doLocalization();
+//
+//    
+//    
+////    // light localization
+//    changeState(GameState.LIGHT_LOC);
+//    lightLoc.localize();
+//    beep(3);
     
     
 //    //Travel to tunnel and face it
@@ -204,14 +208,14 @@ public class GameController implements Runnable {
 //
 //    
 
-  }
+//  }
  
   /**
    * Straightens the robot to face the tunnel entrance 
    * based on the robot's current corner relative to the tunnel
    * @param currCorner
    */
-  public void straighten(int currCorner) {
+  public static void straighten(int currCorner) {
     if (tunnelOrientation() == 1) { //vertical tunnel
       if (currCorner == 0 || currCorner == 1) {
         Navigation.turnToFace(0);
@@ -235,7 +239,7 @@ public class GameController implements Runnable {
    * Method to calculate tunnel orientation
    * @return
    */
-  public int tunnelOrientation() {
+  public static int tunnelOrientation() {
     int orientation = -1;
     if (WiFi.TUNNEL_LL.x + 1 == WiFi.TUNNEL_UR.x) { //vertical tunnel
       orientation = 1;
@@ -250,7 +254,7 @@ public class GameController implements Runnable {
    * Calculates the closest tunnel entrance coordinates
    * @return
    */
-  public Point calcTunnelCoords() {
+  public static Point calcTunnelCoords() {
     double currX = odometer.getXYT()[0];
     double currY = odometer.getXYT()[1];
     
@@ -290,7 +294,7 @@ public class GameController implements Runnable {
    * Calculate the robot's current corner relative to the tunnel
    * @return
    */
-  public int calcCurrCorner() {
+  public static int calcCurrCorner() {
     double xBound = TILE_SIZE*(WiFi.TUNNEL_LL.x + WiFi.TUNNEL_UR.x)/2;
     double yBound = TILE_SIZE*(WiFi.TUNNEL_LL.y + WiFi.TUNNEL_UR.y)/2;
     double currX = odometer.getXYT()[0];
@@ -321,7 +325,7 @@ public class GameController implements Runnable {
    * @param corner
    * @param bin
    */
-  public void travelToTunnel(Point correctCoords, int corner, boolean bin){
+  public static void travelToTunnel(Point correctCoords, int corner, boolean bin){
     if (tunnelOrientation() == 1) { //vertical tunnel
       if (corner == 2 || corner == 3) {
         Navigation.travelTo(correctCoords.x - 0.5, correctCoords.y + 0.5, 0, bin);
@@ -344,7 +348,7 @@ public class GameController implements Runnable {
    * calculates the robot's initial position based on the starting corner
    * @return initial x.y coordinates in integers
    */
-  public double[] calcInitialPos() {
+  public static double[] calcInitialPos() {
     double initialX = 0;
     double initialY = 0;
     double[] initialPos;;
@@ -374,7 +378,7 @@ public class GameController implements Runnable {
    * Method to beep num times 
    * @param num
    */
-  public void beep(int num) {
+  public static void beep(int num) {
     for (int i = 0; i < num; i++) {
       Sound.beep(); 
     }
@@ -384,79 +388,79 @@ public class GameController implements Runnable {
    * Method that defines which threads are running for every state of the game
    * @param newState GameState enum 
    */
-  public void changeState(GameState newState) {
-    state = newState;
-    
-    switch (state) { 
-      case US_LOC:
-        //currUSUsers.add(USLoc);
-        sensorCont.resumeUSPoller();
-        sensorCont.pauseLightPoller();
-        break;
-        
-      case LIGHT_LOC:
-        //currLightUsers.add(lightLoc);
-        sensorCont.pauseUSPoller();
-        sensorCont.resumeLightPoller();
-        break;
-        
-      case NAVIGATION:
-        currUSUsers.remove(USLoc);
-        currLightUsers.remove(lightLoc);
-        sensorCont.pauseUSPoller();
-        sensorCont.pauseLightPoller();
-        break;
-        
-      case TUNNEL_LOC1:
-        currLightUsers.add(lightTunnelLoc1);
-        sensorCont.pauseUSPoller();
-        sensorCont.resumeLightPoller();
-        break;
-      
-      case TUNNEL_LOC2:
-        currLightUsers.remove(lightTunnelLoc1);
-        currLightUsers.add(lightTunnelLoc2);
-        sensorCont.pauseUSPoller();
-        sensorCont.resumeLightPoller();
-        break;
-      
-      case TUNNEL_LOC3:
-        currLightUsers.remove(lightTunnelLoc2);
-        currLightUsers.add(lightTunnelLoc3);
-        sensorCont.pauseUSPoller();
-        sensorCont.resumeLightPoller();
-        break;
-        
-      case TUNNEL_LOC4:
-        currLightUsers.remove(lightTunnelLoc3);
-        currLightUsers.add(lightTunnelLoc4);
-        sensorCont.pauseUSPoller();
-        sensorCont.resumeLightPoller();
-        break;
-        
-      case NAV_WITH_OBSTACLE:
-        currUSUsers.add(obAvoid);
-        sensorCont.resumeUSPoller();
-        sensorCont.pauseLightPoller();
-        break;
-
-      case TUNNEL:
-        sensorCont.pauseUSPoller();
-        sensorCont.pauseLightPoller();
-        break;
-        
-      case LAUNCH:
-        sensorCont.pauseUSPoller();
-        sensorCont.pauseLightPoller();
-        break;
-        
-      case TEST:
-        //TODO: change this as necessary for any test
-        sensorCont.resumeUSPoller();
-        sensorCont.resumeLightPoller();
-        break;
-    }
-    sensorCont.setCurrUSUsers(currUSUsers);
-    sensorCont.setCurrLightUsers(currLightUsers);
-  }
+//  public void changeState(GameState newState) {
+//    state = newState;
+//    
+//    switch (state) { 
+//      case US_LOC:
+//        //currUSUsers.add(USLoc);
+//        sensorCont.resumeUSPoller();
+//        sensorCont.pauseLightPoller();
+//        break;
+//        
+//      case LIGHT_LOC:
+//        //currLightUsers.add(lightLoc);
+//        sensorCont.pauseUSPoller();
+//        sensorCont.resumeLightPoller();
+//        break;
+//        
+//      case NAVIGATION:
+//        currUSUsers.remove(USLoc);
+//        currLightUsers.remove(lightLoc);
+//        sensorCont.pauseUSPoller();
+//        sensorCont.pauseLightPoller();
+//        break;
+//        
+//      case TUNNEL_LOC1:
+//        currLightUsers.add(lightTunnelLoc1);
+//        sensorCont.pauseUSPoller();
+//        sensorCont.resumeLightPoller();
+//        break;
+//      
+//      case TUNNEL_LOC2:
+//        currLightUsers.remove(lightTunnelLoc1);
+//        currLightUsers.add(lightTunnelLoc2);
+//        sensorCont.pauseUSPoller();
+//        sensorCont.resumeLightPoller();
+//        break;
+//      
+//      case TUNNEL_LOC3:
+//        currLightUsers.remove(lightTunnelLoc2);
+//        currLightUsers.add(lightTunnelLoc3);
+//        sensorCont.pauseUSPoller();
+//        sensorCont.resumeLightPoller();
+//        break;
+//        
+//      case TUNNEL_LOC4:
+//        currLightUsers.remove(lightTunnelLoc3);
+//        currLightUsers.add(lightTunnelLoc4);
+//        sensorCont.pauseUSPoller();
+//        sensorCont.resumeLightPoller();
+//        break;
+//        
+//      case NAV_WITH_OBSTACLE:
+//        currUSUsers.add(obAvoid);
+//        sensorCont.resumeUSPoller();
+//        sensorCont.pauseLightPoller();
+//        break;
+//
+//      case TUNNEL:
+//        sensorCont.pauseUSPoller();
+//        sensorCont.pauseLightPoller();
+//        break;
+//        
+//      case LAUNCH:
+//        sensorCont.pauseUSPoller();
+//        sensorCont.pauseLightPoller();
+//        break;
+//        
+//      case TEST:
+//        //TODO: change this as necessary for any test
+//        sensorCont.resumeUSPoller();
+//        sensorCont.resumeLightPoller();
+//        break;
+//    }
+//    sensorCont.setCurrUSUsers(currUSUsers);
+//    sensorCont.setCurrLightUsers(currLightUsers);
+//  }
 }

@@ -107,8 +107,8 @@ public class LightLocalizer {
     }
     stopMotors();
     if (meanFilter()[0]/initialLight[0] < LIGHT_THRESHOLD_L && meanFilter()[1]/initialLight[1] < LIGHT_THRESHOLD_R ) {
-//      offset[0] = 0;
-//      offset[1] = 0;
+      offset[0] = 0;
+      offset[1] = 0;
       isLeftSensor = false; // for completeness only
       aligned = true;
     }
@@ -117,7 +117,7 @@ public class LightLocalizer {
       shouldRight = false;
       //System.out.println("first left: " + meanFilter()[0]/initialLight[0]);
       offset[0] = odometer.getXYT()[secondAxis];
-      System.out.println(odometer.getXYT()[secondAxis] + "odometer.getXYT()[secondAxis];");
+      //System.out.println(odometer.getXYT()[secondAxis] + "odometer.getXYT()[secondAxis];");
       isLeftSensor = true;
     }
     //right sensor sees line first
@@ -125,7 +125,7 @@ public class LightLocalizer {
       shouldRight = true;
       //System.out.println("first right: " + meanFilter()[1]/initialLight[1]);
       offset[0] = odometer.getXYT()[secondAxis];
-      System.out.println(odometer.getXYT()[secondAxis] +"odometer.getXYT()[secondAxis]");
+      //System.out.println(odometer.getXYT()[secondAxis] +"odometer.getXYT()[secondAxis]");
       isLeftSensor = false;
     }
     
@@ -142,23 +142,23 @@ public class LightLocalizer {
         stopMotors();
       }
       offset[1] = odometer.getXYT()[secondAxis];
-      System.out.println( odometer.getXYT()[secondAxis] + "odometer.getXYT()[secondAxis]");
+      //System.out.println( odometer.getXYT()[secondAxis] + "odometer.getXYT()[secondAxis]");
     }
     
     //System.out.println("delta offset" + offset[0] + ", " + offset[1]);
     
-    System.out.println("offffffet[1111]" + offset[1]);
-    System.out.println("offffffet[0000]" + offset[0]);
+    //System.out.println("offffffet[1111]" + offset[1]);
+    //System.out.println("offffffet[0000]" + offset[0]);
     double turnTheta = Math.atan(Math.abs((offset[1] - offset[0]))/WHEEL_BASE);
     double turnThetaDeg = 180*turnTheta/Math.PI;
    
     //System.out.println("turnthetaDeg: " + turnThetaDeg);
     if (shouldRight) {
-      System.out.println("RIGHTTTTT: " + turnThetaDeg);
-      turnRight(turnThetaDeg * 100);
+      //System.out.println("RIGHTTTTT: " + turnThetaDeg);
+      turnRight(turnThetaDeg);
     } else {
-      System.out.println("LEFTTTTTTT: " + turnThetaDeg);
-      turnLeft(turnThetaDeg * 100);
+      //System.out.println("LEFTTTTTTT: " + turnThetaDeg);
+      turnLeft(turnThetaDeg);
     }
  
     //set odometer after localization
