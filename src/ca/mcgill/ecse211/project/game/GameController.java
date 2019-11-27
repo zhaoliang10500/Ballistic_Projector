@@ -1,18 +1,9 @@
 package ca.mcgill.ecse211.project.game;
 
-import java.util.ArrayList;
 import lejos.hardware.Sound;
-
-import ca.mcgill.ecse211.project.game.SensorController;
-import ca.mcgill.ecse211.project.sensor.*;
 import ca.mcgill.ecse211.project.localization.*;
-
-
-import static ca.mcgill.ecse211.project.game.Helper.*;
 import static ca.mcgill.ecse211.project.game.Resources.*;
-
 import static ca.mcgill.ecse211.project.game.WifiResources.*;
-
 /**
  * This class runs the entire game
  * It contains the game state machine 
@@ -134,21 +125,38 @@ public class GameController {
    * @param corner
    * @param bin
    */
-  public static void travelToTunnel(Point correctCoords, int corner, boolean bin){
+  public static void travelToTunnel(Point correctCoords, int corner, boolean bin, boolean withObs){
     if (tunnelOrientation() == 1) { //vertical tunnel
       if (corner == 2 || corner == 3) {
-        Navigation.travelTo(correctCoords.x - 0.5, correctCoords.y + 0.5, 0, bin);
+        if(!withObs){
+          Navigation.travelTo(correctCoords.x - 0.5, correctCoords.y + 0.5, 0, bin);
+        } else {
+          ObstacleAvoidance.travelTo(correctCoords.x - 0.5, correctCoords.y + 0.5, 0, bin);
+        }
+        
       }
       else if (corner == 0 || corner == 1) {
-        Navigation.travelTo(correctCoords.x + 0.5, correctCoords.y - 0.5, 0, bin);
+        if(!withObs){
+          Navigation.travelTo(correctCoords.x + 0.5, correctCoords.y - 0.5, 0, bin);
+        } else {
+          ObstacleAvoidance.travelTo(correctCoords.x + 0.5, correctCoords.y - 0.5, 0, bin);
+        }
       }
     }
     else if (tunnelOrientation() == 2) { //horizontal tunnel
       if (corner == 0 || corner == 3) {
-        Navigation.travelTo(correctCoords.x - 0.5, correctCoords.y + 0.5, 0, bin);
+        if(!withObs){
+          Navigation.travelTo(correctCoords.x - 0.5, correctCoords.y + 0.5, 0, bin);
+        } else {
+          ObstacleAvoidance.travelTo(correctCoords.x - 0.5, correctCoords.y + 0.5, 0, bin);
+        }
       }
       else if (corner == 1 || corner == 2) {
-        Navigation.travelTo(correctCoords.x + 0.5, correctCoords.y - 0.5, 0, bin);
+        if(!withObs){
+          Navigation.travelTo(correctCoords.x + 0.5, correctCoords.y - 0.5, 0, bin);
+        } else {
+          ObstacleAvoidance.travelTo(correctCoords.x + 0.5, correctCoords.y - 0.5, 0, bin);
+        }
       }
     }
   }
@@ -193,83 +201,4 @@ public class GameController {
     }
   }
   
-  /**
-   * Method that defines which threads are running for every state of the game
-   * @param newState GameState enum 
-   */
-//  public void changeState(GameState newState) {
-//    state = newState;
-//    
-//    switch (state) { 
-//      case US_LOC:
-//        //currUSUsers.add(USLoc);
-//        sensorCont.resumeUSPoller();
-//        sensorCont.pauseLightPoller();
-//        break;
-//        
-//      case LIGHT_LOC:
-//        //currLightUsers.add(lightLoc);
-//        sensorCont.pauseUSPoller();
-//        sensorCont.resumeLightPoller();
-//        break;
-//        
-//      case NAVIGATION:
-//        currUSUsers.remove(USLoc);
-//        currLightUsers.remove(lightLoc);
-//        sensorCont.pauseUSPoller();
-//        sensorCont.pauseLightPoller();
-//        break;
-//        
-//      case TUNNEL_LOC1:
-//        currLightUsers.add(lightTunnelLoc1);
-//        sensorCont.pauseUSPoller();
-//        sensorCont.resumeLightPoller();
-//        break;
-//      
-//      case TUNNEL_LOC2:
-//        currLightUsers.remove(lightTunnelLoc1);
-//        currLightUsers.add(lightTunnelLoc2);
-//        sensorCont.pauseUSPoller();
-//        sensorCont.resumeLightPoller();
-//        break;
-//      
-//      case TUNNEL_LOC3:
-//        currLightUsers.remove(lightTunnelLoc2);
-//        currLightUsers.add(lightTunnelLoc3);
-//        sensorCont.pauseUSPoller();
-//        sensorCont.resumeLightPoller();
-//        break;
-//        
-//      case TUNNEL_LOC4:
-//        currLightUsers.remove(lightTunnelLoc3);
-//        currLightUsers.add(lightTunnelLoc4);
-//        sensorCont.pauseUSPoller();
-//        sensorCont.resumeLightPoller();
-//        break;
-//        
-//      case NAV_WITH_OBSTACLE:
-//        currUSUsers.add(obAvoid);
-//        sensorCont.resumeUSPoller();
-//        sensorCont.pauseLightPoller();
-//        break;
-//
-//      case TUNNEL:
-//        sensorCont.pauseUSPoller();
-//        sensorCont.pauseLightPoller();
-//        break;
-//        
-//      case LAUNCH:
-//        sensorCont.pauseUSPoller();
-//        sensorCont.pauseLightPoller();
-//        break;
-//        
-//      case TEST:
-//        //TODO: change this as necessary for any test
-//        sensorCont.resumeUSPoller();
-//        sensorCont.resumeLightPoller();
-//        break;
-//    }
-//    sensorCont.setCurrUSUsers(currUSUsers);
-//    sensorCont.setCurrLightUsers(currLightUsers);
-//  }
 }

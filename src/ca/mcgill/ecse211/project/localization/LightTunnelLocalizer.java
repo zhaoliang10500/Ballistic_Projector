@@ -1,13 +1,9 @@
 package ca.mcgill.ecse211.project.localization;
 
 import static ca.mcgill.ecse211.project.game.Resources.*;
-import static ca.mcgill.ecse211.project.game.WifiResources.*;
-import static ca.mcgill.ecse211.project.game.GameController.*;
 import java.util.Arrays;
 import ca.mcgill.ecse211.project.game.GameController;
 import ca.mcgill.ecse211.project.odometry.Odometer;
-import ca.mcgill.ecse211.project.sensor.LightUser;
-import lejos.hardware.Button;
 import lejos.robotics.SampleProvider;
 import static ca.mcgill.ecse211.project.game.Helper.*;
 
@@ -28,7 +24,6 @@ public class LightTunnelLocalizer{
   private boolean isLeftSensor;
   private int localizingAxis = -1;
   boolean aligned = false;
-  private boolean doneLoc = false;
   
   public LightTunnelLocalizer(Odometer odometer, SampleProvider leftSamp, float[] leftLightData, SampleProvider rightSamp, float[] rightLightData) {
     this.sampleProvider = new SampleProvider[] {leftSamp, rightSamp};

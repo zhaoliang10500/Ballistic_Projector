@@ -1,7 +1,6 @@
 package ca.mcgill.ecse211.project.game;
 
 import static ca.mcgill.ecse211.project.game.WifiResources.*;
-import static ca.mcgill.ecse211.project.game.Helper.sleepFor;
 
 /**
  * This class takes input from the server at the beginning of the program

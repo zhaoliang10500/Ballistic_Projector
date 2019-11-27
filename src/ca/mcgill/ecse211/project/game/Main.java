@@ -6,7 +6,6 @@ import static ca.mcgill.ecse211.project.game.Helper.setLRMotorSpeed;
 import static ca.mcgill.ecse211.project.game.Helper.sleepFor;
 import static ca.mcgill.ecse211.project.game.Resources.*;
 import ca.mcgill.ecse211.project.localization.*;
-import ca.mcgill.ecse211.project.sensor.*;
 import ca.mcgill.ecse211.project.odometry.*;
 import static ca.mcgill.ecse211.project.game.WifiResources.GOT_WIFI_PARAMS;
 
@@ -41,7 +40,6 @@ public class Main {
     LightLocalizer lightLoc = new LightLocalizer(odometer, lightSampL, lightDataL, lightSampR, lightDataR);
     LightTunnelLocalizer lightTunnelLoc = new LightTunnelLocalizer(odometer, lightSampL, lightDataL, lightSampR, lightDataR);
 
-
     //Get parameters from WiFi class
     //Server file included now in project, cd to the jar (java -jar EV3WifiServer.jar)
     //Make sure to change the SERVER_IP in WifiResources to your that of your computer (hostname -I)
@@ -50,86 +48,90 @@ public class Main {
     while(!GOT_WIFI_PARAMS);
 
 
-    do {
-      if (!doneProgram) {
+//    do {
+//      if (!doneProgram) {
+//      //US localization
+//      setLRMotorSpeed(US_SPEED);
+//      USLoc.doLocalization();
+//
+//      // light localization
+//      lightLoc.localize();
+//      GameController.beep(3);
+//      
+//      doneProgram = true;
+//      }
+//      buttonChoice = Button.waitForAnyPress();
+//    } while (buttonChoice != Button.ID_ESCAPE);
+
       //US localization
       setLRMotorSpeed(US_SPEED);
       USLoc.doLocalization();
 
-      // light localization
+      //light localization
       lightLoc.localize();
       GameController.beep(3);
+
+      //Travel to tunnel and face it
+      GameController.travelToTunnel(GameController.calcTunnelCoords(), WiFi.CORNER, false, false);
+      GameController.straighten(WiFi.CORNER);
+
+      // light localization before tunnel
+      setLRMotorSpeed(LS_TUNNEL_SPEED);
+      lightTunnelLoc.localize(); 
+
+      // travel through tunnel
+      setLRMotorSpeed(TUNNEL_SPEED);
+      Navigation.travelThroughTunnel();
       
-      doneProgram = true;
-      }
-      buttonChoice = Button.waitForAnyPress();
-    } while (buttonChoice != Button.ID_ESCAPE);
+      // light localization after tunnel
+      setLRMotorSpeed(LS_TUNNEL_SPEED);
+      lightTunnelLoc.localize(); 
 
-    System.exit(0);
-    
-
-//      //Travel to tunnel and face it
-//      GameController.travelToTunnel(GameController.calcTunnelCoords(), WiFi.CORNER, false);
-//      GameController.straighten(WiFi.CORNER);
-//
-//      // light localization before tunnel
-//      setLRMotorSpeed(LS_TUNNEL_SPEED);
-//      lightTunnelLoc.localize(); 
-//
-//      // travel through tunnel
-//      setLRMotorSpeed(TUNNEL_SPEED);
-//      Navigation.travelThroughTunnel();
-//      
-//      // light localization after tunnel
-//      setLRMotorSpeed(LS_TUNNEL_SPEED);
-//      lightTunnelLoc.localize(); 
-//
 //      // navigation: travel to launch point
 //      Navigation.travelTo(WiFi.BIN.x, WiFi.BIN.y, 0, true);
 //      GameController.beep(3);
       
-//      //travel to ideal launch point while avoiding obstacles
-//      changeState(GameState.NAV_WITH_OBSTACLE);
-//      obAvoid.travelTo(WiFi.BIN.x - 1.0, WiFi.BIN.y - 1.5);
-//      setLRMotorSpeed(NAV_TURN2);
-//  
-//      beep(3);
+      //travel to ideal launch point while avoiding obstacles
+      ObstacleAvoidance.travelTo(WiFi.BIN.x, WiFi.BIN.y, 0, true);
+      setLRMotorSpeed(NAV_TURN2);
+  
+      GameController.beep(3);
 
       
-//      // throw balls
-//      for (int i = 0; i<5; i++) {
-//        Launcher.launch();
-//      }
-//      
-//      sleepFor(25000);
-//      
-//      // travel back to tunnel and face it
-//      int currCorner = GameController.calcCurrCorner();
-//      GameController.travelToTunnel(GameController.calcTunnelCoords(), currCorner, false);
-//      GameController.straighten(currCorner);
-//      
-//      // light localization before tunnel
-//      setLRMotorSpeed(LS_TUNNEL_SPEED);
-//      lightTunnelLoc.localize();
-//      
-//      // travel through tunnel
-//      setLRMotorSpeed(TUNNEL_SPEED);
-//      Navigation.travelThroughTunnel();
-//      
-//      // light localization after tunnel
-//      setLRMotorSpeed(LS_TUNNEL_SPEED);
-//      lightTunnelLoc.localize();
-//      
-//      // travel back to starting position
-//      double[] initialXY = GameController.calcInitialPos();
-//      Navigation.travelTo(initialXY[0], initialXY[1], 0, false);
-//      GameController.beep(5);
+      // throw balls
+      for (int i = 0; i<5; i++) {
+        Launcher.launch();
+      }
       
-//      } while (Button.waitForAnyPress() != Button.ID_ESCAPE);
-//      
-//      if (Button.waitForAnyPress() == Button.ID_ESCAPE) {
-//        System.exit(0);
-//      }
+      sleepFor(25000);
+      
+      // travel back to tunnel and face it
+      int currCorner = GameController.calcCurrCorner();
+      GameController.travelToTunnel(GameController.calcTunnelCoords(), currCorner, false, true);
+      GameController.straighten(currCorner);
+      
+      // light localization before tunnel
+      setLRMotorSpeed(LS_TUNNEL_SPEED);
+      lightTunnelLoc.localize();
+      
+      // travel through tunnel
+      setLRMotorSpeed(TUNNEL_SPEED);
+      Navigation.travelThroughTunnel();
+      
+      // light localization after tunnel
+      setLRMotorSpeed(LS_TUNNEL_SPEED);
+      lightTunnelLoc.localize();
+      
+      // travel back to starting position
+      double[] initialXY = GameController.calcInitialPos();
+      Navigation.travelTo(initialXY[0], initialXY[1], 0, false);
+      GameController.beep(5);
+      
+      while (Button.waitForAnyPress() != Button.ID_ESCAPE);
+      
+      if (Button.waitForAnyPress() == Button.ID_ESCAPE) {
+        System.exit(0);
+      }
   
     
   }

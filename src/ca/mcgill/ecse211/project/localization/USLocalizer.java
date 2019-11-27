@@ -1,5 +1,4 @@
 package ca.mcgill.ecse211.project.localization;
-import lejos.hardware.Button;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.robotics.SampleProvider;
 import static ca.mcgill.ecse211.project.game.Resources.*;
@@ -19,7 +18,6 @@ public class USLocalizer {
   private SampleProvider usSensor;
   private float[] usData;
   private EV3LargeRegulatedMotor leftMotor, rightMotor;
-  private boolean doneLoc = false;
   
   public USLocalizer (EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, 
       Odometer odometer, SampleProvider usSensor, float[] usData) {
@@ -104,7 +102,7 @@ public class USLocalizer {
     odometer.setTheta(0.0);
     
     turnLeft(90);
-    moveForward(7.5);
+    moveForward(6);
     turnRight(90);
    
 //    doneLoc = true;
