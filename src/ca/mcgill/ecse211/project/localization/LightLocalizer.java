@@ -1,7 +1,6 @@
 package ca.mcgill.ecse211.project.localization;
 import static ca.mcgill.ecse211.project.game.Resources.*;
 import java.util.Arrays;
-import lejos.hardware.Button;
 import lejos.robotics.SampleProvider;
 import static ca.mcgill.ecse211.project.game.Helper.*;
 import ca.mcgill.ecse211.project.game.WiFi;
@@ -25,7 +24,6 @@ public class LightLocalizer {
   private boolean shouldRight1, shouldRight2;
   private boolean aligned1, aligned2 = false;
   private boolean isLeftSensor1, isLeftSensor2;
-  private boolean doneLoc = false;
   
   public LightLocalizer(Odometer odometer, SampleProvider leftSamp, float[] leftLightData, SampleProvider rightSamp, float[] rightLightData) {
     this.sampleProvider = new SampleProvider[] {leftSamp, rightSamp};

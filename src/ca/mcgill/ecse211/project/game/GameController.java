@@ -1,5 +1,6 @@
 package ca.mcgill.ecse211.project.game;
 
+
 //import java.util.ArrayList;
 import lejos.hardware.Sound;
 
@@ -9,15 +10,16 @@ import ca.mcgill.ecse211.project.localization.*;
 
 
 //import static ca.mcgill.ecse211.project.game.Helper.*;
+
 import static ca.mcgill.ecse211.project.game.Resources.*;
-
 import static ca.mcgill.ecse211.project.game.WifiResources.*;
-
 /**
  * This class runs the entire game
  * It contains the game state machine 
  */
 public class GameController {
+  
+  ObstacleAvoidance obstacleAvoidance = new ObstacleAvoidance(odometer, leftMotor, rightMotor, USMotor);
 
   /**
    * Straightens the robot to face the tunnel entrance 
@@ -134,21 +136,38 @@ public class GameController {
    * @param corner
    * @param bin
    */
-  public static void travelToTunnel(Point correctCoords, int corner, boolean bin){
+  public void travelToTunnel(Point correctCoords, int corner, boolean bin, boolean withObs){
     if (tunnelOrientation() == 1) { //vertical tunnel
       if (corner == 2 || corner == 3) {
-        Navigation.travelTo(correctCoords.x - 0.5, correctCoords.y + 0.5, 0, bin);
+        if(!withObs){
+          Navigation.travelTo(correctCoords.x - 0.5, correctCoords.y + 0.5, 0, bin);
+        } else {
+          obstacleAvoidance.travelTo(correctCoords.x - 0.5, correctCoords.y + 0.5, 0, bin);
+        }
+        
       }
       else if (corner == 0 || corner == 1) {
-        Navigation.travelTo(correctCoords.x + 0.5, correctCoords.y - 0.5, 0, bin);
+        if(!withObs){
+          Navigation.travelTo(correctCoords.x + 0.5, correctCoords.y - 0.5, 0, bin);
+        } else {
+          obstacleAvoidance.travelTo(correctCoords.x + 0.5, correctCoords.y - 0.5, 0, bin);
+        }
       }
     }
     else if (tunnelOrientation() == 2) { //horizontal tunnel
       if (corner == 0 || corner == 3) {
-        Navigation.travelTo(correctCoords.x - 0.5, correctCoords.y + 0.5, 0, bin);
+        if(!withObs){
+          Navigation.travelTo(correctCoords.x - 0.5, correctCoords.y + 0.5, 0, bin);
+        } else {
+          obstacleAvoidance.travelTo(correctCoords.x - 0.5, correctCoords.y + 0.5, 0, bin);
+        }
       }
       else if (corner == 1 || corner == 2) {
-        Navigation.travelTo(correctCoords.x + 0.5, correctCoords.y - 0.5, 0, bin);
+        if(!withObs){
+          Navigation.travelTo(correctCoords.x + 0.5, correctCoords.y - 0.5, 0, bin);
+        } else {
+          obstacleAvoidance.travelTo(correctCoords.x + 0.5, correctCoords.y - 0.5, 0, bin);
+        }
       }
     }
   }

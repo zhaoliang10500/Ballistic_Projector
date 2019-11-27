@@ -3,15 +3,11 @@ package ca.mcgill.ecse211.project.localization;
 import static ca.mcgill.ecse211.project.game.Resources.*;
 import static ca.mcgill.ecse211.project.game.Helper.*;
 import ca.mcgill.ecse211.project.game.Helper;
-import ca.mcgill.ecse211.project.game.WiFi;
-import lejos.hardware.Button;
-
 /**
  * This class contains methods for navigations
  * Everything here should be static
  */
 public class Navigation {
-  private static double x, y; 
   private static double deltaX, deltaY;
 
   private static double minDist;
