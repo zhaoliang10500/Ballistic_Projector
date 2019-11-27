@@ -96,15 +96,15 @@ public class USLocalizer {
     angle = 360 - angle;
     
     //half of the angle + 45 degrees to get to the 0 degree direction
-    double headingToZero = angle / 2 + 47;
+    double headingToZero = angle / 2 -45;
     
     leftMotor.rotate(convertAngle(WHEEL_RADIUS, WHEEL_BASE, headingToZero), true);
     rightMotor.rotate(-convertAngle(WHEEL_RADIUS, WHEEL_BASE, headingToZero), false);
     
     odometer.setTheta(0.0);
     
-    turnLeft(90);
-    moveForward(7.5);
+   
+    moveForward(7);
     turnRight(90);
    
 //    doneLoc = true;

@@ -68,12 +68,13 @@ public class LightLocalizer {
     return axis;
   }
   
+  
   public void localize() {
     //do {
     if (!gotInitialSample) {
       setLRMotorSpeed(120);
-      moveForward(7);
-      moveBackward(3);
+      //moveForward(7);
+      //moveBackward(3);
       initialLight = meanFilter();
       gotInitialSample = true;
     }
@@ -86,61 +87,73 @@ public class LightLocalizer {
     else if (firstAxis == 1) {
       odometer.setY(0);
     }
-    
+
     //first axis
-    while ( meanFilter()[0]/initialLight[0] > LIGHT_THRESHOLD_L && meanFilter()[1]/initialLight[1] > LIGHT_THRESHOLD_R ) {
+    while (meanFilter()[0]/initialLight[0] > LIGHT_THRESHOLD_L && meanFilter()[1]/initialLight[1] > LIGHT_THRESHOLD_R) {
       moveForward();
     }
+    
     stopMotors();
-    if (meanFilter()[0]/initialLight[0] < LIGHT_THRESHOLD_L && meanFilter()[1]/initialLight[1] < LIGHT_THRESHOLD_R ) {
-      offset1[0] = 0;
-      offset1[1] = 0;
-      isLeftSensor1 = false; // for completeness only
-      aligned1 = true;
-    }
-    //left sensor sees line first
-    else if (meanFilter()[0]/initialLight[0] < LIGHT_THRESHOLD_L && meanFilter()[1]/initialLight[1] > LIGHT_THRESHOLD_R) {
-      shouldRight1 = false;
-      offset1[0] = odometer.getXYT()[firstAxis];
-      isLeftSensor1 = true;
-    }
-    //right sensor sees line first
-    else if (meanFilter()[0]/initialLight[0] > LIGHT_THRESHOLD_L && meanFilter()[1]/initialLight[1] < LIGHT_THRESHOLD_R ){
-      shouldRight1 = true;
-      offset1[0] = odometer.getXYT()[firstAxis];
-      isLeftSensor1 = false;
-    }
-    
-    if (!aligned1) {
-      if (isLeftSensor1) {
-        while (meanFilter()[1]/initialLight[1] > LIGHT_THRESHOLD_R) { //now looking for right sensor line
-          moveForward();
-        }
-        stopMotors();
-      } else {
-        while (meanFilter()[0]/initialLight[0] > LIGHT_THRESHOLD_L ) { //now looking for left sensor line
-          moveForward();
-        }
-        stopMotors();
-      }
-      offset1[1] = odometer.getXYT()[firstAxis];
-    }
-    double deltaOffset = Math.abs(offset1[1] - offset1[0]);
-    double turnTheta1 = Math.atan(deltaOffset/WHEEL_BASE);
-    double turnTheta1Deg = 180*turnTheta1/Math.PI;
-
-    if (shouldRight1) {
-      turnRight(turnTheta1Deg);
-    } else {
-      turnLeft(turnTheta1Deg);
-    }
-    
-    moveBackward(LS_DISTANCE + WHEEL_BASE*Math.sin(turnTheta1)); //sin takes radians
+  
+    moveBackward(LS_DISTANCE);
     turnLeft(90);
     
+//    //first axis
+//    while ( meanFilter()[0]/initialLight[0] > LIGHT_THRESHOLD_L && meanFilter()[1]/initialLight[1] > LIGHT_THRESHOLD_R ) {
+//      moveForward();
+//    }
+//    stopMotors();
+//    if (meanFilter()[0]/initialLight[0] < LIGHT_THRESHOLD_L && meanFilter()[1]/initialLight[1] < LIGHT_THRESHOLD_R ) {
+//      offset1[0] = 0;
+//      offset1[1] = 0;
+//      isLeftSensor1 = false; // for completeness only
+//      aligned1 = true;
+//    }
+//    //left sensor sees line first
+//    else if (meanFilter()[0]/initialLight[0] < LIGHT_THRESHOLD_L && meanFilter()[1]/initialLight[1] > LIGHT_THRESHOLD_R) {
+//      shouldRight1 = false;
+//      offset1[0] = odometer.getXYT()[firstAxis];
+//      isLeftSensor1 = true;
+//    }
+//    //right sensor sees line first
+//    else if (meanFilter()[0]/initialLight[0] > LIGHT_THRESHOLD_L && meanFilter()[1]/initialLight[1] < LIGHT_THRESHOLD_R ){
+//      shouldRight1 = true;
+//      offset1[0] = odometer.getXYT()[firstAxis];
+//      isLeftSensor1 = false;
+//    }
+//    
+//    if (!aligned1) {
+//      if (isLeftSensor1) {
+//        while (meanFilter()[1]/initialLight[1] > LIGHT_THRESHOLD_R) { //now looking for right sensor line
+//          moveForward();
+//        }
+//        stopMotors();
+//      } else {
+//        while (meanFilter()[0]/initialLight[0] > LIGHT_THRESHOLD_L ) { //now looking for left sensor line
+//          moveForward();
+//        }
+//        stopMotors();
+//      }
+//      offset1[1] = odometer.getXYT()[firstAxis];
+//    }
+//    double deltaOffset = Math.abs(offset1[1] - offset1[0]);
+//    double turnTheta1 = Math.atan(deltaOffset/WHEEL_BASE);
+//    double turnTheta1Deg = 180*turnTheta1/Math.PI;
+//
+//    if (shouldRight1) {
+//      turnRight(turnTheta1Deg*100);
+//    } else {
+//      turnLeft(turnTheta1Deg*100);
+//    }
+//    
+//    sleepFor(2000);
+//    moveBackward(LS_DISTANCE + WHEEL_BASE*Math.sin(turnTheta1)); //sin takes radians
+//    turnLeft(90);
+
     
     
     //second axis
+    //moveBackward(5);
     while ( meanFilter()[0]/initialLight[0] > LIGHT_THRESHOLD_L && meanFilter()[1]/initialLight[1] > LIGHT_THRESHOLD_R ) {
       moveForward();
     }
@@ -190,7 +203,7 @@ public class LightLocalizer {
     
     //set odometer after localization
     if (WiFi.CORNER == 0) {
-      odometer.setXYT(TILE_SIZE, TILE_SIZE, 0);
+      odometer.setXYT(TILE_SIZE, TILE_SIZE, 0); //old = 0
     }
     else if (WiFi.CORNER == 1) {
       odometer.setXYT(14*TILE_SIZE, TILE_SIZE, 270);//270
