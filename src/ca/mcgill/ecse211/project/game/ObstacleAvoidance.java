@@ -1,30 +1,37 @@
 package ca.mcgill.ecse211.project.game;
-import ca.mcgill.ecse211.project.odometry.Odometer;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.robotics.SampleProvider;
-import static ca.mcgill.ecse211.project.game.Helper.sleepFor;
 import static ca.mcgill.ecse211.project.game.Resources.*;
 import java.util.Arrays;
+import ca.mcgill.ecse211.project.odometry.Odometer;
 
 public class ObstacleAvoidance {
     
-    private static Odometer odometer;
-    private static EV3LargeRegulatedMotor leftMotor;
-    private static EV3LargeRegulatedMotor rightMotor;
-    private static EV3LargeRegulatedMotor sensorMotor;
-    static int bandCenter = 11;
-    static int bandWidth = 3;
-    private static SampleProvider us;
-    private static float[] usData;
-    static String Obstacle_Direction = "";
-    private static double PI = Math.PI;
+     int bandCenter = 11;
+     int bandWidth = 3;
+    private  SampleProvider us;
+    private  float[] usData;
+     String Obstacle_Direction = "";
+    private  double PI = Math.PI;
     
-    private static int filterSize = 3;
-    private static int[] tempDists = new int[filterSize];
-
-    private static boolean navigating = true;
+    private  int filterSize = 3;
+    private  int[] tempDists = new int[filterSize];
+    private  boolean navigating = true;
+    private Odometer odometer;
+    private EV3LargeRegulatedMotor leftMotor;
+    private EV3LargeRegulatedMotor rightMotor;
+    private EV3LargeRegulatedMotor uSMotor;
     
-    public static void travelTo(double x, double y, double angleOffset, boolean bin) {
+    public ObstacleAvoidance(Odometer odometer, EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor,
+        EV3LargeRegulatedMotor sensorMotor){
+    this.odometer = odometer;
+    this.leftMotor = leftMotor;
+    this.rightMotor = rightMotor;
+    this.uSMotor = sensorMotor;
+}
+    
+    public void travelTo(double x, double y, double angleOffset, boolean bin) {
+      System.out.println("startttttttttt");
       Obstacle_Direction = null;
         //reset motors
         for (EV3LargeRegulatedMotor motor : new EV3LargeRegulatedMotor[] {leftMotor, rightMotor}) {
@@ -39,7 +46,8 @@ public class ObstacleAvoidance {
         
         leftMotor.setSpeed(ROTATE_SPEED);
         rightMotor.setSpeed(ROTATE_SPEED);
-        turnTo(trajectoryAngle);
+        System.out.println("turingnnnnnnnnnn: trajectory" + trajectoryAngle);
+       // turnTo(trajectoryAngle);
         
         double trajectoryLine = Math.hypot(trajectoryX, trajectoryY);
         
@@ -49,39 +57,37 @@ public class ObstacleAvoidance {
         
 //        leftMotor.rotate(convertDistanceForMotor(trajectoryLine),true);
 //        rightMotor.rotate(convertDistanceForMotor(trajectoryLine),true);
-//       
+       
         
         if (!bin) {
-          sleepFor(1000);
           leftMotor.rotate(Helper.convertDistance(trajectoryLine, WHEEL_RADIUS), true);
-          rightMotor.rotate(Helper.convertDistance(trajectoryLine, WHEEL_RADIUS), false);
+          rightMotor.rotate(Helper.convertDistance(trajectoryLine, WHEEL_RADIUS), true);
         } 
-        else if (bin) {
-          sleepFor(1000);
+        else {
           leftMotor.rotate(Helper.convertDistance(Math.abs(trajectoryLine - (LAUNCH_GRID_DIST*TILE_SIZE)), WHEEL_RADIUS), true);
-          rightMotor.rotate(Helper.convertDistance(Math.abs(trajectoryLine- (LAUNCH_GRID_DIST*TILE_SIZE)), WHEEL_RADIUS), false);
+          rightMotor.rotate(Helper.convertDistance(Math.abs(trajectoryLine- (LAUNCH_GRID_DIST*TILE_SIZE)), WHEEL_RADIUS), true);
         }
         
         
-        sensorMotor.resetTachoCount();
-        sensorMotor.setSpeed(SCAN_SPEED);
+        uSMotor.resetTachoCount();
+        uSMotor.setSpeed(SCAN_SPEED);
         
-       
+       System.out.println("enterierererererw while");
         while (leftMotor.isMoving() || rightMotor.isMoving()) { // Scan the surrounding when the robot is moving
-         
-            while (!sensorMotor.isMoving()){ //Rotate the sensor if it's not already rotating
-             
-            if (sensorMotor.getTachoCount()>=CRITICAL_ANGLE){
-                sensorMotor.rotateTo(LEFT_ANGLE,true);
+         System.out.println("dsadsadsadsadsadsad");
+            while (!uSMotor.isMoving()){ //Rotate the sensor if it's not already rotating
+             System.out.println("sssssssssssssssssssss");
+            if (uSMotor.getTachoCount()>=CRITICAL_ANGLE){
+                uSMotor.rotateTo(LEFT_ANGLE,true);
             } else {
-                sensorMotor.rotateTo(RIGHT_ANGLE,true);
+                uSMotor.rotateTo(RIGHT_ANGLE,true);
             }
             }
             
             if(meanFilter() <= bandCenter){
-              if (sensorMotor.getTachoCount() > -5 && sensorMotor.getTachoCount() < 100) {
+              if (uSMotor.getTachoCount() > -5 && uSMotor.getTachoCount() < 100) {
                 Obstacle_Direction = "ON_THE_RIGHT";
-              } else  if (sensorMotor.getTachoCount() > -100 && sensorMotor.getTachoCount() <= -5) {
+              } else  if (uSMotor.getTachoCount() > -100 && uSMotor.getTachoCount() <= -5) {
                 Obstacle_Direction = "ON_THE_LEFT";
               }
 
@@ -94,16 +100,16 @@ public class ObstacleAvoidance {
         
         if (!isNavigating() && Obstacle_Direction != null){
             avoidObstacle(Obstacle_Direction); // Implements bangbang controller to avoid the obstacle
-            sensorMotor.rotateTo(0); // reset sensor position
+            uSMotor.rotateTo(0); // reset sensor position
             navigating = true; // re-enable navigation mode
             travelTo(x,y,angleOffset,bin); // continue traveling to destination
             return;
         }
-        sensorMotor.rotateTo(0);
+        uSMotor.rotateTo(0);
         
     }
     
-    public static void turnTo(double theta) { //method from navigation program
+    public  void turnTo(double theta) { //method from navigation program
    
       double angle = getMinAngle(theta/360*2*PI- odometer.getXYT()[2]/360*2*PI);
      
@@ -111,7 +117,7 @@ public class ObstacleAvoidance {
       rightMotor.rotate(-convertAngleForMotor(angle),false);
     }
     
-    public static double getMinAngle(double angle){
+    public double getMinAngle(double angle){
         if (angle > PI) {
             angle = 2*PI - angle;
         } else if (angle < -PI) {
@@ -122,26 +128,26 @@ public class ObstacleAvoidance {
     
     /* returns: whether or not the vehicle is currently navigating
      */
-    public static boolean isNavigating() {
+    public  boolean isNavigating() {
         return navigating;
     }
     /* parameter: double distance representing the length of the line the vehicle has to run
      * returns: amount of degrees the motors have to turn to traverse this distance
      */
-    private static int convertDistanceForMotor(double distance){
+    private  int convertDistanceForMotor(double distance){
         return (int) (360*distance/(2*PI*WHEEL_RADIUS));
     }
     /* parameter: double angle representing the angle heading change in radians
      * returns: amount of degrees the motors have to turn to change this heading
      */
-    private static int convertAngleForMotor(double angle){
+    private  int convertAngleForMotor(double angle){
         return convertDistanceForMotor(WHEEL_BASE*angle/2);
     }
     
-    public static void avoidObstacle(String OBSTACLE_POSITION){
+    public  void avoidObstacle(String OBSTACLE_POSITION){
       if (OBSTACLE_POSITION == "ON_THE_LEFT") {
         // adjust the robot heading to ensure the avoidance of obstacles
-        sensorMotor.rotateTo(OBSTACLE_SENSOR_ANGLE);
+        uSMotor.rotateTo(OBSTACLE_SENSOR_ANGLE);
 
         leftMotor.rotate(220, true);
         rightMotor.rotate(-220, false);
@@ -181,7 +187,7 @@ public class ObstacleAvoidance {
       }
       else {
         // adjust the robot heading to ensure the avoidance of obstacles
-        sensorMotor.rotateTo(-OBSTACLE_SENSOR_ANGLE);
+        uSMotor.rotateTo(-OBSTACLE_SENSOR_ANGLE);
 
         leftMotor.rotate(-220, true);
         rightMotor.rotate(220, false);
@@ -225,7 +231,7 @@ public class ObstacleAvoidance {
         
     }
 
-    private static int meanFilter() {
+    private  int meanFilter() {
       int distance;
       for (int i = 0; i < filterSize; i++) { 
         us.fetchSample(usData, 0); 

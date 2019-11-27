@@ -9,6 +9,8 @@ import static ca.mcgill.ecse211.project.game.WifiResources.*;
  * It contains the game state machine 
  */
 public class GameController {
+  
+  ObstacleAvoidance obstacleAvoidance = new ObstacleAvoidance(odometer, leftMotor, rightMotor, USMotor);
 
   /**
    * Straightens the robot to face the tunnel entrance 
@@ -125,13 +127,13 @@ public class GameController {
    * @param corner
    * @param bin
    */
-  public static void travelToTunnel(Point correctCoords, int corner, boolean bin, boolean withObs){
+  public void travelToTunnel(Point correctCoords, int corner, boolean bin, boolean withObs){
     if (tunnelOrientation() == 1) { //vertical tunnel
       if (corner == 2 || corner == 3) {
         if(!withObs){
           Navigation.travelTo(correctCoords.x - 0.5, correctCoords.y + 0.5, 0, bin);
         } else {
-          ObstacleAvoidance.travelTo(correctCoords.x - 0.5, correctCoords.y + 0.5, 0, bin);
+          obstacleAvoidance.travelTo(correctCoords.x - 0.5, correctCoords.y + 0.5, 0, bin);
         }
         
       }
@@ -139,7 +141,7 @@ public class GameController {
         if(!withObs){
           Navigation.travelTo(correctCoords.x + 0.5, correctCoords.y - 0.5, 0, bin);
         } else {
-          ObstacleAvoidance.travelTo(correctCoords.x + 0.5, correctCoords.y - 0.5, 0, bin);
+          obstacleAvoidance.travelTo(correctCoords.x + 0.5, correctCoords.y - 0.5, 0, bin);
         }
       }
     }
@@ -148,14 +150,14 @@ public class GameController {
         if(!withObs){
           Navigation.travelTo(correctCoords.x - 0.5, correctCoords.y + 0.5, 0, bin);
         } else {
-          ObstacleAvoidance.travelTo(correctCoords.x - 0.5, correctCoords.y + 0.5, 0, bin);
+          obstacleAvoidance.travelTo(correctCoords.x - 0.5, correctCoords.y + 0.5, 0, bin);
         }
       }
       else if (corner == 1 || corner == 2) {
         if(!withObs){
           Navigation.travelTo(correctCoords.x + 0.5, correctCoords.y - 0.5, 0, bin);
         } else {
-          ObstacleAvoidance.travelTo(correctCoords.x + 0.5, correctCoords.y - 0.5, 0, bin);
+          obstacleAvoidance.travelTo(correctCoords.x + 0.5, correctCoords.y - 0.5, 0, bin);
         }
       }
     }
