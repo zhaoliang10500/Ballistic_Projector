@@ -2,7 +2,6 @@ package ca.mcgill.ecse211.project.game;
 
 import ca.mcgill.ecse211.wificlient.WifiConnection;
 import lejos.hardware.lcd.LCD;
-import static ca.mcgill.ecse211.project.game.Helper.sleepFor;
 import java.math.BigDecimal;
 import java.util.Map;
 
@@ -26,7 +25,7 @@ public class WifiResources {
    * The IP address of the server that transmits data to the robot. Set this to the default for the
    * beta demo and competition.
    */
-  public static final String SERVER_IP = "192.168.2.35";
+  public static final String SERVER_IP = "192.168.2.24";
 
   
   /**

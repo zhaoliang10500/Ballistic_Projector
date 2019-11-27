@@ -1,41 +1,37 @@
 package ca.mcgill.ecse211.project.game;
-import ca.mcgill.ecse211.project.odometry.Odometer;
-import ca.mcgill.ecse211.project.sensor.USUser;
-import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.robotics.SampleProvider;
 import static ca.mcgill.ecse211.project.game.Resources.*;
+import java.util.Arrays;
+import ca.mcgill.ecse211.project.odometry.Odometer;
 
-public class ObstacleAvoidance extends Thread implements USUser{
+public class ObstacleAvoidance {
     
+     int bandCenter = 11;
+     int bandWidth = 3;
+    private  SampleProvider us;
+    private  float[] usData;
+     String Obstacle_Direction = "";
+    private  double PI = Math.PI;
+    
+    private  int filterSize = 3;
+    private  int[] tempDists = new int[filterSize];
+    private  boolean navigating = true;
     private Odometer odometer;
-    private EV3LargeRegulatedMotor leftMotor, rightMotor, sensorMotor;
-    int bandCenter = 11;
-    int bandWidth = 3;
-    static int distance;
-    private SampleProvider us;
-    private float[] usData;
-    String Obstacle_Direction = "";
-    private static double PI = Math.PI;
-    
+    private EV3LargeRegulatedMotor leftMotor;
+    private EV3LargeRegulatedMotor rightMotor;
+    private EV3LargeRegulatedMotor uSMotor;
     
     public ObstacleAvoidance(Odometer odometer, EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor,
-            EV3LargeRegulatedMotor sensorMotor, SampleProvider us, float[] usData){
-        this.odometer = odometer;
-        this.leftMotor = leftMotor;
-        this.rightMotor = rightMotor;
-        this.sensorMotor = sensorMotor;
-        this.us = us;
-        this.usData = usData;
-    }
+        EV3LargeRegulatedMotor sensorMotor){
+    this.odometer = odometer;
+    this.leftMotor = leftMotor;
+    this.rightMotor = rightMotor;
+    this.uSMotor = sensorMotor;
+}
     
-    //constants
-   
- 
-
-    private static boolean navigating = true;
-    
-    public void travelTo(double x, double y) {
+    public void travelTo(double x, double y, double angleOffset, boolean bin) {
+      System.out.println("startttttttttt");
       Obstacle_Direction = null;
         //reset motors
         for (EV3LargeRegulatedMotor motor : new EV3LargeRegulatedMotor[] {leftMotor, rightMotor}) {
@@ -48,48 +44,53 @@ public class ObstacleAvoidance extends Thread implements USUser{
         double trajectoryY = y - odometer.getXYT()[1];
         double trajectoryAngle = Math.atan2(trajectoryX, trajectoryY);
         
-        Sound.beepSequenceUp();
         leftMotor.setSpeed(ROTATE_SPEED);
         rightMotor.setSpeed(ROTATE_SPEED);
-        turnTo(trajectoryAngle);
+        System.out.println("turingnnnnnnnnnn: trajectory" + trajectoryAngle);
+       // turnTo(trajectoryAngle);
         
         double trajectoryLine = Math.hypot(trajectoryX, trajectoryY);
         
-        Sound.beepSequence();
         
         leftMotor.setSpeed(FORWARD_SPEED);
         rightMotor.setSpeed(FORWARD_SPEED);
         
-        leftMotor.rotate(convertDistanceForMotor(trajectoryLine),true);
-        rightMotor.rotate(convertDistanceForMotor(trajectoryLine),true);
+//        leftMotor.rotate(convertDistanceForMotor(trajectoryLine),true);
+//        rightMotor.rotate(convertDistanceForMotor(trajectoryLine),true);
        
         
-        int distance;
-        sensorMotor.resetTachoCount();
-        sensorMotor.setSpeed(SCAN_SPEED);
+        if (!bin) {
+          leftMotor.rotate(Helper.convertDistance(trajectoryLine, WHEEL_RADIUS), true);
+          rightMotor.rotate(Helper.convertDistance(trajectoryLine, WHEEL_RADIUS), true);
+        } 
+        else {
+          leftMotor.rotate(Helper.convertDistance(Math.abs(trajectoryLine - (LAUNCH_GRID_DIST*TILE_SIZE)), WHEEL_RADIUS), true);
+          rightMotor.rotate(Helper.convertDistance(Math.abs(trajectoryLine- (LAUNCH_GRID_DIST*TILE_SIZE)), WHEEL_RADIUS), true);
+        }
         
-       
+        
+        uSMotor.resetTachoCount();
+        uSMotor.setSpeed(SCAN_SPEED);
+        
+       System.out.println("enterierererererw while");
         while (leftMotor.isMoving() || rightMotor.isMoving()) { // Scan the surrounding when the robot is moving
-         
-            while (!sensorMotor.isMoving()){ //Rotate the sensor if it's not already rotating
-             
-            if (sensorMotor.getTachoCount()>=CRITICAL_ANGLE){
-                sensorMotor.rotateTo(LEFT_ANGLE,true);
+         System.out.println("dsadsadsadsadsadsad");
+            while (!uSMotor.isMoving()){ //Rotate the sensor if it's not already rotating
+             System.out.println("sssssssssssssssssssss");
+            if (uSMotor.getTachoCount()>=CRITICAL_ANGLE){
+                uSMotor.rotateTo(LEFT_ANGLE,true);
             } else {
-                sensorMotor.rotateTo(RIGHT_ANGLE,true);
+                uSMotor.rotateTo(RIGHT_ANGLE,true);
             }
             }
             
-            us.fetchSample(usData,0);                           // acquire data
-            distance=(int)(usData[0]*100.0);                    // extract from buffer, cast to int
-            
-            if(distance <= bandCenter){
-              if (sensorMotor.getTachoCount() > -5 && sensorMotor.getTachoCount() < 100) {
+            if(meanFilter() <= bandCenter){
+              if (uSMotor.getTachoCount() > -5 && uSMotor.getTachoCount() < 100) {
                 Obstacle_Direction = "ON_THE_RIGHT";
-              } else  if (sensorMotor.getTachoCount() > -100 && sensorMotor.getTachoCount() <= -5) {
+              } else  if (uSMotor.getTachoCount() > -100 && uSMotor.getTachoCount() <= -5) {
                 Obstacle_Direction = "ON_THE_LEFT";
               }
-                Sound.beep();
+
                 leftMotor.stop(true); // Stop the robot and quit navigation mode
                 rightMotor.stop(false);
                 navigating = false;
@@ -97,18 +98,18 @@ public class ObstacleAvoidance extends Thread implements USUser{
             try { Thread.sleep(50); } catch(Exception e){}      // Poor man's timed sampling
         }
         
-        if (!this.isNavigating() && Obstacle_Direction != null){
+        if (!isNavigating() && Obstacle_Direction != null){
             avoidObstacle(Obstacle_Direction); // Implements bangbang controller to avoid the obstacle
-            sensorMotor.rotateTo(0); // reset sensor position
+            uSMotor.rotateTo(0); // reset sensor position
             navigating = true; // re-enable navigation mode
-            travelTo(x,y); // continue traveling to destination
+            travelTo(x,y,angleOffset,bin); // continue traveling to destination
             return;
         }
-        sensorMotor.rotateTo(0);
+        uSMotor.rotateTo(0);
         
     }
     
-    public void turnTo(double theta) { //method from navigation program
+    public  void turnTo(double theta) { //method from navigation program
    
       double angle = getMinAngle(theta/360*2*PI- odometer.getXYT()[2]/360*2*PI);
      
@@ -127,40 +128,38 @@ public class ObstacleAvoidance extends Thread implements USUser{
     
     /* returns: whether or not the vehicle is currently navigating
      */
-    public boolean isNavigating() {
+    public  boolean isNavigating() {
         return navigating;
     }
     /* parameter: double distance representing the length of the line the vehicle has to run
      * returns: amount of degrees the motors have to turn to traverse this distance
      */
-    private int convertDistanceForMotor(double distance){
+    private  int convertDistanceForMotor(double distance){
         return (int) (360*distance/(2*PI*WHEEL_RADIUS));
     }
     /* parameter: double angle representing the angle heading change in radians
      * returns: amount of degrees the motors have to turn to change this heading
      */
-    private int convertAngleForMotor(double angle){
+    private  int convertAngleForMotor(double angle){
         return convertDistanceForMotor(WHEEL_BASE*angle/2);
     }
     
-    public void avoidObstacle(String OBSTACLE_POSITION){
+    public  void avoidObstacle(String OBSTACLE_POSITION){
       if (OBSTACLE_POSITION == "ON_THE_LEFT") {
         // adjust the robot heading to ensure the avoidance of obstacles
-        sensorMotor.rotateTo(OBSTACLE_SENSOR_ANGLE);
+        uSMotor.rotateTo(OBSTACLE_SENSOR_ANGLE);
 
         leftMotor.rotate(220, true);
         rightMotor.rotate(-220, false);
         
         // define the exit condition of avoidance mode
         double endAngle = odometer.getXYT()[2]/360*2*PI+PI*0.5;
-        System.out.println(endAngle + "   EndAngle    "   + odometer.getXYT()[2]/360*2*PI + "   odometersssssssssss");
+      
         // engage bangbang controller to avoid the obstacle
         while (odometer.getXYT()[2]/360*2*PI<endAngle){
-          System.out.println(endAngle + "   EndAngle    "   + odometer.getXYT()[2]/360*2*PI + "   odometer");
-            us.fetchSample(usData,0);                           // acquire data
-            distance=(int)(usData[0]*100.0);                    // extract from buffer, cast to int
-            int errorDistance = bandCenter - distance;
-            System.out.println(distance + "disttttttttce");
+           
+            int errorDistance = bandCenter - meanFilter();
+            
             if (Math.abs(errorDistance)<= bandWidth){ //moving in straight line
                 leftMotor.setSpeed(100 * 2);
                 rightMotor.setSpeed(100 * 2);
@@ -188,7 +187,7 @@ public class ObstacleAvoidance extends Thread implements USUser{
       }
       else {
         // adjust the robot heading to ensure the avoidance of obstacles
-        sensorMotor.rotateTo(-OBSTACLE_SENSOR_ANGLE);
+        uSMotor.rotateTo(-OBSTACLE_SENSOR_ANGLE);
 
         leftMotor.rotate(-220, true);
         rightMotor.rotate(220, false);
@@ -196,13 +195,10 @@ public class ObstacleAvoidance extends Thread implements USUser{
         // define the exit condition of avoidance mode
         //double endAngle = odometer.getXYT()[2]/360*2*PI+PI*0.8;
         double endAngle = odometer.getXYT()[2]/360*2*PI-PI*0.5;
-        System.out.println(endAngle + "   EndAngle    "   + odometer.getXYT()[2]/360*2*PI + "   odometersssssssssss");
+      
         // engage bangbang controller to avoid the obstacle
         while (odometer.getXYT()[2]/360*2*PI>endAngle){
-          System.out.println(endAngle + "   EndAngle    "   + odometer.getXYT()[2]/360*2*PI + "   odometer");
-            us.fetchSample(usData,0);                           // acquire data
-            distance=(int)(usData[0]*100.0);                    // extract from buffer, cast to int
-            int errorDistance = bandCenter - distance;
+            int errorDistance = bandCenter - meanFilter();
             
             if (Math.abs(errorDistance)<= bandWidth){ //moving in straight line
                 leftMotor.setSpeed(100 * 2);
@@ -230,16 +226,20 @@ public class ObstacleAvoidance extends Thread implements USUser{
         }
       }
        
-        Sound.beep();
         leftMotor.stop();
         rightMotor.stop();
         
     }
 
-    @Override
-    public void processUSData(int distance) {
-      ObstacleAvoidance.distance = distance;
+    private  int meanFilter() {
+      int distance;
+      for (int i = 0; i < filterSize; i++) { 
+        us.fetchSample(usData, 0); 
+        tempDists[i] = (int) (usData[0] * 100.0); 
+      }
       
+      Arrays.sort(tempDists);
+      distance = tempDists[filterSize/2]; //java rounds down for int division
+      return distance;
     }
-
 }

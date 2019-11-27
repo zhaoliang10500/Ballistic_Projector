@@ -37,6 +37,7 @@ public class USLocalizer {
    */
   public void doLocalization() {
     
+    //do {
     double angle;
     leftMotor.setSpeed(ROTATION_SPEED);
     rightMotor.setSpeed(ROTATION_SPEED);
@@ -93,16 +94,19 @@ public class USLocalizer {
     angle = 360 - angle;
     
     //half of the angle + 45 degrees to get to the 0 degree direction
-    double headingToZero = angle / 2 + 47;
+    double headingToZero = angle / 2 -45;
     
     leftMotor.rotate(convertAngle(WHEEL_RADIUS, WHEEL_BASE, headingToZero), true);
     rightMotor.rotate(-convertAngle(WHEEL_RADIUS, WHEEL_BASE, headingToZero), false);
     
     odometer.setTheta(0.0);
-    
-    turnLeft(90);
-    moveForward(4.1);
+
+    moveForward(7);
     turnRight(90);
+   
+//    doneLoc = true;
+//    
+//    } while (Button.waitForAnyPress() != Button.ID_ESCAPE && doneLoc == false);
   
   }
   

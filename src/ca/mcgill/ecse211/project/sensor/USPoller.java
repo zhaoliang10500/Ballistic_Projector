@@ -2,7 +2,6 @@ package ca.mcgill.ecse211.project.sensor;
 
 import lejos.robotics.SampleProvider;
 import ca.mcgill.ecse211.project.game.SensorController;
-import static ca.mcgill.ecse211.project.game.Resources.USMotor;
 import java.util.Arrays;
 
 /**
