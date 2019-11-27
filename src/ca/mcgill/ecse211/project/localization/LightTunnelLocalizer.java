@@ -127,6 +127,7 @@ public class LightTunnelLocalizer{
     } else if (tunnelOri == 2) { //horizontal
       localizingAxis = 0; //x
     }
+<<<<<<< HEAD
     
     while (meanFilter()[0]/initialLight[0] > LIGHT_THRESHOLD_L && meanFilter()[1]/initialLight[1] > LIGHT_THRESHOLD_R) {
       moveForward();
@@ -188,6 +189,8 @@ public class LightTunnelLocalizer{
       sampleProvider[1].fetchSample(lightData[1], 0); 
       tempLights[1][i] = (int)(lightData[1][0]*1000.0);   
     }
+=======
+>>>>>>> parent of 12205ea... correct tunnel loc
 //    doneLoc = true;
 //    
 //    } while (Button.waitForAnyPress() != Button.ID_ESCAPE && doneLoc == false);

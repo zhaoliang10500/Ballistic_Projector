@@ -26,7 +26,10 @@ public class WifiResources {
    * beta demo and competition.
    */
   public static final String SERVER_IP = "192.168.43.83";
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of 12205ea... correct tunnel loc
 
   
   /**
