@@ -189,6 +189,25 @@ public class LightTunnelLocalizer{
       tempLights[1][i] = (int)(lightData[1][0]*1000.0);   
     }
     
+    turnRight(90);
+    moveBackward(TILE_SIZE/5*3);
+    while (meanFilter()[0]/initialLight[0] > LIGHT_THRESHOLD_L && meanFilter()[1]/initialLight[1] > LIGHT_THRESHOLD_R) {
+      moveForward();
+    }
+    stopMotors();
+    moveForward(TILE_SIZE/2 - LS_DISTANCE);
+    turnLeft(90);
+    
+    
+//    doneLoc = true;
+//    
+//    } while (Button.waitForAnyPress() != Button.ID_ESCAPE && doneLoc == false);
+//    
+//    if (Button.waitForAnyPress() == Button.ID_ESCAPE) {
+//      System.exit(0);
+//    }
+
+    
     Arrays.sort(tempLights[0]);
     Arrays.sort(tempLights[1]);
     lights[0] = tempLights[0][filterSize/2]; //java rounds down for int division

@@ -1,7 +1,16 @@
 package ca.mcgill.ecse211.project.game;
 
+
+//import java.util.ArrayList;
 import lejos.hardware.Sound;
+
+//import ca.mcgill.ecse211.project.game.SensorController;
+//import ca.mcgill.ecse211.project.sensor.*;
 import ca.mcgill.ecse211.project.localization.*;
+
+
+//import static ca.mcgill.ecse211.project.game.Helper.*;
+
 import static ca.mcgill.ecse211.project.game.Resources.*;
 import static ca.mcgill.ecse211.project.game.WifiResources.*;
 /**
@@ -163,6 +172,26 @@ public class GameController {
     }
   }
 
+//  public static double[] calcTravelToTunnel(Point correctCoords, int corner) {
+//    double[] travelToTunnel;
+//    if (tunnelOrientation() == 1) { //vertical tunnel
+//      if (corner == 2 || corner == 3) {
+//        travelToTunnel = new double[]{correctCoords.x - 0.5, correctCoords.y + 0.5};
+//      }
+//      else if (corner == 0 || corner == 1) {
+//       travelToTunnel = new double[] {correctCoords.x + 0.5, correctCoords.y - 0.5
+//      }
+//    }
+//    else if (tunnelOrientation() == 2) { //horizontal tunnel
+//      if (corner == 0 || corner == 3) {
+//        Navigation.travelTo(correctCoords.x - 0.5, correctCoords.y + 0.5, 0, bin);
+//      }
+//      else if (corner == 1 || corner == 2) {
+//        Navigation.travelTo(correctCoords.x + 0.5, correctCoords.y - 0.5, 0, bin);
+//      }
+//    }
+//  }
+  
   /**
    * calculates the robot's initial position based on the starting corner
    * @return initial x.y coordinates in integers
