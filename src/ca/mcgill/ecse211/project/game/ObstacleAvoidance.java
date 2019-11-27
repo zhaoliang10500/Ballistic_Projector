@@ -31,7 +31,7 @@ public class ObstacleAvoidance {
 }
     
     public void travelTo(double x, double y, double angleOffset, boolean bin) {
-      System.out.println("startttttttttt");
+     
       Obstacle_Direction = null;
         //reset motors
         for (EV3LargeRegulatedMotor motor : new EV3LargeRegulatedMotor[] {leftMotor, rightMotor}) {
@@ -46,7 +46,7 @@ public class ObstacleAvoidance {
         
         leftMotor.setSpeed(ROTATE_SPEED);
         rightMotor.setSpeed(ROTATE_SPEED);
-        System.out.println("turingnnnnnnnnnn: trajectory" + trajectoryAngle);
+        
        // turnTo(trajectoryAngle);
         
         double trajectoryLine = Math.hypot(trajectoryX, trajectoryY);
@@ -72,11 +72,11 @@ public class ObstacleAvoidance {
         uSMotor.resetTachoCount();
         uSMotor.setSpeed(SCAN_SPEED);
         
-       System.out.println("enterierererererw while");
+      
         while (leftMotor.isMoving() || rightMotor.isMoving()) { // Scan the surrounding when the robot is moving
-         System.out.println("dsadsadsadsadsadsad");
+       
             while (!uSMotor.isMoving()){ //Rotate the sensor if it's not already rotating
-             System.out.println("sssssssssssssssssssss");
+            
             if (uSMotor.getTachoCount()>=CRITICAL_ANGLE){
                 uSMotor.rotateTo(LEFT_ANGLE,true);
             } else {

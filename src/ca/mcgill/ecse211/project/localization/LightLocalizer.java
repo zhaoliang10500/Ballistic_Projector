@@ -19,11 +19,10 @@ public class LightLocalizer {
   private int[][] tempLights = new int[2][filterSize];
   private boolean gotInitialSample = false;
   private double[] initialLight = new double[2];
-  private double[] offset2 = new double[2];
   private double[] offset1 = new double[2];
-  private boolean shouldRight1, shouldRight2;
-  private boolean aligned1, aligned2 = false;
-  private boolean isLeftSensor1, isLeftSensor2;
+  private boolean shouldRight1;
+  private boolean aligned1 = false;
+  private boolean isLeftSensor1;
   
   public LightLocalizer(Odometer odometer, SampleProvider leftSamp, float[] leftLightData, SampleProvider rightSamp, float[] rightLightData) {
     this.sampleProvider = new SampleProvider[] {leftSamp, rightSamp};
