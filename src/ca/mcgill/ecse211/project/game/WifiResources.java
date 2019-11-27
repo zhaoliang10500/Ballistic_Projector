@@ -25,8 +25,7 @@ public class WifiResources {
    * The IP address of the server that transmits data to the robot. Set this to the default for the
    * beta demo and competition.
    */
-
-  public static final String SERVER_IP = "192.168.2.24";
+  public static final String SERVER_IP = "192.168.43.83";
 
 
   
