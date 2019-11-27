@@ -2,7 +2,7 @@ package ca.mcgill.ecse211.project.game;
 
 //import java.util.ArrayList;
 import lejos.hardware.Sound;
-
+import lejos.robotics.SampleProvider;
 //import ca.mcgill.ecse211.project.game.SensorController;
 //import ca.mcgill.ecse211.project.sensor.*;
 import ca.mcgill.ecse211.project.localization.*;
@@ -18,7 +18,7 @@ import static ca.mcgill.ecse211.project.game.WifiResources.*;
  * It contains the game state machine 
  */
 public class GameController {
-
+  
   /**
    * Straightens the robot to face the tunnel entrance 
    * based on the robot's current corner relative to the tunnel
@@ -128,30 +128,6 @@ public class GameController {
     return corner;
   }
   
-  /**
-   *  Method to travel to a tunnel, vertical or horizontal
-   * @param correctCoords
-   * @param corner
-   * @param bin
-   */
-  public static void travelToTunnel(Point correctCoords, int corner, boolean bin){
-    if (tunnelOrientation() == 1) { //vertical tunnel
-      if (corner == 2 || corner == 3) {
-        Navigation.travelTo(correctCoords.x - 0.5, correctCoords.y + 0.5, 0, bin);
-      }
-      else if (corner == 0 || corner == 1) {
-        Navigation.travelTo(correctCoords.x + 0.5, correctCoords.y - 0.5, 0, bin);
-      }
-    }
-    else if (tunnelOrientation() == 2) { //horizontal tunnel
-      if (corner == 0 || corner == 3) {
-        Navigation.travelTo(correctCoords.x - 0.5, correctCoords.y + 0.5, 0, bin);
-      }
-      else if (corner == 1 || corner == 2) {
-        Navigation.travelTo(correctCoords.x + 0.5, correctCoords.y - 0.5, 0, bin);
-      }
-    }
-  }
 
 //  public static double[] calcTravelToTunnel(Point correctCoords, int corner) {
 //    double[] travelToTunnel;
