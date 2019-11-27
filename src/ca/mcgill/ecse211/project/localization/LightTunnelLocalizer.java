@@ -118,6 +118,17 @@ public class LightTunnelLocalizer{
     } else {
       turnLeft(turnThetaDeg);
     }
+    
+    turnRight(90);
+    moveBackward(TILE_SIZE/5*3);
+    while (meanFilter()[0]/initialLight[0] > LIGHT_THRESHOLD_L && meanFilter()[1]/initialLight[1] > LIGHT_THRESHOLD_R) {
+      moveForward();
+    }
+    stopMotors();
+    moveForward(TILE_SIZE/2 - LS_DISTANCE);
+    turnLeft(90);
+    
+    
 //    doneLoc = true;
 //    
 //    } while (Button.waitForAnyPress() != Button.ID_ESCAPE && doneLoc == false);

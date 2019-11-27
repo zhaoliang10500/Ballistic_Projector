@@ -81,7 +81,7 @@ public class LightLocalizer {
     
     int firstAxis = getAxis()[1];
     int secondAxis = getAxis()[0];
-    System.out.println("currfirst and secon: " + firstAxis + ", " + secondAxis);
+    //System.out.println("currfirst and secon: " + firstAxis + ", " + secondAxis);
 //    if (firstAxis == 0) {
 //      odometer.setX(0);
 //    }
@@ -113,16 +113,16 @@ public class LightLocalizer {
     //left sensor sees line first
     else if (meanFilter()[0]/initialLight[0] < LIGHT_THRESHOLD_L && meanFilter()[1]/initialLight[1] > LIGHT_THRESHOLD_R) {
       shouldRight1 = false;
-      System.out.println("first axis:" + odometer.getXYT()[firstAxis]);
-      System.out.println("second axis:" + odometer.getXYT()[secondAxis]);
+      //System.out.println("first axis:" + odometer.getXYT()[firstAxis]);
+      //System.out.println("second axis:" + odometer.getXYT()[secondAxis]);
       offset1[0] = odometer.getXYT()[firstAxis];
       isLeftSensor1 = true;
     }
     //right sensor sees line first
     else if (meanFilter()[0]/initialLight[0] > LIGHT_THRESHOLD_L && meanFilter()[1]/initialLight[1] < LIGHT_THRESHOLD_R ){
       shouldRight1 = true;
-      System.out.println("first axis:" + odometer.getXYT()[firstAxis]);
-      System.out.println("second axis:" + odometer.getXYT()[secondAxis]);
+      //System.out.println("first axis:" + odometer.getXYT()[firstAxis]);
+      //System.out.println("second axis:" + odometer.getXYT()[secondAxis]);
       offset1[0] = odometer.getXYT()[firstAxis];
       isLeftSensor1 = false;
     }
@@ -140,11 +140,11 @@ public class LightLocalizer {
         stopMotors();
       }
       offset1[1] = odometer.getXYT()[firstAxis];
-      System.out.println("first axis2:" + odometer.getXYT()[firstAxis]);
-      System.out.println("second axis2:" + odometer.getXYT()[secondAxis]);
+      //System.out.println("first axis2:" + odometer.getXYT()[firstAxis]);
+      //System.out.println("second axis2:" + odometer.getXYT()[secondAxis]);
     }
     
-    System.out.println("offsets" + offset1[0] + ", " + offset1[1]);
+    //System.out.println("offsets" + offset1[0] + ", " + offset1[1]);
     double turnTheta1 = Math.atan(Math.abs(offset1[1] - offset1[0])/WHEEL_BASE);
     double turnTheta1Deg = 180*turnTheta1/Math.PI;
 

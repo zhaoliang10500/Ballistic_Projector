@@ -3,12 +3,13 @@ package ca.mcgill.ecse211.project.game;
 import lejos.robotics.SampleProvider;
 import lejos.hardware.Button;
 import static ca.mcgill.ecse211.project.game.Helper.setLRMotorSpeed;
-import static ca.mcgill.ecse211.project.game.Helper.sleepFor;
+//import static ca.mcgill.ecse211.project.game.Helper.sleepFor;
 import static ca.mcgill.ecse211.project.game.Resources.*;
 import ca.mcgill.ecse211.project.localization.*;
-import ca.mcgill.ecse211.project.sensor.*;
+//import ca.mcgill.ecse211.project.sensor.*;
 import ca.mcgill.ecse211.project.odometry.*;
 import static ca.mcgill.ecse211.project.game.WifiResources.GOT_WIFI_PARAMS;
+import static ca.mcgill.ecse211.project.game.WifiResources.Point;
 
 /**
  * This class contains the main method of the program.
@@ -58,6 +59,8 @@ public class Main {
         GameController.beep(3);
 
         //Travel to tunnel and face it
+        //Point tunnelCoords = GameController.calcTunnelCoords();
+        //GameController.travelToTunnel(tunnelCoords, WiFi.CORNER, false);
         GameController.travelToTunnel(GameController.calcTunnelCoords(), WiFi.CORNER, false);
         GameController.straighten(WiFi.CORNER);
 
@@ -65,15 +68,15 @@ public class Main {
         setLRMotorSpeed(LS_TUNNEL_SPEED);
         //sleepFor(2000);
         lightTunnelLoc.localize(); 
-
+        
         // travel through tunnel
         setLRMotorSpeed(TUNNEL_SPEED);
         Navigation.travelThroughTunnel();
 
-        // light localization after tunnel
-        setLRMotorSpeed(LS_TUNNEL_SPEED);
-        //sleepFor(2000);
-        lightTunnelLoc.localize(); 
+//        // light localization after tunnel
+//        setLRMotorSpeed(LS_TUNNEL_SPEED);
+//        //sleepFor(2000);
+//        lightTunnelLoc.localize(); 
 
         // navigation: travel to launch point
         Navigation.travelTo(WiFi.BIN.x, WiFi.BIN.y, 0, true);
@@ -87,14 +90,15 @@ public class Main {
         //      beep(3);
 
 
-        // throw balls
-        for (int i = 0; i<5; i++) {
-          Launcher.launch();
-        }
-
-        sleepFor(25000); //wait till finished throw
+//        // throw balls
+//        for (int i = 0; i<5; i++) {
+//          Launcher.launch();
+//        }
+//
+//        sleepFor(25000); //wait till finished throw
 
         // travel back to tunnel and face it
+        Helper.turnRight(180);
         int currCorner = GameController.calcCurrCorner();
         GameController.travelToTunnel(GameController.calcTunnelCoords(), currCorner, false);
         GameController.straighten(currCorner);
